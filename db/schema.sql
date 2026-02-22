@@ -92,10 +92,12 @@ CREATE TABLE batches (
 -- Depends on Products + Companies
 CREATE TABLE packages (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    batch_id INTEGER REFERENCES batches(id) ON DELETE CASCADE SET NULL,
+    package_tag VARCHAR(24) UNIQUE,
+    external_id VARCHAR(255),
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
-    parent_lot_id INTEGER REFERENCES packages(id) ON DELETE SET NULL,
+    parent_package_id INTEGER REFERENCES packages(id) ON DELETE SET NULL,
+    batch_id INTEGER REFERENCES batches(id) ON DELETE SET NULL,
     location VARCHAR(255) DEFAULT 'backroom',
     status packages_status NOT NULL DEFAULT 'active',
     quantity DECIMAL(10,3) NOT NULL DEFAULT 0,
@@ -104,10 +106,9 @@ CREATE TABLE packages (
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
     lot_number VARCHAR(100),
-    state_uuid UUID UNIQUE,
     updated_at TIMESTAMP DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    UNIQUE (batch_id, location, lot_number)
+    UNIQUE (package_tag)
 );
 
 -- Audit Trail
