@@ -30,6 +30,7 @@
         <th class="px-3 py-2 border border-gray-300">Source Tag</th>
         <th class="px-3 py-2 border border-gray-300">Product</th>
         <th class="px-3 py-2 border border-gray-300">Quantity</th>
+        <th class="px-3 py-2 border border-gray-300">Category</th>
         <th class="px-3 py-2 border border-gray-300 sm:hidden">Avg Cost</th>
         <th class="px-3 py-2 border border-gray-300">Total Val.</th>
         <th class="px-3 py-2 border border-gray-300">Status</th>
@@ -81,6 +82,10 @@
                 <%= pkg.quantity %> <%= pkg.unit %>
             </td>
 
+             <td class="px-3 py-2 border border-gray-300 font-bold">
+                <%= pkg.category_name %>
+            </td>
+
             <td class="px-3 py-2 border border-gray-300 sm:hidden text-gray-500">
                 $<%= Number(pkg.cost_price || 0).toFixed(2) %>
             </td>
@@ -98,8 +103,6 @@
             <td class="px-3 py-2 border border-gray-300">
                 <div class="flex space-x-2">
                     <a href="/packages/<%= pkg.id %>/adjust" class="text-xs text-gray-600 hover:text-black">Adjust</a>
-                    <a href="/products/<%= pkg.product_id %>/receive" class="text-xs text-gray-600 hover:text-black">Receive</a>
-
                     <% if (Number(pkg.quantity) > 0) { %>
                         <a href="/packages/<%= pkg.id %>/split" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">Split</a>
                     <% } %>
