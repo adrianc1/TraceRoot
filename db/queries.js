@@ -515,6 +515,7 @@ const createProductInventory = async (
 };
 
 const applyInventoryMovement = async ({
+	package_tag,
 	product_id,
 	packages_id = null,
 	batch_id,
@@ -567,11 +568,12 @@ const applyInventoryMovement = async ({
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
 			 status = $4,
-			 batch_id = $5
+			 batch_id = $5,
+			 package_tag = $6,
              updated_at = NOW()
-         WHERE id = $6
+         WHERE id = $7
 		 RETURNING *`,
-				[newQty, cost_per_unit, null, status, batch, invId],
+				[newQty, cost_per_unit, null, status, batch_id, package_tag, invId],
 			);
 
 			updateInventory = updated[0];
@@ -619,11 +621,12 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           (product_id, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+           ( product_id, package_tag, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
            RETURNING *`,
 					[
 						product_id,
+						package_tag,
 						company_id,
 						location,
 						targetQty,
@@ -662,16 +665,36 @@ const applyInventoryMovement = async ({
 	}
 };
 
-const createBatch = async (
-	productId,
-	companyId,
-	batchNumber,
-	totalQty,
-	unit,
-) => {
+const getBatchByNumber = async (product_id, batch_number) => {
 	const { rows } = await pool.query(
-		`INSERT INTO batches(product_id, company_id, batch_number, total_quantity, unit  ) VALUES($1,$2,$3,$4,$5) RETURNING *`,
-		[productId, companyId, batchNumber, totalQty, unit],
+		`SELECT * FROM batches WHERE product_id=$1 AND batch_number=$2`,
+		[product_id, batch_number],
+	);
+	return rows[0] || null;
+};
+
+const createBatch = async ({
+	product_id,
+	company_id,
+	batch_number,
+	total_quantity,
+	unit,
+	cost_per_unit,
+	supplier_name,
+}) => {
+	const { rows } = await pool.query(
+		`INSERT INTO batches (product_id, company_id, batch_number, total_quantity, unit, cost_per_unit, supplier_name)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)
+         RETURNING *`,
+		[
+			product_id,
+			company_id,
+			batch_number,
+			total_quantity,
+			unit,
+			cost_per_unit,
+			supplier_name,
+		],
 	);
 	return rows[0];
 };
@@ -962,5 +985,6 @@ module.exports = {
 	splitPackageTransaction,
 	getPackagesByProductId,
 	createBatch,
+	getBatchByNumber,
 	getAllPackages,
 };

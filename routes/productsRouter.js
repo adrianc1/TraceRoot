@@ -10,6 +10,7 @@ router.get(
 );
 
 router.get('/receive', productsController.receiveNewPackageForm);
+router.post('/receive', productsController.receiveNewPackagesPOST);
 
 router.post('/create-product', productsController.insertProduct);
 
