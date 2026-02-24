@@ -17,8 +17,6 @@ const receiveNewPackageForm = async (req, res) => {
 	const product = { unit: 'N/a' };
 	const products = await db.getAllProductsDB(req.user.company_id);
 
-	console.log('=====', req.body);
-
 	console.log('product====', product);
 	res.render('products/receiveAll.ejs', { products, product });
 };
@@ -82,6 +80,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		userId,
 		status: 'active',
 		package_size: package_size || null,
+		unit,
 	});
 	res.status(200).json({ success: true });
 };

@@ -502,18 +502,6 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
-const createProductInventory = async (
-	packages_id,
-	movement_type,
-	quantity,
-	notes,
-) => {
-	const insert = await pool.query(
-		'INSERT INTO packages (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
-		[product_id, location, quantity, cost_price, supplier_name],
-	);
-};
-
 const applyInventoryMovement = async ({
 	package_tag,
 	product_id,
@@ -529,6 +517,7 @@ const applyInventoryMovement = async ({
 	userId,
 	status,
 	package_size,
+	unit,
 }) => {
 	const client = await pool.connect();
 	let delta;
@@ -621,8 +610,8 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           ( product_id, package_tag, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+           ( product_id, package_tag, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id, unit)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11)
            RETURNING *`,
 					[
 						product_id,
@@ -635,6 +624,7 @@ const applyInventoryMovement = async ({
 						batch,
 						status || (targetQty <= 0 ? 'inactive' : 'active'),
 						batch_id,
+						unit,
 					],
 				);
 				updateInventory = insertRows[0];
@@ -971,7 +961,6 @@ module.exports = {
 	getSingleCategory,
 	updateCategory,
 	updateStrain,
-	createProductInventory,
 	signupAdmin,
 	getUserByEmail,
 	adjustProductInventory,
