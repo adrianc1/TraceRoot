@@ -1,3 +1,7 @@
+-- ==========================================================
+-- UPDATED SEED DATA (Independent Package Architecture)
+-- ==========================================================
+
 -- =========================
 -- COMPANIES
 -- =========================
@@ -38,9 +42,9 @@ VALUES
 INSERT INTO users
 (company_id, first_name, last_name, email, password_hash, role)
 VALUES
-(1,'Alice','Admin','alice@gvf.com','$2b$10$.v93RcRcVwnMAQJmcK3SU.KxZeHxC2RS09w6cQBpxSXAZ7BsXctOa','admin'),
-(1,'Mark','Manager','mark@gvf.com','$2b$10$.v93RcRcVwnMAQJmcK3SU.KxZeHxC2RS09w6cQBpxSXAZ7BsXctOa','manager'),
-(2,'Sam','Staff','sam@gvf.com','$2b$10$.v93RcRcVwnMAQJmcK3SU.KxZeHxC2RS09w6cQBpxSXAZ7BsXctOa','staff');
+(1,'Alice','Admin','alice@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','admin'),
+(1,'Mark','Manager','mark@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','manager'),
+(2,'Sam','Staff','sam@gvf.com','$2b$10$fZMjWuFZO8oWsSr7ANyH1.w2NrCAt5A4x0jtpFrfPPkrZm7FGtcnW','staff');
 
 -- =========================
 -- PRODUCTS
@@ -53,7 +57,7 @@ VALUES
 (1, 1, NULL, 2, 'Live Resin Cartridge', '1g vape cart', 'g', 'LR-1G');
 
 -- =========================
--- BATCHES
+-- BATCHES (Now Optional Labels)
 -- =========================
 INSERT INTO batches
 (product_id, company_id, batch_number, total_quantity, unit, cost_per_unit, supplier_name)
@@ -66,43 +70,38 @@ VALUES
 -- PACKAGES
 -- =========================
 
--- Blue Dream master package
+-- 1. Blue Dream "Master" Package (The Parent)
 INSERT INTO packages
-(batch_id, product_id, company_id, quantity, package_size, unit,
+(package_tag, batch_id, product_id, company_id, quantity, package_size, unit,
  location, lot_number, supplier_name, cost_price)
 VALUES
-(1,1,1,1000.000,1000.000,'g','backroom','LOT-BD-001','Green Valley Grow',2.50);
+('1A4060300001230000000001', 1, 1, 1, 1000.000, 1000.000, 'g', 'backroom', 'LOT-BD-001', 'Green Valley Grow', 2.50);
 
--- Split packages (child lots)
+-- 2. Split Packages (Child Tags created from Package ID 1)
+-- Notice we use parent_package_id = 1
 INSERT INTO packages
-(batch_id, product_id, company_id, parent_lot_id,
+(package_tag, batch_id, product_id, company_id, parent_package_id,
  quantity, package_size, unit, location, lot_number, cost_price)
 VALUES
-(1,1,1,1,500.000,3.5,'g','front','LOT-BD-001-A',2.50),
-(1,1,1,1,500.000,3.5,'g','front','LOT-BD-001-B',2.50);
+('1A406030000123000000000A', 1, 1, 1, 1, 500.000, 3.5, 'g', 'front', 'LOT-BD-001-A', 2.50),
+('1A406030000123000000000B', 1, 1, 1, 1, 500.000, 3.5, 'g', 'front', 'LOT-BD-001-B', 2.50);
 
--- OG Kush package
+-- 3. Received Inventory (Scenario: Direct Intake, no internal batch needed)
+-- We set batch_id to NULL to show flexibility
 INSERT INTO packages
-(batch_id, product_id, company_id,
- quantity, package_size, unit, location, lot_number, cost_price)
+(package_tag, batch_id, product_id, company_id,
+ quantity, package_size, unit, location, lot_number, supplier_name, cost_price)
 VALUES
-(2,2,1,2000.000,28,'g','backroom','LOT-OG-001',1.90);
-
--- Live Resin carts
-INSERT INTO packages
-(batch_id, product_id, company_id,
- quantity, package_size, unit, location, lot_number, cost_price)
-VALUES
-(3,3,1,500.000,1,'g','safe','LOT-LR-001',6.00);
+('1A4060300001230000009999', NULL, 3, 1, 500.000, 1, 'g', 'safe', 'LOT-LR-001', 'Emerald Extraction Lab', 6.00);
 
 -- =========================
--- INVENTORY MOVEMENTS
+-- INVENTORY MOVEMENTS (The Ledger)
 -- =========================
 INSERT INTO inventory_movements
 (packages_id, user_id, movement_type, quantity, cost_per_unit, notes)
 VALUES
-(1,1,'batch_created',1000.000,2.50,'Initial batch intake'),
-(2,2,'split',500.000,2.50,'Split into retail packages'),
-(3,2,'split',500.000,2.50,'Split into retail packages'),
-(4,3,'transfer',2000.000,1.90,'Moved to storage'),
-(5,1,'intake',500.000,6.00,'Received from extractor');
+(1, 1, 'intake', 1000.000, 2.50, 'Initial master package intake'),
+(1, 2, 'split_parent', -1000.000, 2.50, 'Master package depleted by split'),
+(2, 2, 'split_child', 500.000, 2.50, 'Created from tag ...0001'),
+(3, 2, 'split_child', 500.000, 2.50, 'Created from tag ...0001'),
+(4, 1, 'intake', 500.000, 6.00, 'Received directly from external lab');

@@ -83,6 +83,52 @@ const getAllProductsDB = async (user_id) => {
 	}
 };
 
+const getAllPackages = async (company_id) => {
+	try {
+		const { rows } = await pool.query(
+			`
+            SELECT 
+                pk.id,
+                pk.package_tag,
+				pk.product_id,
+                pk.quantity,
+                pk.unit,
+                pk.location,
+                pk.status,
+                pk.cost_price,
+                pk.lot_number,
+                pk.created_at,
+                -- Product Details
+                p.name AS product_name,
+                p.sku AS product_sku,
+                c.name AS category_name,
+                b.name AS brand_name,
+                s.name AS strain_name,
+                -- Batch Details
+                bt.batch_number,
+                -- Parent Info 
+                pk.parent_package_id,
+                parent_pk.package_tag AS parent_package_tag
+            FROM packages AS pk
+            INNER JOIN products AS p ON pk.product_id = p.id
+            LEFT JOIN categories AS c ON p.category_id = c.id
+            LEFT JOIN brands AS b ON p.brand_id = b.id
+            LEFT JOIN strains AS s ON p.strain_id = s.id
+            LEFT JOIN batches AS bt ON pk.batch_id = bt.id
+            LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
+            WHERE pk.company_id = $1 
+              AND pk.status = 'active'
+            ORDER BY pk.created_at DESC;
+            `,
+			[company_id],
+		);
+		return rows;
+	} catch (error) {
+		console.error('Database error fetching packages:', error);
+		throw error;
+	}
+};
+
 const getProductDB = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
@@ -456,19 +502,8 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
-const createProductInventory = async (
-	packages_id,
-	movement_type,
-	quantity,
-	notes,
-) => {
-	const insert = await pool.query(
-		'INSERT INTO packages (product_id, location, quantity, cost_price, supplier_name) VALUES $1, $2, $3, $4, $5',
-		[product_id, location, quantity, cost_price, supplier_name],
-	);
-};
-
 const applyInventoryMovement = async ({
+	package_tag,
 	product_id,
 	packages_id = null,
 	batch_id,
@@ -482,6 +517,7 @@ const applyInventoryMovement = async ({
 	userId,
 	status,
 	package_size,
+	unit,
 }) => {
 	const client = await pool.connect();
 	let delta;
@@ -521,11 +557,12 @@ const applyInventoryMovement = async ({
              cost_price = COALESCE($2, cost_price),
              supplier_name = COALESCE($3, supplier_name),
 			 status = $4,
-			 batch_id = $5
+			 batch_id = $5,
+			 package_tag = $6,
              updated_at = NOW()
-         WHERE id = $6
+         WHERE id = $7
 		 RETURNING *`,
-				[newQty, cost_per_unit, null, status, batch, invId],
+				[newQty, cost_per_unit, null, status, batch_id, package_tag, invId],
 			);
 
 			updateInventory = updated[0];
@@ -573,11 +610,12 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           (product_id, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+           ( product_id, package_tag, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id, unit)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11)
            RETURNING *`,
 					[
 						product_id,
+						package_tag,
 						company_id,
 						location,
 						targetQty,
@@ -586,6 +624,7 @@ const applyInventoryMovement = async ({
 						batch,
 						status || (targetQty <= 0 ? 'inactive' : 'active'),
 						batch_id,
+						unit,
 					],
 				);
 				updateInventory = insertRows[0];
@@ -616,16 +655,36 @@ const applyInventoryMovement = async ({
 	}
 };
 
-const createBatch = async (
-	productId,
-	companyId,
-	batchNumber,
-	totalQty,
-	unit,
-) => {
+const getBatchByNumber = async (product_id, batch_number) => {
 	const { rows } = await pool.query(
-		`INSERT INTO batches(product_id, company_id, batch_number, total_quantity, unit  ) VALUES($1,$2,$3,$4,$5) RETURNING *`,
-		[productId, companyId, batchNumber, totalQty, unit],
+		`SELECT * FROM batches WHERE product_id=$1 AND batch_number=$2`,
+		[product_id, batch_number],
+	);
+	return rows[0] || null;
+};
+
+const createBatch = async ({
+	product_id,
+	company_id,
+	batch_number,
+	total_quantity,
+	unit,
+	cost_per_unit,
+	supplier_name,
+}) => {
+	const { rows } = await pool.query(
+		`INSERT INTO batches (product_id, company_id, batch_number, total_quantity, unit, cost_per_unit, supplier_name)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)
+         RETURNING *`,
+		[
+			product_id,
+			company_id,
+			batch_number,
+			total_quantity,
+			unit,
+			cost_per_unit,
+			supplier_name,
+		],
 	);
 	return rows[0];
 };
@@ -649,6 +708,15 @@ const getPackageByLot = async (productId, lotNumber) => {
 
 	return rows[0] || null;
 };
+
+// const getAllPackages = async (companyId) => {
+// 	const { rows } = await pool.query(
+// 		`SELECT * FROM packages WHERE company_id=$1`,
+// 		[companyId],
+// 	);
+
+// 	return rows || null;
+// };
 
 const adjustProductInventory = async (
 	packages_id,
@@ -893,7 +961,6 @@ module.exports = {
 	getSingleCategory,
 	updateCategory,
 	updateStrain,
-	createProductInventory,
 	signupAdmin,
 	getUserByEmail,
 	adjustProductInventory,
@@ -907,4 +974,6 @@ module.exports = {
 	splitPackageTransaction,
 	getPackagesByProductId,
 	createBatch,
+	getBatchByNumber,
+	getAllPackages,
 };
