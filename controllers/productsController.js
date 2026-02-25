@@ -7,6 +7,9 @@ const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
 		const packages = await db.getAllPackages(userCompanyId);
+		// console.log('packages');
+
+		// console.log(packages);
 		res.render('products/products', { message: 'All Products', packages });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
@@ -274,12 +277,15 @@ const editProductForm = async (req, res) => {
 
 const updateProduct = async (req, res) => {
 	const id = req.params.id;
+	const company_id = req.user.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, status } =
 		req.body;
+	console.log(req.body);
 	await db.updateProduct(
 		name,
 		description,
 		unit,
+		company_id,
 		brandId,
 		strainId,
 		categoryId,
@@ -289,11 +295,9 @@ const updateProduct = async (req, res) => {
 };
 
 const receiveInventoryPut = async (req, res) => {
-	const product_id = req.params.id;
-	const product = await db.getProductDB(product_id, req.user.company_id);
-
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
+	const product_id = req.params.id;
 
 	const {
 		quantity,
@@ -306,21 +310,27 @@ const receiveInventoryPut = async (req, res) => {
 		package_size,
 		package_tag,
 	} = req.body;
-	const existingInventory = await db.getPackageByLot(product_id, batch);
 
-	const newBatch = await db.createBatch(
+	console.log(product_id);
+
+	const product = await db.getProductDB(product_id, req.user.company_id);
+	const existingInventory = await db.getPackageByLot(product_id, batch);
+	const newBatch = await db.createBatch({
 		product_id,
 		company_id,
-		batch,
-		quantity,
+		batch_number: batch,
+		total_quantity: quantity,
 		unit,
-	);
+		cost_per_unit: unit_price,
+		supplier_name: vendor,
+	});
 
 	const batch_id = newBatch.id;
 
 	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
+	console.log('=====', req.body);
 
 	await db.applyInventoryMovement({
 		package_tag,

@@ -69,12 +69,10 @@
             </td>
 
             <td class="px-3 py-2 border border-gray-300">
-                <!-- insert here!!! -->
                 <a href="/products/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
                     <%= pkg.product_name %>
                 </a>
-                <!-- above here!! -->
-                <!-- <div class="font-semibold"><%= pkg.product_name %></div> -->
+
                 <div class="text-xs text-gray-400"><%= pkg.strain_name || 'No Strain' %></div>
             </td>
 
@@ -83,7 +81,7 @@
             </td>
 
              <td class="px-3 py-2 border border-gray-300 font-bold">
-                <%= pkg.category_name %>
+                <a href="/categories/<%= pkg.category_id %>"><%= pkg.category_name %></a>
             </td>
 
             <td class="px-3 py-2 border border-gray-300 sm:hidden text-gray-500">

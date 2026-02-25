@@ -102,6 +102,7 @@ const getAllPackages = async (company_id) => {
                 p.name AS product_name,
                 p.sku AS product_sku,
                 c.name AS category_name,
+				c.id AS category_id,
                 b.name AS brand_name,
                 s.name AS strain_name,
                 -- Batch Details
@@ -292,6 +293,7 @@ const updateProduct = async (
 	name,
 	description,
 	unit,
+	company_id,
 	brandId,
 	strainId,
 	categoryId,
@@ -310,10 +312,11 @@ const updateProduct = async (
        unit = $3, 
        brand_id = $4, 
        strain_id = $5, 
-       category_id = $6
-   WHERE id = $7
+       category_id = $6,
+	   company_id = $7
+   WHERE id = $8
 `,
-			[name, description, unit, brandId, strainId, categoryId, id],
+			[name, description, unit, brandId, strainId, categoryId, company_id, id],
 		);
 
 		await client.query('COMMIT');
