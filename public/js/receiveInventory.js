@@ -1,13 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const formEl = document.getElementById('receive-form');
+	const product_id = formEl.dataset.product_id;
 
 	const receiveInventoryFunction = async () => {
 		const formData = new FormData(formEl);
-		const product_id = document.getElementById('product_id').value;
 
 		const data = {
 			package_tag: formData.get('packageTag'),
-			product_id: product_id,
 			quantity: formData.get('quantity'),
 			unit: formData.get('unit'),
 			unit_price: formData.get('unit_price'),
@@ -15,12 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			vendor: formData.get('vendor'),
 			batch: formData.get('batch'),
 			notes: formData.get('notes'),
+			product_id: product_id,
 		};
 
 		console.log('Data to send:', data);
 
-		const res = await fetch(`/products/receive`, {
-			method: 'POST',
+		const res = await fetch(`/products/${product_id}/receive`, {
+			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 			},

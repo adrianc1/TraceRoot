@@ -10,7 +10,7 @@
         		<%- include ('../partials/header.ejs') %>
 
             <form
-					data-id="<%= product.id %>"
+					data-product_id="<%= product.id %>"
 					id="receive-form"
 					method="POST"
 					action="/products/<%= product.id %>/receive"
@@ -19,7 +19,8 @@
 					
                         <div class="flex items-center gap-2">
                             <p class="text-md font-semibold text-gray-700"> Product Name: </p>
-                            <div class="text-2xl font-bold text-emerald-800"><%= product.name %></div>
+                            <div class="text-2xl font-bold text-emerald-800"
+                            ><%= product.name %></div>
                         </div>
 					
                         <div class="">
