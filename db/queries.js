@@ -179,10 +179,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 		const source = sourcePackage.rows[0];
 
 		//calc total weight used
-		const totalUsed = splits.reduce(
-			(sum, s) => sum + s.packageSize * s.quantity,
-			0,
-		);
+		const totalUsed = splits.reduce((sum, s) => sum + s.totalWeight, 0);
 
 		if (totalUsed > source.quantity) {
 			throw new Error('Split exceeds available inventory');
