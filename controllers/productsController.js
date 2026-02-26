@@ -7,7 +7,10 @@ const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
 		const packages = await db.getAllPackages(userCompanyId);
-		res.render('products/products', { message: 'All Products', packages });
+		// console.log('packages');
+
+		// console.log(packages);
+		res.render('products/products', { message: 'All Packages', packages });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
@@ -82,7 +85,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		package_size: package_size || null,
 		unit,
 	});
-	res.status(200).json({ success: true });
+	res.redirect(`/packages/${product_id}`);
 };
 
 const getProduct = async (req, res) => {
@@ -228,7 +231,7 @@ const insertProduct = async (req, res) => {
 		userCompanyId,
 		sku,
 	);
-	res.redirect(`/products/${product.id}`);
+	res.redirect(`/packages/${product.id}`);
 };
 
 const deleteProduct = async (req, res) => {
@@ -274,26 +277,27 @@ const editProductForm = async (req, res) => {
 
 const updateProduct = async (req, res) => {
 	const id = req.params.id;
+	const company_id = req.user.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, status } =
 		req.body;
+	console.log(req.body);
 	await db.updateProduct(
 		name,
 		description,
 		unit,
+		company_id,
 		brandId,
 		strainId,
 		categoryId,
 		id,
 	);
-	res.status(200).json({ success: true });
+	res.redirect(`/packages/${id}`);
 };
 
 const receiveInventoryPut = async (req, res) => {
-	const product_id = req.params.id;
-	const product = await db.getProductDB(product_id, req.user.company_id);
-
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
+	const product_id = req.params.id;
 
 	const {
 		quantity,
@@ -306,21 +310,27 @@ const receiveInventoryPut = async (req, res) => {
 		package_size,
 		package_tag,
 	} = req.body;
-	const existingInventory = await db.getPackageByLot(product_id, batch);
 
-	const newBatch = await db.createBatch(
+	console.log(product_id);
+
+	const product = await db.getProductDB(product_id, req.user.company_id);
+	const existingInventory = await db.getPackageByLot(product_id, batch);
+	const newBatch = await db.createBatch({
 		product_id,
 		company_id,
-		batch,
-		quantity,
+		batch_number: batch,
+		total_quantity: quantity,
 		unit,
-	);
+		cost_per_unit: unit_price,
+		supplier_name: vendor,
+	});
 
 	const batch_id = newBatch.id;
 
 	const package_id = existingInventory ? existingInventory.id : null;
 
 	const normalizedQty = convertQuantity(quantity, unit, product.unit);
+	console.log('=====', req.body);
 
 	await db.applyInventoryMovement({
 		package_tag,
@@ -338,10 +348,11 @@ const receiveInventoryPut = async (req, res) => {
 		status: 'active',
 		package_size: package_size || null,
 	});
-	res.status(200).json({ success: true });
+	res.redirect(`/packages/${product_id}`);
 };
 
 const adjustInventoryGet = async (req, res) => {
+	console.log('running the inventory get!!');
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	const statusOptions = [
@@ -355,7 +366,16 @@ const adjustInventoryGet = async (req, res) => {
 
 	try {
 		const lotNumber = req.params.lotNumber;
-		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const product = await db.getPackage(
+			Number(req.params.id),
+			req.user.company_id,
+		);
+		console.log('the product');
+		console.log('querywith', product);
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
 		const brand = product.brand_id
 			? await db.getBrand(product.brand_id, req.user.company_id)
 			: null;
@@ -365,7 +385,6 @@ const adjustInventoryGet = async (req, res) => {
 		const category = product.category_id
 			? await db.getSingleCategory(product.category_id, req.user.company_id)
 			: null;
-		const selectedBatch = await db.getInventoryByLot(product.id, lotNumber);
 
 		const adjustmentReasons = [
 			'Audit/Cycle Count',
@@ -382,14 +401,6 @@ const adjustInventoryGet = async (req, res) => {
 			'Seizure/Legal Compliance',
 		];
 
-		if (!product) {
-			res.status(404).json({ error: 'Product not found' });
-			return;
-		}
-		if (!brand || !strain || !category) {
-			res.status(404).json({ error: 'No Brands, Strain, or Category Found' });
-		}
-
 		res.render('products/adjustInventory', {
 			product,
 			brand,
@@ -397,7 +408,6 @@ const adjustInventoryGet = async (req, res) => {
 			category,
 			units,
 			adjustmentReasons,
-			selectedBatch,
 			statusOptions,
 		});
 	} catch (error) {
@@ -410,13 +420,16 @@ const updateInventory = async (req, res) => {
 	const lotNumber = req.params.lotNumber;
 	const userId = req.user.id;
 
-	const selectedBatch = await db.getInventoryByLot(id, lotNumber);
+	const selectedBatch = await db.getPackage(id, req.user.company_id);
+
+	console.log('selected batch!', selectedBatch);
 
 	const { quantity, movement_type, notes, cost_price_unit, status } = req.body;
 
 	await db.applyInventoryMovement({
+		package_tag: selectedBatch.package_tag,
 		product_id: id,
-		inventory_id: selectedBatch.id,
+		packages_id: selectedBatch.id,
 		company_id: selectedBatch.company_id,
 		location: selectedBatch.location,
 		batch: lotNumber,
@@ -428,7 +441,7 @@ const updateInventory = async (req, res) => {
 		status,
 	});
 
-	res.status(200).json({ success: true });
+	res.json({ success: true });
 };
 
 const receiveInventoryGet = async (req, res) => {
