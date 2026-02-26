@@ -20,8 +20,8 @@
 			</h1>
 		</div>
 		<div class="main-buttons">
-			<a href="/products/create-product" class="btn-primary">Add New Product</a>
-            <a href="/products/receive" class="btn-secondary">Receive</a>
+			<a href="/packages/create-product" class="btn-primary">Add New Product</a>
+            <a href="/packages/receive" class="btn-secondary">Receive</a>
 		</div>
 
 		<table class="products-table w-full border-collapse">
@@ -69,21 +69,19 @@
             </td>
 
             <td class="px-3 py-2 border border-gray-300">
-                <!-- insert here!!! -->
-                <a href="/products/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
+                <a href="/packages/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
                     <%= pkg.product_name %>
                 </a>
-                <!-- above here!! -->
-                <!-- <div class="font-semibold"><%= pkg.product_name %></div> -->
+
                 <div class="text-xs text-gray-400"><%= pkg.strain_name || 'No Strain' %></div>
             </td>
 
             <td class="px-3 py-2 border border-gray-300 font-bold">
-                <%= pkg.quantity %> <%= pkg.unit %>
+                <%= pkg.quantity %> <%= pkg.unit || 'each' %>
             </td>
 
              <td class="px-3 py-2 border border-gray-300 font-bold">
-                <%= pkg.category_name %>
+                <a href="/categories/<%= pkg.category_id %>"><%= pkg.category_name %></a>
             </td>
 
             <td class="px-3 py-2 border border-gray-300 sm:hidden text-gray-500">
@@ -102,7 +100,7 @@
 
             <td class="px-3 py-2 border border-gray-300">
                 <div class="flex space-x-2">
-                    <a href="/packages/<%= pkg.id %>/adjust" class="text-xs text-gray-600 hover:text-black">Adjust</a>
+                    <a href="/packages/<%= pkg.id %>/adjust/<%=pkg.lot_number%>" class="text-xs text-gray-600 hover:text-black">Adjust</a>
                     <% if (Number(pkg.quantity) > 0) { %>
                         <a href="/packages/<%= pkg.id %>/split" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">Split</a>
                     <% } %>
