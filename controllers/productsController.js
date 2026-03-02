@@ -130,8 +130,6 @@ const createProductForm = async (req, res) => {
 };
 
 const splitPackageProductForm = async (req, res) => {
-	const lotNumber = req.params.lotNumber;
-	const productId = req.params.id;
 	const selectedPackage = await db.getPackage(
 		req.params.id,
 		req.user.company_id,
@@ -157,15 +155,17 @@ const splitPackagePost = async (req, res) => {
 		package_id,
 		Number(req.user.company_id),
 	);
+
 	const { productId, packageSize, quantity, batch, packageTag } = req.body;
+
 	const unit = selectedBatch.unit;
 	let totalUsed = 0;
 	let orignalPackageQty = parseFloat(selectedBatch.quantity);
 
 	const packageSizes = packageSize || quantity.map(() => 1);
 
-	const splits = quantity.map((_, i) => {
-		const qty = parseFloat(quantity[i]) || 0;
+	const splits = productId.map((_, i) => {
+		const qty = 1;
 		const size = parseFloat(packageSizes[i]) || 1;
 
 		const weight = unit === 'each' ? qty : size * qty;

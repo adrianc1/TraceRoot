@@ -12,7 +12,9 @@ function updateTotals() {
 			? parseFloat(packageSizeInput.value) || 1
 			: 1;
 
-		const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+		// const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+
+		const quantity = 1;
 
 		let totalWeight;
 
