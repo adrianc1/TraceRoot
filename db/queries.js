@@ -741,7 +741,7 @@ const applyInventoryMovement = async ({
 						notes,
 						userId,
 						startingQty,
-						endingQty,
+						newQty,
 					],
 				);
 			}

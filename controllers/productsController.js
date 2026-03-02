@@ -89,8 +89,6 @@ const getProduct = async (req, res) => {
 		const productInventory = await db.getProductInventory(req.params.id);
 		const packages = await db.getAuditTrail(req.params.id);
 
-		console.log('the packges', packages[0].movements);
-
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
