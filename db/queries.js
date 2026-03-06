@@ -594,7 +594,6 @@ const deleteCategory = async (categoryId) => {
 	return category;
 };
 
-// finish fixing applyinventorymovement blocks with starting and ending qty
 const applyInventoryMovement = async ({
 	package_tag,
 	product_id,
