@@ -9,7 +9,7 @@ const getAuditTrail = async (productId) => {
     pk.quantity,
     pk.cost_price,
     pk.status,
-    pk.location,
+    l.name AS location,
     pk.unit AS package_unit,
     pk.batch_id,
     pk.lot_number,
@@ -36,13 +36,14 @@ const getAuditTrail = async (productId) => {
     ) AS movements
 	FROM packages pk
 	JOIN products pr ON pr.id = pk.product_id
+	JOIN locations l ON l.id = pk.location_id
 	LEFT JOIN brands b ON b.id = pr.brand_id
 	LEFT JOIN strains s ON s.id = pr.strain_id
 	LEFT JOIN categories c ON c.id = pr.category_id
 	LEFT JOIN inventory_movements im ON im.packages_id = pk.id
 	LEFT JOIN users u ON u.id = im.user_id
 	WHERE pk.product_id = $1
-	GROUP BY pk.id, pr.name, pr.unit, b.name, s.name, c.name
+	GROUP BY pk.id, pr.name, pr.unit, b.name, s.name, c.name, l.name
 	ORDER BY pk.id;
 `,
 			[productId],
@@ -53,6 +54,16 @@ const getAuditTrail = async (productId) => {
 		console.error(error);
 		throw error;
 	}
+};
+
+const getLocations = async (company_id) => {
+	const { rows } = await pool.query(
+		`SELECT id, name FROM locations 
+         WHERE company_id = $1 AND is_active = true 
+         ORDER BY name`,
+		[company_id],
+	);
+	return rows;
 };
 
 const getProductWithInventoryDB = async (id) => {
@@ -148,7 +159,7 @@ const getAllPackages = async (company_id) => {
 				pk.product_id,
                 pk.quantity,
                 pk.unit,
-                pk.location,
+                l.name AS location,
                 pk.status,
                 pk.cost_price,
                 pk.lot_number,
@@ -167,6 +178,7 @@ const getAllPackages = async (company_id) => {
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
             INNER JOIN products AS p ON pk.product_id = p.id
+			JOIN locations l ON l.id = pk.location_id
             LEFT JOIN categories AS c ON p.category_id = c.id
             LEFT JOIN brands AS b ON p.brand_id = b.id
             LEFT JOIN strains AS s ON p.strain_id = s.id
@@ -589,7 +601,7 @@ const applyInventoryMovement = async ({
 	packages_id = null,
 	batch_id,
 	company_id,
-	location = 'backroom',
+	location_id,
 	batch,
 	targetQty,
 	movement_type,
@@ -662,8 +674,8 @@ const applyInventoryMovement = async ({
 		} else {
 			const { rows } = await client.query(
 				`SELECT id, quantity FROM packages
-         WHERE product_id=$1 AND location=$2 AND lot_number=$3 FOR UPDATE`,
-				[product_id, location, batch],
+         WHERE product_id=$1 AND location_id=$2 FOR UPDATE`,
+				[product_id, location_id],
 			);
 
 			if (rows.length) {
@@ -707,14 +719,14 @@ const applyInventoryMovement = async ({
 				delta = targetQty;
 				const { rows: insertRows } = await client.query(
 					`INSERT INTO packages
-           ( product_id, package_tag, company_id, location, quantity, cost_price, package_size, lot_number, status, batch_id, unit)
+           ( product_id, package_tag, company_id, location_id, quantity, cost_price, package_size, lot_number, status, batch_id, unit)
            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11)
            RETURNING *`,
 					[
 						product_id,
 						package_tag,
 						company_id,
-						location,
+						location_id,
 						targetQty,
 						cost_per_unit,
 						package_size,
@@ -731,8 +743,8 @@ const applyInventoryMovement = async ({
 				// log movement
 				await client.query(
 					`INSERT INTO inventory_movements
-     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity, company_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 					[
 						invId,
 						movement_type,
@@ -742,6 +754,7 @@ const applyInventoryMovement = async ({
 						userId,
 						startingQty,
 						delta,
+						company_id,
 					],
 				);
 			}
@@ -967,11 +980,12 @@ const getInventoryId = async (productId) => {
 const getProductInventory = async (productId) => {
 	const { rows } = await pool.query(
 		`
-		SELECT *, COALESCE(cost_price, 0) AS cost_price
-		FROM packages 
+		SELECT pk.*, 
+		COALESCE(cost_price, 0) AS cost_price,
+		l.name AS location
+		FROM packages pk
+		JOIN locations l on l.id = pk.location_id
 		WHERE product_id=$1
-		  AND lot_number IS NOT NULL
-		  AND lot_number <> ''
 		ORDER BY created_at, location
 		`,
 		[productId],
@@ -1106,4 +1120,5 @@ module.exports = {
 	getPackage,
 	getAuditTrail,
 	getCategoryById,
+	getLocations,
 };

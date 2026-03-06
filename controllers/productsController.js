@@ -303,6 +303,8 @@ const receiveInventoryPut = async (req, res) => {
 	const company_id = req.user.company_id;
 	const product_id = req.params.id;
 
+	console.log(req.body);
+
 	const {
 		quantity,
 		unit,
@@ -313,6 +315,7 @@ const receiveInventoryPut = async (req, res) => {
 		batch,
 		package_size,
 		package_tag,
+		location_id,
 	} = req.body;
 
 	const product = await db.getProductDB(product_id, req.user.company_id);
@@ -339,7 +342,7 @@ const receiveInventoryPut = async (req, res) => {
 		packages_id: package_id,
 		batch_id,
 		company_id,
-		location: 'backroom',
+		location_id,
 		batch,
 		targetQty: Number(normalizedQty),
 		movement_type: reason,
@@ -472,6 +475,8 @@ const receiveInventoryGet = async (req, res) => {
 			? await db.getSingleCategory(product.category_id, req.user.company_id)
 			: null;
 
+		const locations = await db.getLocations(req.user.company_id);
+
 		const adjustmentReason = 'Receive';
 		res.render('products/receiveInventory', {
 			product,
@@ -480,6 +485,7 @@ const receiveInventoryGet = async (req, res) => {
 			category,
 			units,
 			adjustmentReason,
+			locations,
 		});
 	} catch (error) {
 		console.error(error);

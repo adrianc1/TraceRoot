@@ -35,7 +35,7 @@ const insertStrain = async (req, res) => {
 	try {
 		const { name, description, type } = req.body;
 		const result = await db.insertStrain(name, description, type);
-		res.status(200).redirect('/products/');
+		res.status(200).redirect('/strains/');
 	} catch (error) {
 		console.error(error);
 	}

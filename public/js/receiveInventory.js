@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			batch: formData.get('batch'),
 			notes: formData.get('notes'),
 			product_id: product_id,
+			location_id: formData.get('location_id'),
 		};
 
 		const res = await fetch(`/packages/${product_id}/receive`, {
