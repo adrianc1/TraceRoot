@@ -16,8 +16,9 @@ const getAllProducts = async (req, res) => {
 const receiveNewPackageForm = async (req, res) => {
 	const product = { unit: 'N/a' };
 	const products = await db.getAllProductsDB(req.user.company_id);
+	const locations = await db.getLocations(req.user.company_id);
 
-	res.render('products/receiveAll.ejs', { products, product });
+	res.render('products/receiveAll.ejs', { products, product, locations });
 };
 
 const receiveNewPackagesPOST = async (req, res) => {
@@ -35,6 +36,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		package_size,
 		package_tag,
 		product_id,
+		location_id,
 	} = await req.body;
 
 	if (!product_id) {
@@ -69,7 +71,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		packages_id: null,
 		batch_id,
 		company_id,
-		location: 'backroom',
+		location_id,
 		batch,
 		targetQty: Number(normalizedQty),
 		movement_type: reason,
