@@ -15,13 +15,14 @@ DROP TYPE IF EXISTS inventory_status CASCADE;
 DROP TYPE IF EXISTS unit CASCADE;
 
 CREATE TYPE user_role AS ENUM ('admin', 'manager', 'staff');
+CREATE TYPE product_status AS ENUM ('active', 'archived');
 CREATE TYPE inventory_status AS ENUM ('active','inactive','quarantine','damaged','expired','reserved');
 CREATE TYPE unit AS ENUM ('mg','g','kg','oz','lb','ml','l','each');
 
 
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     license_number VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -75,6 +76,7 @@ CREATE TABLE products (
     description TEXT,
     unit unit NOT NULL,
     sku VARCHAR(100),
+    status product_status NOT NULL DEFAULT 'active',
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE (company_id, sku)
 );

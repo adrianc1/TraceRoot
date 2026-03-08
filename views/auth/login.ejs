@@ -13,6 +13,11 @@
 		<div
 			class="max-w-2xl mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-200"
 		>
+		<% if (locals.message) { %>
+				<div class="mb-4 px-4 py-3 rounded-md bg-green-light text-green-deep text-[0.875rem]">
+					<%= message %>
+				</div>
+			<% } %>
 			<form action="/login" method="post">
 				<div class="flex flex-col gap-2">
 					<label for="email" class="text-sm font-semibold text-gray-600"

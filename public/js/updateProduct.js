@@ -1,4 +1,4 @@
-const formEl = document.getElementById('edit-form');
+const formEl = document.getElementById('edit-product-form');
 
 document.addEventListener('DOMContentLoaded', () => {
 	const updateProductFunction = async () => {
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			brandId: formData.get('brandId'),
 			strainId: formData.get('strainId'),
 			categoryId: formData.get('categoryId'),
+			status: formData.get('status'),
 		};
 
 		console.log('Data to send:', data);
@@ -23,8 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			},
 			body: JSON.stringify(data),
 		});
-
-		console.log(res.body);
 
 		if (res.ok) {
 			window.location.href = `/packages/${productId}`;

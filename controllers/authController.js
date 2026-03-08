@@ -26,9 +26,8 @@ const validateUser = [
 	body('company')
 		.isLength({ min: 2 })
 		.withMessage(`company must at least contain 2 characters`),
-	,
 	body('password')
-		.isLength({ min: 4 })
+		.isLength({ min: 8 })
 		.withMessage('password must be at least 8 characters'),
 	body('confirmPassword')
 		.custom((value, { req }) => {
@@ -51,8 +50,16 @@ const postSignUpForm = async (req, res) => {
 	}
 	const { firstName, lastName, email, company, license } = matchedData(req);
 
+	const exisitingCompany = await db.getCompanyByName(company);
+
+	if (exisitingCompany) {
+		return res.status(400).render('auth/signup', {
+			errors: [{ msg: 'A company with that name already exists' }],
+			formData: req.body,
+		});
+	}
+
 	const password_hash = await bcrypt.hash(req.body.password, 10);
-	const products = await db.getAllProductsDB();
 	await db.signupAdmin(
 		firstName,
 		lastName,
@@ -61,14 +68,14 @@ const postSignUpForm = async (req, res) => {
 		company,
 		license,
 	);
-	res.render('products/products', {
-		message: `Welcome ${firstName}!`,
-		products,
-	});
+	res.redirect('/login?registered=true');
 };
 
 const getLoginForm = async (req, res) => {
-	res.render('auth/login');
+	const registered = req.query.registered === 'true';
+	res.render('auth/login', {
+		message: registered ? 'Account created! Please log in.' : null,
+	});
 };
 
 module.exports = {

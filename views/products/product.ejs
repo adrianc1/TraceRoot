@@ -3,28 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-	    <link href="/tailwind.css" rel="stylesheet" />
+	<link href="/tailwind.css" rel="stylesheet" />
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['DM Sans', 'sans-serif'],
-                        mono: ['DM Mono', 'monospace'],
-                    },
-                    colors: {
-                        green: { deep: '#004d35', mid: '#006144', light: '#e6f7ef' },
-                        amber: { dark: '#92600a', light: '#fdf3e0' }
-                    },
-                }
-            }
-        }
-    </script>
-    <style> body { -webkit-font-smoothing: antialiased; } </style>
     <title>Product — <%= product.name %></title>
 </head>
 <body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
@@ -46,22 +28,37 @@
             <div class="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
                 <div>
                     <div class="font-mono text-[0.7rem] text-gray-400 uppercase tracking-[0.08em] mb-1"><%= product.sku %></div>
-                    <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= product.name %></h1>
+                    <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= product.name %>
+                    <% if (product.status === 'archived') { %>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.7rem] font-medium bg-gray-100 text-gray-500 tracking-wide">
+                            Archived
+                        </span>
+                    <% } %>
+                    </h1>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <button
-                        id="delete-btn"
-                        data-id="<%= product.id %>"
-                        class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-red-700 border border-red-200 rounded-md hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer bg-white">
-                        Delete
-                    </button>
+                    <% if (product.status === 'archived') { %>
+                        <button
+                            id="unarchive-btn"
+                            data-id="<%= product.id %>"
+                            class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-green-700 border border-green-200 rounded-md hover:bg-green-light transition-colors cursor-pointer bg-white">
+                            Unarchive
+                        </button>
+                    <% } else { %>
+                        <button
+                            id="delete-btn"
+                            data-id="<%= product.id %>"
+                            class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-red-700 border border-red-200 rounded-md hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer bg-white">
+                            Archive
+                        </button>
+                    <% } %>
                     <a href="/packages/<%= product.id %>/edit"
                        class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
                         Edit
                     </a>
                     
 						<a href="/packages/<%= product.id %>/receive"
-						   class="btn-tertiary">
+						   class="btn-primary">
 							+ Receive
 						</a>
                 </div>
@@ -109,6 +106,23 @@
                     <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Unit</div>
                     <div class="text-[0.875rem] font-mono font-medium text-gray-800"><%= product.unit %></div>
                 </div>
+
+                <div class="px-6 py-4">
+                <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Status</div>
+                <div class="text-[0.875rem] font-medium text-gray-800">
+                    <% if (product.status === 'active') { %>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.75rem] font-medium bg-green-light text-green-deep">
+                            Active
+                        </span>
+                    <% } else { %>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.75rem] font-medium bg-gray-100 text-gray-500">
+                            Archived
+                        </span>
+                    <% } %>
+                </div>
+        </div>
+
+                
             </div>
 
         </div>
@@ -119,6 +133,7 @@
     </div>
 
     <script src="/js/auditToggle.js"></script>
-    <script src="/js/deleteProduct.js"></script>
+    <script src="/js/productActions.js"></script>
+
 </body>
 </html>

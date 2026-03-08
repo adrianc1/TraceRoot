@@ -244,7 +244,7 @@ const insertProduct = async (req, res) => {
 };
 
 const deleteProduct = async (req, res) => {
-	const result = await db.deleteProduct(req.params.id);
+	const result = await db.deleteProduct(req.params.id, req.user.company_id);
 
 	if (result.rowCount === 0) {
 		return res.status(400).json({
@@ -255,6 +255,20 @@ const deleteProduct = async (req, res) => {
 	res.status(200).json({ success: true });
 };
 
+const unarchiveProduct = async (req, res) => {
+	console.log('yoooo');
+	try {
+		const unarchive = await db.unarchiveProduct(
+			req.params.id,
+			req.user.company_id,
+		);
+
+		res.status(200).json({ success: true });
+	} catch (error) {
+		res.status(500).json({ error: 'Server Error' });
+	}
+};
+
 const editProductForm = async (req, res) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
@@ -263,6 +277,8 @@ const editProductForm = async (req, res) => {
 		const strains = await db.getAllStrains(req.user.company_id);
 		const categories = await db.getAllCategories(req.user.company_id);
 		const product = await db.getProductDB(req.params.id, req.user.company_id);
+
+		console.log('the proudcrt', product.status === 'active');
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -289,17 +305,33 @@ const updateProduct = async (req, res) => {
 	const company_id = req.user.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, status } =
 		req.body;
-	await db.updateProduct(
-		name,
-		description,
-		unit,
-		company_id,
-		brandId,
-		strainId,
-		categoryId,
-		id,
-	);
-	res.json({ success: true });
+
+	try {
+		const activePackages = await db.activePackages(id);
+
+		if (Number(activePackages[0].count) > 0 && status === 'archived') {
+			console.log('yooooo');
+			return res.status(400).json({
+				error:
+					'Cannot archive a product with active inventory. Deplete or transfer all packages first.',
+			});
+		}
+		await db.updateProduct(
+			name,
+			description,
+			unit,
+			company_id,
+			brandId,
+			strainId,
+			categoryId,
+			id,
+			status,
+		);
+		res.json({ success: true });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Server error' });
+	}
 };
 
 const receiveInventoryPut = async (req, res) => {
@@ -438,7 +470,8 @@ const updateInventory = async (req, res) => {
 	const { quantity, movement_type, notes, cost_price_unit, status, unit } =
 		req.body;
 
-	console.log('the real STATUS===', req.body);
+	const resolvedStatus =
+		Number(quantity) === 0 && status === 'active' ? 'inactive' : status;
 
 	try {
 		await db.applyInventoryMovement({
@@ -454,7 +487,7 @@ const updateInventory = async (req, res) => {
 			notes,
 			cost_per_unit: cost_price_unit || null,
 			userId,
-			status,
+			status: resolvedStatus,
 			unit,
 		});
 
@@ -514,4 +547,5 @@ module.exports = {
 	splitPackagePost,
 	receiveNewPackageForm,
 	receiveNewPackagesPOST,
+	unarchiveProduct,
 };

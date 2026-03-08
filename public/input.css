@@ -4,14 +4,28 @@
 	--color-primary-green: rgb(22 163 74);
 	--color-secondary-brown: rgb(161 98 7);
 	--color-tertiary-sage: rgb(132 204 22);
+
+	--color-green-deep: #004d35;
+	--color-green-mid: #006144;
+	--color-green-light: #e6f7ef;
+	--color-amber-dark: #92600a;
+	--color-amber-light: #fdf3e0;
+
+	--font-sans: 'DM Sans', sans-serif;
+	--font-mono: 'DM Mono', monospace;
 }
 
 body {
-	font-family:
-		system-ui,
-		-apple-system,
-		sans-serif;
+	font-family: var(--font-sans);
 	padding: 0 16px;
+	-webkit-font-smoothing: antialiased;
+}
+input:focus,
+select:focus,
+textarea:focus {
+	outline: none;
+	border-color: #006144;
+	box-shadow: 0 0 0 3px rgba(0, 97, 68, 0.08);
 }
 
 .bg-gradient-radial {

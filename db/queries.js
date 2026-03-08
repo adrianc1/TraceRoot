@@ -66,6 +66,14 @@ const getLocations = async (company_id) => {
 	return rows;
 };
 
+const getCompanyByName = async (name) => {
+	const { rows } = await pool.query(
+		'SELECT id FROM companies WHERE LOWER(name) = LOWER($1)',
+		[name],
+	);
+	return rows[0];
+};
+
 const getProductWithInventoryDB = async (id) => {
 	try {
 		const { rows } = await pool.query(
@@ -79,6 +87,7 @@ const getProductWithInventoryDB = async (id) => {
         p.brand_id,
         p.category_id,
         p.strain_id,
+		p.status,
         brands.name AS brand_name,
         categories.name AS category_name,
         strains.name AS strain_name,
@@ -208,6 +217,7 @@ const getProductDB = async (id, companyId) => {
 			p.brand_id,
 			p.category_id,
 			p.strain_id,
+			p.status,
 			brands.name AS brand_name,
 			categories.name AS category_name,
 			strains.name AS strain_name
@@ -369,6 +379,14 @@ const insertProduct = async (
 	}
 };
 
+const activePackages = async (id) => {
+	const { rows } = await pool.query(
+		`SELECT COUNT(*) FROM packages WHERE product_id=$1 AND quantity > 0 AND status = 'active'`,
+		[id],
+	);
+	return rows;
+};
+
 // Update Product
 const updateProduct = async (
 	name,
@@ -379,6 +397,7 @@ const updateProduct = async (
 	strainId,
 	categoryId,
 	id,
+	status,
 ) => {
 	const client = await pool.connect();
 
@@ -394,10 +413,21 @@ const updateProduct = async (
        brand_id = $4, 
        strain_id = $5, 
        category_id = $6,
-	   company_id = $7
-   WHERE id = $8
+	   company_id = $7,
+	   status=$8
+   WHERE id = $9
 `,
-			[name, description, unit, brandId, strainId, categoryId, company_id, id],
+			[
+				name,
+				description,
+				unit,
+				brandId,
+				strainId,
+				categoryId,
+				company_id,
+				status,
+				id,
+			],
 		);
 
 		await client.query('COMMIT');
@@ -410,20 +440,34 @@ const updateProduct = async (
 	}
 };
 
-// Delete Product
-const deleteProduct = async (productId) => {
+// Archive Product
+const deleteProduct = async (productId, companyId) => {
 	const product = await pool.query(
-		`DELETE FROM products 
+		`UPDATE products
+		SET status= 'archived'
 		WHERE id = $1
+		AND company_id =$2
 		AND NOT EXISTS (
-		SELECT 1 
-		FROM packages
-		WHERE product_id=$1
-		AND quantity > 0)
-		RETURNING id;`,
-		[productId],
+		SELECT 1 FROM packages
+		WHERE product_id = $1
+		AND quantity > 0
+		AND status = 'active'
+		)`,
+		[productId, companyId],
 	);
 	return product;
+};
+
+const unarchiveProduct = async (productId, companyId) => {
+	const { rows } = await pool.query(
+		`UPDATE products
+		SET status = 'active'
+		WHERE id = $1
+		AND company_id =$2`,
+		[productId, companyId],
+	);
+
+	return rows;
 };
 
 // Brand Queries
@@ -1124,4 +1168,7 @@ module.exports = {
 	getAuditTrail,
 	getCategoryById,
 	getLocations,
+	activePackages,
+	unarchiveProduct,
+	getCompanyByName,
 };
