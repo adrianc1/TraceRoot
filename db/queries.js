@@ -205,6 +205,54 @@ const getAllPackages = async (company_id) => {
 	}
 };
 
+const getPackagesByStatus = async (company_id, status) => {
+	try {
+		const { rows } = await pool.query(
+			`
+            SELECT 
+                pk.id,
+                pk.package_tag,
+				pk.product_id,
+                pk.quantity,
+                pk.unit,
+                l.name AS location,
+                pk.status,
+                pk.cost_price,
+                pk.lot_number,
+                pk.created_at,
+                -- Product Details
+                p.name AS product_name,
+                p.sku AS product_sku,
+                c.name AS category_name,
+				c.id AS category_id,
+                b.name AS brand_name,
+                s.name AS strain_name,
+                -- Batch Details
+                bt.batch_number,
+                -- source Info 
+                pk.parent_package_id,
+                parent_pk.package_tag AS parent_package_tag
+            FROM packages AS pk
+            INNER JOIN products AS p ON pk.product_id = p.id
+			JOIN locations l ON l.id = pk.location_id
+            LEFT JOIN categories AS c ON p.category_id = c.id
+            LEFT JOIN brands AS b ON p.brand_id = b.id
+            LEFT JOIN strains AS s ON p.strain_id = s.id
+            LEFT JOIN batches AS bt ON pk.batch_id = bt.id
+            LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
+            WHERE pk.company_id = $1 
+			AND pk.status = $2
+            ORDER BY pk.created_at DESC;
+            `,
+			[company_id, status],
+		);
+		return rows;
+	} catch (error) {
+		console.error('Database error fetching packages:', error);
+		throw error;
+	}
+};
+
 const getProductDB = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
@@ -1171,4 +1219,5 @@ module.exports = {
 	activePackages,
 	unarchiveProduct,
 	getCompanyByName,
+	getPackagesByStatus,
 };

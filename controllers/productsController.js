@@ -6,8 +6,13 @@ const { convertQuantity } = require('../utils/conversion');
 const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
-		const packages = await db.getAllPackages(userCompanyId);
-		res.render('products/products', { message: 'All Packages', packages });
+		const status = req.query.status || 'active';
+		const packages = await db.getPackagesByStatus(userCompanyId, status);
+		res.render('products/products', {
+			message: 'All Packages',
+			packages,
+			currentStatus: status,
+		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
