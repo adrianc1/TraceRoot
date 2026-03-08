@@ -283,7 +283,9 @@ const editProductForm = async (req, res) => {
 		const categories = await db.getAllCategories(req.user.company_id);
 		const product = await db.getProductDB(req.params.id, req.user.company_id);
 
-		console.log('the proudcrt', product.status === 'active');
+		const rows = await db.checkIfProductHasPackages(req.params.id);
+
+		const hasPackages = Number(rows[0].count) > 0;
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -299,6 +301,7 @@ const editProductForm = async (req, res) => {
 			strains,
 			categories,
 			units,
+			hasPackages,
 		});
 	} catch (error) {
 		console.error(error);
@@ -308,19 +311,10 @@ const editProductForm = async (req, res) => {
 const updateProduct = async (req, res) => {
 	const id = req.params.id;
 	const company_id = req.user.company_id;
-	const { name, description, unit, brandId, strainId, categoryId, status } =
+	const { name, description, unit, brandId, strainId, categoryId, sku } =
 		req.body;
 
 	try {
-		const activePackages = await db.activePackages(id);
-
-		if (Number(activePackages[0].count) > 0 && status === 'archived') {
-			console.log('yooooo');
-			return res.status(400).json({
-				error:
-					'Cannot archive a product with active inventory. Deplete or transfer all packages first.',
-			});
-		}
 		await db.updateProduct(
 			name,
 			description,
@@ -330,7 +324,7 @@ const updateProduct = async (req, res) => {
 			strainId,
 			categoryId,
 			id,
-			status,
+			sku,
 		);
 		res.json({ success: true });
 	} catch (err) {
