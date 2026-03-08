@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			brandId: formData.get('brandId'),
 			strainId: formData.get('strainId'),
 			categoryId: formData.get('categoryId'),
-			status: formData.get('status'),
+			sku: formData.get('sku'),
 		};
 
 		console.log('Data to send:', data);

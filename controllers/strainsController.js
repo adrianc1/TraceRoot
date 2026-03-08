@@ -34,7 +34,12 @@ const createStrainForm = async (req, res) => {
 const insertStrain = async (req, res) => {
 	try {
 		const { name, description, type } = req.body;
-		const result = await db.insertStrain(name, description, type);
+		const result = await db.insertStrain(
+			name,
+			req.user.company_id,
+			description,
+			type,
+		);
 		res.status(200).redirect('/strains/');
 	} catch (error) {
 		console.error(error);

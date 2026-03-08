@@ -445,7 +445,7 @@ const updateProduct = async (
 	strainId,
 	categoryId,
 	id,
-	status,
+	sku,
 ) => {
 	const client = await pool.connect();
 
@@ -462,9 +462,9 @@ const updateProduct = async (
        strain_id = $5, 
        category_id = $6,
 	   company_id = $7,
-	   status=$8
-   WHERE id = $9
-`,
+	   sku = $8
+   		WHERE id = $9
+				`,
 			[
 				name,
 				description,
@@ -473,7 +473,7 @@ const updateProduct = async (
 				strainId,
 				categoryId,
 				company_id,
-				status,
+				sku,
 				id,
 			],
 		);
@@ -486,6 +486,14 @@ const updateProduct = async (
 	} finally {
 		client.release();
 	}
+};
+
+const checkIfProductHasPackages = async (id) => {
+	const { rows } = await pool.query(
+		`SELECT COUNT(*) FROM packages WHERE product_id = $1`,
+		[id],
+	);
+	return rows;
 };
 
 // Archive Product
@@ -1220,4 +1228,5 @@ module.exports = {
 	unarchiveProduct,
 	getCompanyByName,
 	getPackagesByStatus,
+	checkIfProductHasPackages,
 };
