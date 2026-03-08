@@ -1,0 +1,53 @@
+<header
+	class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200"
+>
+	<div
+		class="max-w-7xl mx-auto px-6 h-[60px] flex items-center justify-between"
+	>
+		<!-- Logo -->
+		<a href="/packages" class="flex items-center gap-2 no-underline shrink-0">
+			<img src="/greenventory-logo.png" alt="Greenventory" class="h-7" />
+		</a>
+
+		<!-- Nav links -->
+		<nav class="hidden md:flex items-center gap-7">
+			<a
+				href="/packages"
+				class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+			>
+				Packages
+			</a>
+			<a
+				href="/categories"
+				class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+			>
+				Categories
+			</a>
+			<a
+				href="/strains"
+				class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+			>
+				Strains
+			</a>
+			<a
+				href="/brands"
+				class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+			>
+				Brands
+			</a>
+		</nav>
+
+		<!-- Right: user + logout -->
+		<div class="flex items-center gap-4">
+			<span class="text-[0.8125rem] text-gray-500 font-light">
+				<%= locals.firstName %>
+			</span>
+			<a
+				href="/logout"
+				class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline"
+			>
+				Log out
+			</a>
+		</div>
+	</div>
+</header>

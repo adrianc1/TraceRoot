@@ -1,13 +1,42 @@
 const express = require('express');
 const strainsController = require('../controllers/strainsController');
+const authorizeRole = require('../auth/authorizeRole.js');
 const router = express.Router();
 
-router.get('/', strainsController.getAllStrains);
-router.get('/create-strain', strainsController.createStrainForm);
-router.post('/create-strain', strainsController.insertStrain);
-router.get('/:id/edit', strainsController.editStrainForm);
-router.put('/:id', strainsController.updateStrain);
-router.delete('/:id', strainsController.deleteStrain);
-router.get('/:id', strainsController.getStrain);
+router.get(
+	'/',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.getAllStrains,
+);
+router.get(
+	'/create-strain',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.createStrainForm,
+);
+router.post(
+	'/create-strain',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.insertStrain,
+);
+router.get(
+	'/:id/edit',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.editStrainForm,
+);
+router.put(
+	'/:id',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.updateStrain,
+);
+router.delete(
+	'/:id',
+	authorizeRole('admin', 'manager'),
+	strainsController.deleteStrain,
+);
+router.get(
+	'/:id',
+	authorizeRole('admin', 'manager', 'staff'),
+	strainsController.getStrain,
+);
 
 module.exports = router;

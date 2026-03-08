@@ -3,373 +3,650 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link href="/tailwind.css" rel="stylesheet" />
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						fontFamily: {
+							sans: ['DM Sans', 'sans-serif'],
+							mono: ['DM Mono', 'monospace'],
+						},
+						colors: {
+							green: {
+								deep: '#004d35',
+								mid: '#006144',
+								light: '#e6f7ef',
+								border: '#b8e4ce',
+							},
+							amber: {
+								dark: '#92600a',
+								light: '#fdf3e0',
+							},
+						},
+						letterSpacing: {
+							tightest: '-0.04em',
+							tighter: '-0.03em',
+							tight: '-0.025em',
+						},
+					},
+				},
+			};
+		</script>
+		<style>
+			body {
+				-webkit-font-smoothing: antialiased;
+			}
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(16px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.fade-up-1 {
+				animation: fadeUp 0.5s ease both;
+			}
+			.fade-up-2 {
+				animation: fadeUp 0.5s ease 0.1s both;
+			}
+		</style>
 		<title>Greenventory - Cannabis Inventory</title>
 	</head>
-	<body class="bg-gray-50">
-		<!-- Navigation -->
-		<nav class="bg-white shadow-sm">
-			<div class="max-w-7xl mx-auto px-6 py-4">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<img
-							src="/greenventory-logo.png"
-							alt="Greenventory Logo"
-							class="h-16"
-						/>
-					</div>
-					<div class="hidden md:flex space-x-8">
+	<body class="bg-white text-gray-900 font-sans text-[15px] leading-relaxed">
+		<!-- NAV -->
+		<nav
+			class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200"
+		>
+			<div
+				class="max-w-5xl mx-auto px-6 h-[60px] flex items-center justify-between"
+			>
+				<a
+					href="/"
+					class="flex items-center gap-2 font-semibold text-green-deep text-[1.05rem] tracking-tight no-underline"
+				>
+					<span class="w-2 h-2 rounded-full bg-green-mid inline-block"></span>
+					Greenventory
+				</a>
+
+				<ul class="hidden md:flex items-center gap-8 list-none">
+					<li>
 						<a
 							href="#features"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
+							class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline"
 							>Features</a
 						>
+					</li>
+					<li>
 						<a
 							href="#about"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
+							class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline"
 							>About</a
 						>
+					</li>
+					<li>
 						<a
 							href="#contact"
-							class="text-gray-600 hover:text-emerald-600 transition-colors"
+							class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline"
 							>Contact</a
 						>
-					</div>
-					<div class="flex gap-2">
-						<a
-							href="/login"
-							class="px-6 py-2.5 bg-white text-emerald-700 border-2 border-emerald-700 rounded-lg font-medium hover:bg-emerald-800 hover:text-white transition-colors duration-200"
-						>
-							Login
-						</a>
-						<a
-							href="/signup/create-account"
-							class="px-6 py-2.5 bg-white text-emerald-700 border-2 border-emerald-700 rounded-lg font-medium hover:bg-emerald-800 hover:text-white transition-colors duration-200"
-						>
-							Get Started
-						</a>
-					</div>
+					</li>
+				</ul>
+
+				<div class="flex items-center gap-2">
+					<a
+						href="/login"
+						class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline"
+					>
+						Login
+					</a>
+					<a
+						href="/signup/create-account"
+						class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline"
+					>
+						Get started
+					</a>
 				</div>
 			</div>
 		</nav>
 
-		<!-- Hero Section -->
+		<!-- HERO -->
 		<section
-  class="relative py-20 px-6"
-  style="
-    background: radial-gradient(
-      ellipse 100% 80% at center,
-      rgb(225, 255, 234),
-      white 70%
-    );
-  "
->
-  <div class="absolute inset-x-0 bottom-0 h-16 bg-linear-to-b from-transparent"></div>
-				<div class="text-center max-w-3xl mx-auto">
-					<h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6">
-						Manage Your Cannabis Inventory with
-						<span class="text-emerald-600">Ease</span>
-					</h1>
-					<p class="text-xl text-gray-600 mb-8">
-						A simple, powerful inventory management system designed specifically
-						for cannabis businesses. Track products, strains, categories, and
-						more.
-					</p>
-					<div class="flex flex-col sm:flex-row gap-4 justify-center">
-						<a
-							href="/packages"
-							class="px-8 py-3 bg-emerald-800 text-white rounded-lg font-semibold hover:bg-emerald-600 transition-colors duration-200 shadow-md hover:shadow-lg"
+			class="max-w-5xl mx-auto px-6 pt-20 pb-16 grid grid-cols-1 md:grid-cols-2 gap-16 items-center"
+		>
+			<!-- Left copy -->
+			<div class="fade-up-1">
+				<div
+					class="inline-flex items-center gap-2 font-mono text-[0.72rem] text-green-mid uppercase tracking-[0.08em] mb-5"
+				>
+					<span class="w-5 h-px bg-green-mid inline-block"></span>
+					Cannabis Inventory Platform
+				</div>
+				<h1
+					class="text-[2.75rem] font-semibold leading-[1.15] tracking-tighter text-gray-900 mb-5"
+				>
+					Inventory that keeps<br />
+					<span class="text-green-mid">compliance</span> in check
+				</h1>
+				<p
+					class="text-base text-gray-500 font-light leading-[1.7] mb-8 max-w-md"
+				>
+					Track packages, batches, locations, and movements across your entire
+					dispensary — built for the way cannabis businesses actually operate.
+				</p>
+				<div class="flex flex-wrap gap-3">
+					<a
+						href="/packages"
+						class="inline-flex items-center justify-center px-5 py-[0.6rem] text-[0.9rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline"
+					>
+						View Inventory
+					</a>
+					<a
+						href="#features"
+						class="inline-flex items-center justify-center px-5 py-[0.6rem] text-[0.9rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline"
+					>
+						See features
+					</a>
+				</div>
+			</div>
+
+			<!-- Right — package table card -->
+			<div class="fade-up-2">
+				<div class="border border-gray-300 rounded-xl overflow-hidden">
+					<!-- Card header -->
+					<div
+						class="px-4 py-3 border-b border-gray-200 bg-white flex items-center justify-between"
+					>
+						<span class="text-[0.8125rem] font-medium text-gray-700"
+							>Active Packages</span
 						>
-							View Products
-						</a>
-						<a
-							href="#features"
-							class="px-8 py-3 bg-white text-emerald-800 border-2 border-emerald-700 rounded-lg font-semibold hover:bg-emerald-700 hover:text-white transition-colors duration-200"
+						<span
+							class="font-mono text-[0.7rem] px-2 py-[0.2rem] rounded bg-green-light text-green-deep font-medium"
+							>Live</span
 						>
-							Learn More
-						</a>
+					</div>
+
+					<!-- Table -->
+					<table class="w-full border-collapse">
+						<thead>
+							<tr class="bg-white border-b border-gray-200">
+								<th
+									class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-[0.625rem]"
+								>
+									Product
+								</th>
+								<th
+									class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-[0.625rem]"
+								>
+									Location
+								</th>
+								<th
+									class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-[0.625rem]"
+								>
+									Qty
+								</th>
+								<th
+									class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-[0.625rem]"
+								>
+									Status
+								</th>
+							</tr>
+						</thead>
+						<tbody class="bg-gray-50">
+							<tr
+								class="border-b border-gray-100 hover:bg-white transition-colors"
+							>
+								<td class="px-4 py-[0.625rem]">
+									<div class="text-[0.8125rem] font-medium text-gray-900">
+										Blue Dream 3.5g
+									</div>
+									<div class="font-mono text-[0.72rem] text-gray-400">
+										PF-BD-3.5
+									</div>
+								</td>
+								<td
+									class="px-4 py-[0.625rem] font-mono text-[0.75rem] text-gray-500"
+								>
+									Sales Floor
+								</td>
+								<td class="px-4 py-[0.625rem] text-[0.8125rem] text-gray-700">
+									290g
+								</td>
+								<td class="px-4 py-[0.625rem]">
+									<span
+										class="font-mono text-[0.7rem] px-2 py-[0.2rem] rounded bg-green-light text-green-deep font-medium"
+										>active</span
+									>
+								</td>
+							</tr>
+							<tr
+								class="border-b border-gray-100 hover:bg-white transition-colors"
+							>
+								<td class="px-4 py-[0.625rem]">
+									<div class="text-[0.8125rem] font-medium text-gray-900">
+										OG Kush Live Resin
+									</div>
+									<div class="font-mono text-[0.72rem] text-gray-400">
+										CN-OGK-LR
+									</div>
+								</td>
+								<td
+									class="px-4 py-[0.625rem] font-mono text-[0.75rem] text-gray-500"
+								>
+									Cooler
+								</td>
+								<td class="px-4 py-[0.625rem] text-[0.8125rem] text-gray-700">
+									100g
+								</td>
+								<td class="px-4 py-[0.625rem]">
+									<span
+										class="font-mono text-[0.7rem] px-2 py-[0.2rem] rounded bg-green-light text-green-deep font-medium"
+										>active</span
+									>
+								</td>
+							</tr>
+							<tr
+								class="border-b border-gray-100 hover:bg-white transition-colors"
+							>
+								<td class="px-4 py-[0.625rem]">
+									<div class="text-[0.8125rem] font-medium text-gray-900">
+										OG Kush 3.5g
+									</div>
+									<div class="font-mono text-[0.72rem] text-gray-400">
+										PF-OGK-3.5
+									</div>
+								</td>
+								<td
+									class="px-4 py-[0.625rem] font-mono text-[0.75rem] text-gray-500"
+								>
+									Quarantine
+								</td>
+								<td class="px-4 py-[0.625rem] text-[0.8125rem] text-gray-700">
+									10g
+								</td>
+								<td class="px-4 py-[0.625rem]">
+									<span
+										class="font-mono text-[0.7rem] px-2 py-[0.2rem] rounded bg-amber-light text-amber-dark font-medium"
+										>quarantine</span
+									>
+								</td>
+							</tr>
+							<tr class="hover:bg-white transition-colors">
+								<td class="px-4 py-[0.625rem]">
+									<div class="text-[0.8125rem] font-medium text-gray-900">
+										Sour Diesel Gummies
+									</div>
+									<div class="font-mono text-[0.72rem] text-gray-400">
+										PF-SD-GUM
+									</div>
+								</td>
+								<td
+									class="px-4 py-[0.625rem] font-mono text-[0.75rem] text-gray-500"
+								>
+									Backroom
+								</td>
+								<td class="px-4 py-[0.625rem] text-[0.8125rem] text-gray-700">
+									300 ea
+								</td>
+								<td class="px-4 py-[0.625rem]">
+									<span
+										class="font-mono text-[0.7rem] px-2 py-[0.2rem] rounded bg-green-light text-green-deep font-medium"
+										>active</span
+									>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- Card footer -->
+					<div
+						class="px-4 py-3 border-t border-gray-200 bg-white flex justify-between items-center"
+					>
+						<span class="text-[0.75rem] text-gray-400"
+							><span class="font-mono text-green-mid font-medium">8</span>
+							packages total</span
+						>
+						<span class="text-[0.75rem] text-gray-400"
+							><span class="font-mono text-green-mid font-medium">1</span> in
+							quarantine</span
+						>
+						<span class="text-[0.75rem] text-gray-400">Updated just now</span>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- Features Section -->
-		<section id="features" class="py-20 px-6 bg-white">
-			<div class="max-w-7xl mx-auto">
-				<div class="text-center mb-16">
-					<h2 class="text-4xl font-bold text-gray-800 mb-4">
-						Everything You Need
-					</h2>
-					<p class="text-xl text-gray-600">
-						Powerful features built for cannabis inventory management
-					</p>
-				</div>
+		<!-- DIVIDER -->
+		<div class="max-w-5xl mx-auto px-6"><hr class="border-gray-200" /></div>
 
-				<div class="grid md:grid-cols-3 gap-8">
-					<!-- Feature 1 -->
-					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
-					>
+		<!-- STATS STRIP -->
+		<div
+			class="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-0"
+		>
+			<div class="px-6 border-r border-gray-200 first:pl-0">
+				<div
+					class="text-[1.75rem] font-semibold tracking-tightest text-gray-900 leading-none mb-1"
+				>
+					24
+				</div>
+				<div class="text-[0.8125rem] text-gray-500 font-light">
+					Active packages
+				</div>
+			</div>
+			<div class="px-6 border-r border-gray-200">
+				<div
+					class="text-[1.75rem] font-semibold tracking-tightest text-gray-900 leading-none mb-1"
+				>
+					6
+				</div>
+				<div class="text-[0.8125rem] text-gray-500 font-light">
+					Locations tracked
+				</div>
+			</div>
+			<div class="px-6 border-r border-gray-200">
+				<div
+					class="text-[1.75rem] font-semibold tracking-tightest text-gray-900 leading-none mb-1"
+				>
+					11
+				</div>
+				<div class="text-[0.8125rem] text-gray-500 font-light">
+					Products catalogued
+				</div>
+			</div>
+			<div class="px-6">
+				<div
+					class="text-[1.75rem] font-semibold tracking-tightest text-gray-900 leading-none mb-1"
+				>
+					100%
+				</div>
+				<div class="text-[0.8125rem] text-gray-500 font-light">
+					Audit trail coverage
+				</div>
+			</div>
+		</div>
+
+		<!-- FEATURES -->
+		<section
+			id="features"
+			class="bg-gray-50 border-t border-b border-gray-200 py-20 px-6"
+		>
+			<div class="max-w-5xl mx-auto">
+				<div
+					class="font-mono text-[0.7rem] text-gray-400 uppercase tracking-[0.1em] mb-3"
+				>
+					Platform Features
+				</div>
+				<h2
+					class="text-[1.75rem] font-semibold tracking-tight text-gray-900 mb-2"
+				>
+					Built for cannabis operations
+				</h2>
+				<p class="text-[0.9rem] text-gray-500 font-light mb-12 max-w-lg">
+					Everything your team needs to receive, track, and audit inventory — no
+					spreadsheets required.
+				</p>
+
+				<!-- 3-col grid with 1px dividers -->
+				<div
+					class="grid grid-cols-1 md:grid-cols-3 border border-gray-200 rounded-xl overflow-hidden divide-y md:divide-y-0 md:divide-x divide-gray-200"
+				>
+					<div class="bg-white p-7 hover:bg-gray-50 transition-colors">
 						<div
-							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+							class="w-9 h-9 rounded-lg bg-green-light flex items-center justify-center mb-4"
 						>
 							<svg
-								class="w-6 h-6 text-emerald-800"
+								class="w-[18px] h-[18px] text-green-deep"
 								fill="none"
 								stroke="currentColor"
+								stroke-width="1.75"
 								viewBox="0 0 24 24"
 							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									stroke-width="2"
 									d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
 								/>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">
-							Product Management
-						</h3>
-						<p class="text-gray-600">
-							Easily track all your cannabis products, including flower,
-							concentrates, edibles, and more. Add, edit, and manage inventory
-							in real-time.
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Package Tracking
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
+						>
+							Track every package tag, quantity, and status from receive to sale
+							with a full audit trail.
 						</p>
 					</div>
 
-					<!-- Feature 2 -->
-					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
-					>
+					<div class="bg-white p-7 hover:bg-gray-50 transition-colors">
 						<div
-							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+							class="w-9 h-9 rounded-lg bg-green-light flex items-center justify-center mb-4"
 						>
 							<svg
-								class="w-6 h-6 text-emerald-800"
+								class="w-[18px] h-[18px] text-green-deep"
 								fill="none"
 								stroke="currentColor"
+								stroke-width="1.75"
 								viewBox="0 0 24 24"
 							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									stroke-width="2"
-									d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+									d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"
 								/>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">
-							Strain Database
-						</h3>
-						<p class="text-gray-600">
-							Organize products by strain type. Keep detailed records of Indica,
-							Sativa, and Hybrid varieties with all their unique properties.
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Location Management
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
+						>
+							Assign packages to Backroom, Sales Floor, Cooler, Safe, or custom
+							locations your team defines.
 						</p>
 					</div>
 
-					<!-- Feature 3 -->
-					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
-					>
+					<div class="bg-white p-7 hover:bg-gray-50 transition-colors">
 						<div
-							class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4"
+							class="w-9 h-9 rounded-lg bg-green-light flex items-center justify-center mb-4"
 						>
 							<svg
-								class="w-6 h-6 text-emerald-800"
+								class="w-[18px] h-[18px] text-green-deep"
 								fill="none"
 								stroke="currentColor"
+								stroke-width="1.75"
 								viewBox="0 0 24 24"
 							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									stroke-width="2"
+									d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+								/>
+							</svg>
+						</div>
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Batch & Lot Control
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
+						>
+							Link packages to supplier batches for full traceability — know
+							exactly where every gram came from.
+						</p>
+					</div>
+
+					<!-- Row 2 -->
+					<div
+						class="bg-white p-7 hover:bg-gray-50 transition-colors border-t border-gray-200"
+					>
+						<div
+							class="w-9 h-9 rounded-lg bg-amber-light flex items-center justify-center mb-4"
+						>
+							<svg
+								class="w-[18px] h-[18px] text-amber-dark"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.75"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
 									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
 								/>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">
-							Category Organization
-						</h3>
-						<p class="text-gray-600">
-							Sort inventory by categories like Flower, Concentrates, Edibles,
-							Vapes, and more. Keep everything organized and easy to find.
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Inventory Movements
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
+						>
+							Every receive, sale, transfer, and adjustment logged with
+							timestamps and who made the change.
 						</p>
 					</div>
 
-					<!-- Feature 4 -->
 					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+						class="bg-white p-7 hover:bg-gray-50 transition-colors border-t border-gray-200"
 					>
 						<div
-							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+							class="w-9 h-9 rounded-lg bg-amber-light flex items-center justify-center mb-4"
 						>
 							<svg
-								class="w-6 h-6 text-amber-700"
+								class="w-[18px] h-[18px] text-amber-dark"
 								fill="none"
 								stroke="currentColor"
+								stroke-width="1.75"
 								viewBox="0 0 24 24"
 							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									stroke-width="2"
 									d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
 								/>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">Brand Tracking</h3>
-						<p class="text-gray-600">
-							Keep track of all your brands and suppliers. Quickly filter
-							products by brand to see what's selling and what needs restocking.
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Strain & Brand Database
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
+						>
+							Organize products by strain and brand. Filter instantly to see
+							what's moving and what needs restocking.
 						</p>
 					</div>
 
-					<!-- Feature 5 -->
 					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
+						class="bg-white p-7 hover:bg-gray-50 transition-colors border-t border-gray-200"
 					>
 						<div
-							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+							class="w-9 h-9 rounded-lg bg-amber-light flex items-center justify-center mb-4"
 						>
 							<svg
-								class="w-6 h-6 text-amber-700"
+								class="w-[18px] h-[18px] text-amber-dark"
 								fill="none"
 								stroke="currentColor"
+								stroke-width="1.75"
 								viewBox="0 0 24 24"
 							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									stroke-width="2"
-									d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-								/>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
+									d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
 								/>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">
-							Quantity Monitoring
-						</h3>
-						<p class="text-gray-600">
-							Track stock levels in real-time. Never run out of your
-							best-selling products with automatic quantity updates.
-						</p>
-					</div>
-
-					<!-- Feature 6 -->
-					<div
-						class="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
-					>
-						<div
-							class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4"
+						<div class="text-[0.9rem] font-semibold text-gray-900 mb-1">
+							Multi-Tenant & Role-Based
+						</div>
+						<p
+							class="text-[0.8125rem] text-gray-500 font-light leading-relaxed"
 						>
-							<svg
-								class="w-6 h-6 text-amber-700"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-						</div>
-						<h3 class="text-xl font-bold text-gray-800 mb-3">
-							Price Management
-						</h3>
-						<p class="text-gray-600">
-							Set and update prices for all products. Track pricing by unit
-							(gram, ounce, etc.) for accurate inventory valuation.
+							Separate data per dispensary with admin, manager, and staff roles
+							— each with the right access level.
 						</p>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- CTA Section -->
-		<section class="py-20 px-6 bg-linear-to-br from-emerald-600 to-emerald-900">
-			<div class="max-w-4xl mx-auto text-center">
-				<h2 class="text-4xl font-bold text-white mb-6">
-					Ready to streamline your cannabis inventory?
-				</h2>
-				<p class="text-xl text-green-100 mb-8">
-					Start managing your products, strains, and categories today.
-				</p>
-				<a
-					href="/products"
-					class="inline-block px-8 py-3 bg-white text-emerald-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg"
+		<!-- CTA -->
+		<section
+			id="contact"
+			class="max-w-5xl mx-auto px-6 py-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+		>
+			<div>
+				<h2
+					class="text-[1.5rem] font-semibold tracking-tight text-gray-900 mb-1"
 				>
-					Get Started Now
+					Ready to get your inventory in order?
+				</h2>
+				<p class="text-[0.9rem] text-gray-500 font-light">
+					Set up your dispensary in minutes. No spreadsheets, no guessing.
+				</p>
+			</div>
+			<div class="flex gap-3 shrink-0">
+				<a
+					href="/signup/create-account"
+					class="inline-flex items-center justify-center px-5 py-[0.6rem] text-[0.9rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline whitespace-nowrap"
+				>
+					Create account
+				</a>
+				<a
+					href="/login"
+					class="inline-flex items-center justify-center px-5 py-[0.6rem] text-[0.9rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline"
+				>
+					Sign in
 				</a>
 			</div>
 		</section>
 
-		<!-- Footer -->
-		<footer class="bg-gray-200 text-gray-900 py-12 px-6">
-			<div class="max-w-7xl mx-auto">
-				<div class="grid md:grid-cols-3 gap-8 mb-8">
-					<div>
-						<div class="flex items-center space-x-3 mb-4">
-							<img
-								src="/greenventory-logo.png"
-								alt="Greenventory Logo"
-								class="h-16"
-							/>
-						</div>
-						<p class="text-gray-700">
-							Simple, powerful cannabis inventory management for modern
-							dispensaries.
-						</p>
-					</div>
-
-					<div>
-						<h4 class="text-green-900 font-semibold mb-4">Quick Links</h4>
-						<ul class="space-y-2">
-							<li>
-								<a
-									href="/products"
-									class="hover:text-green-700 transition-colors"
-									>Products</a
-								>
-							</li>
-							<li>
-								<a
-									href="/categories"
-									class="hover:text-green-700 transition-colors"
-									>Categories</a
-								>
-							</li>
-							<li>
-								<a
-									href="/strains"
-									class="hover:text-green-700 transition-colors"
-									>Strains</a
-								>
-							</li>
-						</ul>
-					</div>
-
-					<div>
-						<h4 class="text-green-900 font-semibold mb-4">Contact</h4>
-						<p class="text-gray-700">
-							Questions? Reach out to us and we'll help you get started.
-						</p>
-					</div>
-				</div>
-
-				<div class="border-t border-gray-700 pt-8 text-center text-gray-600">
-					<p>
-						&copy; 2025 Greenventory. Built for cannabis inventory management.
-					</p>
-				</div>
+		<!-- FOOTER -->
+		<footer class="border-t border-gray-200 bg-gray-50">
+			<div
+				class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4"
+			>
+				<span class="text-[0.875rem] font-semibold text-green-deep"
+					>Greenventory</span
+				>
+				<ul class="flex gap-6 list-none">
+					<li>
+						<a
+							href="/products"
+							class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+							>Products</a
+						>
+					</li>
+					<li>
+						<a
+							href="/categories"
+							class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+							>Categories</a
+						>
+					</li>
+					<li>
+						<a
+							href="/strains"
+							class="text-[0.8125rem] text-gray-500 hover:text-gray-900 transition-colors no-underline"
+							>Strains</a
+						>
+					</li>
+				</ul>
+				<span class="font-mono text-[0.72rem] text-gray-400"
+					>© 2025 Greenventory</span
+				>
 			</div>
 		</footer>
 	</body>

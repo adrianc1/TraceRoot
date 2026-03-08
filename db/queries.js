@@ -257,8 +257,8 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 
 			const childResult = await client.query(
 				`INSERT INTO packages
-				(product_id, company_id, status, quantity, package_size, unit, parent_package_id, lot_number, cost_price, batch_id, package_tag)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+				(product_id, company_id, status, quantity, package_size, unit, parent_package_id, lot_number, cost_price, batch_id, package_tag, location_id)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
 				[
 					source.product_id,
 					source.company_id,
@@ -271,13 +271,14 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 					source.cost_price,
 					source.batch_id,
 					split.package_tag,
+					source.location_id,
 				],
 			);
 
 			const childInventoryId = childResult.rows[0].id;
 
 			await client.query(
-				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+				`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity, company_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
 				[
 					childInventoryId,
 					userId,
@@ -286,6 +287,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 					source.cost_price,
 					0,
 					childQty,
+					selectedPackage.company_id,
 				],
 			);
 		}
@@ -299,8 +301,8 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 		);
 
 		await client.query(
-			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity)
-     VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+			`INSERT INTO inventory_movements(packages_id, user_id, movement_type, quantity, cost_per_unit, starting_quantity, ending_quantity, company_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
 			[
 				source.id,
 				userId,
@@ -309,6 +311,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 				source.cost_price,
 				parentStartingQty,
 				parentEndingQty,
+				selectedPackage.company_id,
 			],
 		);
 

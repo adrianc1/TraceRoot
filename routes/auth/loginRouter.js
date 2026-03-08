@@ -8,7 +8,7 @@ router.get('/', authController.getLoginForm);
 router.post(
 	'/',
 	passport.authenticate('local', {
-		successRedirect: '/products',
+		successRedirect: '/packages',
 		failureRedirect: '/login',
 	}),
 );

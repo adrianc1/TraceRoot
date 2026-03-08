@@ -15,18 +15,14 @@ module.exports = function (passport) {
 					console.log('User fetched from DB:', user);
 
 					if (!user) {
-						console.log('No user found for that email');
-
 						return done(null, false, { message: 'Incorrect email' });
 					}
 					const match = await bcrypt.compare(password, user.password_hash);
 					console.log('Password comparison result:', match);
 
 					if (!match) {
-						console.log('Password did not match');
 						return done(null, false, { message: 'Incorrect password' });
 					}
-					console.log('it worked!!');
 
 					return done(null, user);
 				} catch (err) {

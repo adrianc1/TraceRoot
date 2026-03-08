@@ -18,81 +18,100 @@ body {
 	background: radial-gradient(ellipse at top, rgb(240 253 244), white 70%);
 }
 
-/* Primary Button - Green */
 .btn-primary {
-	display: inline-block;
-	padding: 0.625rem 1.5rem;
-	background-color: white;
-	color: rgb(0, 97, 68);
-	border: 2px solid rgb(0, 97, 68);
-	border-radius: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.4rem 1rem;
+	background-color: rgb(0, 97, 68);
+	color: white;
+	border: 1px solid rgb(0, 97, 68);
+	border-radius: 0.375rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
+	letter-spacing: 0.01em;
 	text-decoration: none;
-	transition: all 0.2s;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
 	cursor: pointer;
 }
 
 .btn-primary:hover {
-	background-color: rgb(0, 125, 94);
-	border: 2px solid rgb(0, 176, 132);
-	color: white;
+	background-color: rgb(0, 78, 54);
+	border-color: rgb(0, 78, 54);
 }
 
-/* Secondary Button - Brown */
 .btn-secondary {
-	display: inline-block;
-	padding: 0.625rem 1.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.4rem 1rem;
 	background-color: white;
-	color: rgb(161 98 7);
-	border: 2px solid rgb(161 98 7);
-	border-radius: 0.5rem;
+	color: rgb(55, 65, 81);
+	border: 1px solid rgb(209, 213, 219);
+	border-radius: 0.375rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
+	letter-spacing: 0.01em;
 	text-decoration: none;
-	transition: all 0.2s;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
 	cursor: pointer;
 }
 
 .btn-secondary:hover {
-	background-color: rgb(161 98 7);
-	color: white;
+	background-color: rgb(249, 250, 251);
+	border-color: rgb(156, 163, 175);
 }
 
-/* Accent Buttons */
 .btn-tertiary {
-	display: inline-block;
-	padding: 0.625rem 1.5rem;
-	background-color: white;
-	color: rgb(0, 118, 14);
-	border: 2px solid rgb(0, 118, 14);
-	border-radius: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.4rem 1rem;
+	background-color: rgb(240, 253, 244);
+	color: rgb(0, 97, 68);
+	border: 1px solid rgb(187, 247, 208);
+	border-radius: 0.375rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
+	letter-spacing: 0.01em;
 	text-decoration: none;
-	transition: all 0.2s;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
 	cursor: pointer;
 }
 
 .btn-tertiary:hover {
-	background-color: rgb(0, 118, 14);
-	color: white;
+	background-color: rgb(220, 252, 231);
+	border-color: rgb(134, 239, 172);
 }
 
-/* Danger Button - Red */
 .btn-danger {
-	display: inline-block;
-	padding: 0.625rem 1.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.4rem 1rem;
 	background-color: white;
-	color: rgb(220 38 38);
-	border: 2px solid rgb(220 38 38);
-	border-radius: 0.5rem;
+	color: rgb(185, 28, 28);
+	border: 1px solid rgb(252, 165, 165);
+	border-radius: 0.375rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
+	letter-spacing: 0.01em;
 	text-decoration: none;
-	transition: all 0.2s;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
 	cursor: pointer;
 }
 
 .btn-danger:hover {
-	background-color: rgb(220 38 38);
-	color: white;
+	background-color: rgb(254, 242, 242);
+	border-color: rgb(248, 113, 113);
 }
 
 /* Danger Badge */
