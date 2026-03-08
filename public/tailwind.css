@@ -638,6 +638,10 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
+  .border-b-2 {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 2px;
+  }
   .border-none {
     --tw-border-style: none;
     border-style: none;
@@ -671,6 +675,9 @@
   }
   .border-stone-200 {
     border-color: var(--color-stone-200);
+  }
+  .border-transparent {
+    border-color: transparent;
   }
   .bg-amber-light {
     background-color: var(--color-amber-light);

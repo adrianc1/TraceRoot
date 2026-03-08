@@ -27,6 +27,16 @@
             </div>
         </div>
 
+        <div class="flex gap-1 border-b border-gray-200 mb-4">
+            <% ['active', 'inactive', 'quarantine', 'expired', 'damaged', 'reserved'].forEach(s => { %>
+                <a href="/packages?status=<%= s %>"
+                class="px-4 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors
+                <%= locals.currentStatus === s ? 'border-green-mid text-green-mid' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
+                    <%= s.charAt(0).toUpperCase() + s.slice(1) %>
+                </a>
+            <% }) %>
+        </div>
+
         <!-- Table card -->
         <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
 
