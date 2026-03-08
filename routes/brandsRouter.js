@@ -1,8 +1,13 @@
 const express = require('express');
 const brandsController = require('../controllers/brandsController');
+const authorizeRole = require('../auth/authorizeRole.js');
 const router = express.Router();
 
-router.get('/', brandsController.getAllBrands);
+router.get(
+	'/',
+	authorizeRole('admin', 'manager', 'staff'),
+	brandsController.getAllBrands,
+);
 // router.get('/create-brand', brandsController.createBrandForm);
 // router.post('/create-brand', brandsController.insertBrand);
 // router.get('/:id/edit', brandsController.editBrandForm);

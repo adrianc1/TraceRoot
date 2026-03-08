@@ -1,117 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['DM Sans', 'sans-serif'],
+                        mono: ['DM Mono', 'monospace'],
+                    },
+                    colors: {
+                        green: {
+                            deep:  '#004d35',
+                            mid:   '#006144',
+                            light: '#e6f7ef',
+                        },
+                        amber: {
+                            dark:  '#92600a',
+                            light: '#fdf3e0',
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+    <style> body { -webkit-font-smoothing: antialiased; } </style>
+    <title>Packages</title>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-		<link href="/tailwind.css" rel="stylesheet" />
+    <%- include('../partials/header.ejs') %>
 
-		<title>Products Page</title>
-	</head>
-	<body class="md:px-4">
+    <div class="max-w-7xl mx-auto px-6 py-8">
 
-		<%- include ('../partials/header.ejs') %>
-
-		<div class="mb-8 mt-4 relative">
-			<h1
-				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
-			>
-				<%= message %>
-			</h1>
-		</div>
-		<div class="main-buttons">
-			<a href="/packages/create-product" class="btn-primary">Add New Product</a>
-            <a href="/packages/receive" class="btn-secondary">Receive</a>
-		</div>
-
-		<table class="products-table w-full border-collapse">
-    <tr class="products-table-headers bg-gray-200 text-left">
-        <th class="px-3 py-2 border border-gray-300">Package Tag</th>
-        <th class="px-3 py-2 border border-gray-300">Product</th>
-        <th class="px-3 py-2 border border-gray-300">Quantity</th>
-        <th class="px-3 py-2 border border-gray-300">Category</th>
-        <th class="px-3 py-2 border border-gray-300">Status</th>
-        <th class="px-3 py-2 border border-gray-300 sm:hidden">Avg Cost</th>
-        <th class="px-3 py-2 border border-gray-300">Total Val.</th>
-        <th class="px-3 py-2 border border-gray-300">Source Tag</th>
-        <th class="px-3 py-2 border border-gray-300">Actions</th>
-    </tr>
-
-    <% packages.forEach((pkg, i) => { %>
-        <% 
-          // Color Mapping Logic
-          const statusClasses = { 
-            active: 'bg-green-100 text-green-800',
-            inactive: 'bg-gray-200 text-gray-700',
-            quarantine: 'bg-yellow-100 text-yellow-800',
-            damaged: 'bg-red-100 text-red-800',
-            expired: 'bg-orange-100 text-orange-800',
-            reserved: 'bg-blue-100 text-blue-800',
-          };
-          const statusClass = statusClasses[pkg.status] || 'bg-gray-100 text-gray-800';
-        %>
-
-        <tr class="product-row hover:bg-gray-200 <%= i % 2 === 0 ? 'bg-white' : 'bg-gray-100' %>">
-            <td class="px-3 py-2 border border-gray-300 font-mono text-xs ">
-                <div >
-                    <%= pkg.package_tag %>
-                </div>
-            </td>
-
-            <td class="px-3 py-2 border border-gray-300">
-                <a href="/packages/<%= pkg.product_id %>" class="text-blue-600 hover:underline">
-                    <%= pkg.product_name %>
+        <!-- Page header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= message %></h1>
+                <p class="text-sm text-gray-400 font-light mt-0.5">All active packages across your inventory</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="/packages/receive"
+                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                    Receive
                 </a>
+                <a href="/packages/create-product"
+                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+                    + Add Product
+                </a>
+            </div>
+        </div>
 
-                <div class="text-xs text-gray-400"><%= pkg.strain_name || 'No Strain' %></div>
-            </td>
+        <!-- Table card -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
 
-            <td class="px-3 py-2 border border-gray-300 font-bold">
-                <%= pkg.quantity %> <%= pkg.unit || 'each' %>
-            </td>
+            <!-- Table -->
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-200 bg-gray-50">
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Product</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Quantity</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Category</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Status</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Cost</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Total Val.</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Source</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <% packages.forEach((pkg) => { %>
+                    <%
+                        const statusStyles = {
+                            active:     'bg-green-light text-green-deep',
+                            inactive:   'bg-gray-100 text-gray-500',
+                            quarantine: 'bg-amber-light text-amber-dark',
+                            damaged:    'bg-red-50 text-red-700',
+                            expired:    'bg-orange-50 text-orange-700',
+                            reserved:   'bg-blue-50 text-blue-700',
+                        };
+                        const statusStyle = statusStyles[pkg.status] || 'bg-gray-100 text-gray-500';
+                    %>
+                    <tr class="hover:bg-gray-50 transition-colors">
 
-            <td class="px-3 py-2 border border-gray-300 font-bold">
-                <a href="/categories/<%= pkg.category_id %>"><%= pkg.category_name %></a>
-            </td>
+                        <!-- Package tag -->
+                        <td class="px-4 py-3">
+                            <span class="font-mono text-[0.75rem] text-gray-500"><%= pkg.package_tag %></span>
+                        </td>
 
-            <td class="px-3 py-2 border border-gray-300">
-                <span class="inline-block px-2 py-1 rounded-full text-xs font-medium capitalize <%= statusClass %>">
-                    <%= pkg.status %>
+                        <!-- Product -->
+                        <td class="px-4 py-3">
+                            <a href="/packages/<%= pkg.product_id %>"
+                               class="text-[0.8125rem] font-medium text-gray-900 hover:text-green-mid transition-colors no-underline">
+                                <%= pkg.product_name %>
+                            </a>
+                            <div class="font-mono text-[0.7rem] text-gray-400 mt-0.5"><%= pkg.strain_name || '—' %></div>
+                        </td>
+
+                        <!-- Quantity -->
+                        <td class="px-4 py-3">
+                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= pkg.quantity %></span>
+                            <span class="text-[0.75rem] text-gray-400 ml-1"><%= pkg.unit || 'each' %></span>
+                        </td>
+
+                        <!-- Category -->
+                        <td class="px-4 py-3">
+                            <a href="/categories/<%= pkg.category_id %>"
+                               class="text-[0.8125rem] text-gray-600 hover:text-green-mid transition-colors no-underline">
+                                <%= pkg.category_name %>
+                            </a>
+                        </td>
+
+                        <!-- Status badge -->
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= statusStyle %>">
+                                <%= pkg.status %>
+                            </span>
+                        </td>
+
+                        <!-- Avg cost -->
+                        <td class="px-4 py-3 text-[0.8125rem] text-gray-500">
+                            $<%= Number(pkg.cost_price || 0).toFixed(2) %>
+                        </td>
+
+                        <!-- Total value -->
+                        <td class="px-4 py-3">
+                            <span class="text-[0.8125rem] font-semibold text-green-mid">
+                                $<%= (Number(pkg.quantity) * Number(pkg.cost_price || 0)).toFixed(2) %>
+                            </span>
+                        </td>
+
+                        <!-- Source tag -->
+                        <td class="px-4 py-3">
+                            <% if (pkg.parent_package_tag) { %>
+                                <span class="font-mono text-[0.72rem] text-gray-400" title="<%= pkg.parent_package_tag %>">
+                                    ...<%= pkg.parent_package_tag.slice(-6) %>
+                                </span>
+                            <% } else { %>
+                                <span class="text-[0.75rem] text-gray-300 italic">Direct</span>
+                            <% } %>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <a href="/packages/<%= pkg.id %>/adjust/<%= pkg.lot_number %>"
+                                   class="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline">
+                                    Adjust
+                                </a>
+                                <% if (Number(pkg.quantity) > 0) { %>
+                                <a href="/packages/<%= pkg.id %>/split/<%= pkg.lot_number %>"
+                                   class="text-[0.75rem] text-green-mid hover:text-green-deep transition-colors font-medium no-underline">
+                                    Split
+                                </a>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <!-- Empty state -->
+            <% if (!packages || packages.length === 0) { %>
+            <div class="py-16 text-center">
+                <div class="text-gray-300 text-4xl mb-3">□</div>
+                <p class="text-sm font-medium text-gray-500">No packages yet</p>
+                <p class="text-xs text-gray-400 mt-1 mb-4">Receive your first package to get started</p>
+                <a href="/packages/receive"
+                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep transition-colors no-underline">
+                    Receive inventory
+                </a>
+            </div>
+            <% } %>
+
+            <!-- Table footer -->
+            <% if (packages && packages.length > 0) { %>
+            <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                <span class="font-mono text-[0.72rem] text-gray-400">
+                    <span class="text-gray-600 font-medium"><%= packages.length %></span> packages
                 </span>
-            </td>
-            
-
-
-            <td class="px-3 py-2 border border-gray-300 sm:hidden text-gray-500">
-                $<%= Number(pkg.cost_price || 0).toFixed(2) %>
-            </td>
-            
-            <td class="px-3 py-2 border border-gray-300 font-semibold text-green-700">
-                $<%= (Number(pkg.quantity) * Number(pkg.cost_price || 0)).toFixed(2) %>
-            </td>
-
-            <td class="px-3 py-2 border border-gray-300 text-xs text-gray-500">
-                <% if (pkg.parent_package_tag) { %>
-                    <span title="<%= pkg.parent_package_tag %>">
-                        ...<%= pkg.parent_package_tag.slice(-6) %>
+                <span class="font-mono text-[0.72rem] text-gray-400">
+                    Total value:
+                    <span class="text-green-mid font-medium">
+                        $<%= packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0).toFixed(2) %>
                     </span>
-                <% } else { %>
-                    <span class="italic text-gray-400">Direct Intake</span>
-                <% } %>
-            </td>
+                </span>
+            </div>
+            <% } %>
+        </div>
+    </div>
 
-
-
-            <td class="px-3 py-2 border border-gray-300">
-                <div class="flex space-x-2">
-                    <a href="/packages/<%= pkg.id %>/adjust/<%=pkg.lot_number%>" class="text-xs text-gray-600 hover:text-black cursor-pointer">Adjust</a>
-                    <% if (Number(pkg.quantity) > 0) { %>
-                        <a href="/packages/<%= pkg.id %>/split/<%=pkg.lot_number%>" class="text-xs text-blue-600 hover:text-blue-800 font-semibold cursor-pointer">Split</a>
-                    <% } %>
-                </div>
-            </td>
-        </tr>
-    <% }) %>
-</table>
-	</body>
+</body>
 </html>

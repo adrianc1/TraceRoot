@@ -71,15 +71,9 @@ const getLoginForm = async (req, res) => {
 	res.render('auth/login');
 };
 
-const postLoginForm = async (req, res) => {
-	const { email, password } = req.body;
-	console.log(email, password);
-};
-
 module.exports = {
 	getSignUpForm,
 	postSignUpForm,
 	getLoginForm,
 	validateUser,
-	postLoginForm,
 };

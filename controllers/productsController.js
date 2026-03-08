@@ -166,17 +166,18 @@ const splitPackagePost = async (req, res) => {
 	const packageSizes = packageSize || quantity.map(() => 1);
 
 	const splits = productId.map((_, i) => {
-		const qty = 1;
+		// const qty = 1;
 		const size = parseFloat(packageSizes[i]) || 1;
 
-		const weight = unit === 'each' ? qty : size * qty;
+		// const weight = unit === 'each' ? qty : size * qty;
+		const weight = size;
 
 		totalUsed += weight;
 
 		return {
 			productId: parseFloat(productId[i]),
 			packageSize: unit === 'each' ? null : size,
-			quantity: qty,
+			quantity: size,
 			totalWeight: weight,
 			childLotNumber: batch[i],
 			package_tag: packageTag[i],
