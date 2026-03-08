@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link href="/tailwind.css" rel="stylesheet" />
-
+		<link href="/tailwind.css" rel="stylesheet" />
 
     <title>Edit Product</title>
 </head>
@@ -33,7 +32,7 @@
 
         <!-- Form card -->
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <form method="POST" action="/packages/<%= product.id %>" id="edit-product-form" data-id="<%= product.id %>">
+            <form method="POST" action="/packages/<%= product.id %>?_method=PUT" id="edit-product-form">
 
                 <!-- Section: Basic Info -->
                 <div class="px-6 py-5 border-b border-gray-100">
@@ -194,6 +193,6 @@
         </div>
     </div>
 
-    <script src="/js/updateProduct.js"></script>
+    <script src="/js/productForm.js"></script>
 </body>
 </html>

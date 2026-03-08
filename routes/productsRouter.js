@@ -68,7 +68,17 @@ router.get(
 	productsController.adjustInventoryGet,
 );
 
-router.delete('/:id', authorizeRole('admin'), productsController.deleteProduct);
+router.put(
+	'/:id/archive',
+	authorizeRole('admin'),
+	productsController.deleteProduct,
+);
+
+router.put(
+	'/:id/unarchive',
+	authorizeRole('admin'),
+	productsController.unarchiveProduct,
+);
 router.get(
 	'/:id',
 	authorizeRole('admin', 'manager', 'staff'),
