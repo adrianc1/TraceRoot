@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Brands' }) %>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+
+    <%- include('../partials/header.ejs') %>
+
+    <div class="max-w-4xl mx-auto px-6 py-8">
+
+        <!-- Page header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-semibold tracking-tight text-gray-900">Brands</h1>
+                <p class="text-sm text-gray-400 font-light mt-0.5"><%= brands.length %> brand<%= brands.length !== 1 ? 's' : '' %> in your company</p>
+            </div>
+            <a href="/brands/create-brand"
+               class="btn-primary">
+                + New Brand
+            </a>
+        </div>
+
+        <!-- Table card -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+            <% if (brands.length === 0) { %>
+                <div class="px-6 py-12 text-center">
+                    <p class="text-[0.875rem] text-gray-400">No brands yet.</p>
+                    <a href="/brands/create" class="text-[0.875rem] text-green-mid hover:text-green-deep mt-1 inline-block">
+                        Create your first brand →
+                    </a>
+                </div>
+            <% } else { %>
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-100">
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Name</th>
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Description</th>
+                            <th class="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% brands.forEach((brand) => { %>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 text-[0.875rem] font-medium text-gray-900">
+                                <%= brand.name %>
+                            </td>
+                            <td class="px-6 py-4 text-[0.875rem] text-gray-500">
+                                <%= brand.description || '—' %>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="/brands/<%= brand.id %>/edit"
+                                   class="inline-flex items-center justify-center px-3 py-[0.35rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+
+        </div>
+    </div>
+
+</body>
+</html>
