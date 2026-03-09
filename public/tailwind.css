@@ -811,6 +811,9 @@
   .py-10 {
     padding-block: calc(var(--spacing) * 10);
   }
+  .py-12 {
+    padding-block: calc(var(--spacing) * 12);
+  }
   .py-16 {
     padding-block: calc(var(--spacing) * 16);
   }
@@ -825,6 +828,9 @@
   }
   .py-\[0\.6rem\] {
     padding-block: 0.6rem;
+  }
+  .py-\[0\.35rem\] {
+    padding-block: 0.35rem;
   }
   .py-\[0\.625rem\] {
     padding-block: 0.625rem;
