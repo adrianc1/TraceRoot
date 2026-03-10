@@ -17,10 +17,6 @@ const getCategory = async (req, res) => {
 		const category = await db.getCategoryById(categoryId, req.user.company_id);
 		const products = await db.getCategory(req.params.id, req.user.company_id);
 
-		// if (!products.length) {
-		// 	return res.status(404).json({ error: 'Category not found' });
-		// }
-
 		console.log(products);
 		res.render('categories/categoryProducts', {
 			products: products || [],
