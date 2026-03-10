@@ -1,45 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <%- include('../partials/head', { title: 'Strains Page' }) %>
+<head>
+    <%- include('../partials/head', { title: 'Strains' }) %>
 </head>
-	<body>
-		<%- include ('../partials/header.ejs') %>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-		<div class="mb-8 mt-4 relative">
-			<h1
-				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
-			>
-				<%= message %>
-			</h1>
-		</div>
+    <%- include('../partials/header.ejs') %>
 
-		<div class="main-buttons">
-			<button class="btn-primary">
-				<a href="/strains/create-strain">Create New Strain</a>
-			</button>
+    <div class="max-w-4xl mx-auto px-6 py-8">
 
-			<div class="view-buttons">
-				<button class="btn-primary"><a href="/strains/">See Strains</a></button>
-				<button class="btn-primary">
-					<a href="/packages/">See Packages</a>
-				</button>
-			</div>
-		</div>
+        <!-- Page header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-semibold tracking-tight text-gray-900">Strains</h1>
+                <p class="text-sm text-gray-400 font-light mt-0.5"><%= strains.length %> strain<%= strains.length !== 1 ? 's' : '' %> in your company</p>
+            </div>
+            <a href="/strains/create-strain" class="btn-primary">
+                + New Strain
+            </a>
+        </div>
 
-		<table class="products-table">
-			<tr class="products-table-headers">
-				<th class="table-header">Name</th>
-				<th class="table-header">Description</th>
-				<th class="table-header">Type</th>
-			</tr>
-			<% strains.map((strain) => { %>
-			<tr class="product-row">
-				<td><div><%=strain.name %></div></td>
-				<td><%= strain.description %></td>
-				<td><%=strain.type%></td>
-			</tr>
-			<% }) %>
-		</table>
-	</body>
+        <!-- Table card -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+            <% if (strains.length === 0) { %>
+                <div class="px-6 py-12 text-center">
+                    <p class="text-[0.875rem] text-gray-400">No strains yet.</p>
+                    <a href="/strains/create-strain" class="text-[0.875rem] text-green-mid hover:text-green-deep mt-1 inline-block">
+                        Create your first strain →
+                    </a>
+                </div>
+            <% } else { %>
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-100">
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Name</th>
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Type</th>
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Description</th>
+                            <th class="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% strains.forEach((strain) => { %>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 text-[0.875rem] font-medium text-gray-900">
+                                <%= strain.name %>
+                            </td>
+                            <td class="px-6 py-4">
+                                <% if (strain.type) { %>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.75rem] font-medium
+                                        <% if (strain.type === 'indica') { %>bg-purple-100 text-purple-700
+                                        <% } else if (strain.type === 'sativa') { %>bg-orange-100 text-orange-700
+                                        <% } else if (strain.type === 'hybrid') { %>bg-gray-100 text-gray-700
+                                        <% } else if (strain.type === 'indica-dominant') { %>bg-blue-50 text-blue-700
+                                        <% } else if (strain.type === 'sativa-dominant') { %>bg-amber-50 text-amber-700
+                                        <% } else { %>bg-gray-100 text-gray-700
+                                        <% } %>">
+                                        <%= strain.type.charAt(0).toUpperCase() + strain.type.slice(1) %>
+                                    </span>
+                                <% } else { %>
+                                    <span class="text-[0.875rem] text-gray-400">—</span>
+                                <% } %>
+                            </td>
+                            <td class="px-6 py-4 text-[0.875rem] text-gray-500">
+                                <%= strain.description || '—' %>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="/strains/<%= strain.id %>/edit"
+                                   class="inline-flex items-center justify-center px-3 py-[0.35rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+
+        </div>
+    </div>
+
+</body>
 </html>

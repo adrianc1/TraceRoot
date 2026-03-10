@@ -653,6 +653,7 @@ const getCategory = async (id, companyId) => {
             p.unit,
             p.category_id,
             p.sku,
+			p.status,
             b.name AS brand_name,
             c.name AS category_name,
             s.name AS strain_name,
