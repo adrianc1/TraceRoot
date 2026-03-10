@@ -1,58 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
+<head>
     <%- include('../partials/head', { title: 'Create Category' }) %>
 </head>
-	<body class="bg-gray-50 min-h-screen">
-		<%- include ('../partials/header.ejs') %>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-		<div class="max-w-2xl mx-auto px-6 py-8">
-			<a
-				href="/categories"
-				class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
-			>
-				← Back to categories
-			</a>
-			<div class="bg-white rounded-lg shadow-md p-8">
-				<h1 class="text-3xl font-bold text-gray-800 mb-6">
-					Create New Category
-				</h1>
-				<form
-					action="/categories/create-category"
-					method="POST"
-					class="space-y-6"
-				>
-					<label
-						for="category-name"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-						>Category Name:
-					</label>
-					<input
-						type="text"
-						id="category-name"
-						name="name"
-						value=""
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
-					/>
-					<label
-						for="category-name"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-						>Category Description:
-					</label>
-					<input
-						type="text"
-						id="category-description"
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors"
-						name="description"
-						value=""
-					/>
-					<div class="pt-4">
-						<button type="submit" class="btn-primary w-full">
-							Create New Category
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</body>
+    <%- include('../partials/header.ejs') %>
+
+    <div class="max-w-2xl mx-auto px-6 py-8">
+
+        <!-- Back link -->
+        <a href="/categories"
+           class="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+            ← Back to categories
+        </a>
+
+        <!-- Page title -->
+        <div class="mb-6">
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900">Add New Category</h1>
+            <p class="text-sm text-gray-400 font-light mt-0.5">Categories can be assigned to products in your inventory</p>
+        </div>
+
+        <%- include('../partials/errors.ejs') %>
+
+        <!-- Form card -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <form id="create-category-form">
+
+                <!-- Section: Category Info -->
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Category Info</div>
+                    <div class="space-y-4">
+
+                        <div>
+                            <label for="name" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Category Name <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="e.g. Flower, Vapes, Edibles"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="description" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Description
+                                <span class="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+                            </label>
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="3"
+                                placeholder="Brief description of this category..."
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all resize-none bg-white placeholder-gray-300"
+                            ></textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Form actions -->
+                <div class="px-6 py-4 bg-gray-50 flex items-center justify-between gap-3">
+                    <a href="/categories"
+                       class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-white hover:border-gray-400 transition-colors no-underline">
+                        Cancel
+                    </a>
+                    <button
+                        type="submit"
+                        class="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer">
+                        Create Category
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('create-category-form');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const data = {
+                    name: formData.get('name'),
+                    description: formData.get('description'),
+                };
+
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Creating...';
+
+                const res = await fetch('/categories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                if (res.ok) {
+                    window.location.href = '/categories';
+                } else {
+                    const err = await res.json();
+                    alert(err.error || 'Failed to create category');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Category';
+                }
+            });
+        });
+    </script>
+
+</body>
 </html>

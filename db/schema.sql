@@ -136,6 +136,34 @@ CREATE TABLE packages (
         REFERENCES locations(id, company_id) ON DELETE RESTRICT
 );
 
+-- Tranfers 
+
+CREATE TABLE transfers (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+    transfer_type VARCHAR(20) NOT NULL CHECK (transfer_type IN ('internal', 'external')),
+    from_location_id INTEGER NOT NULL REFERENCES locations(id),
+    to_location_id INTEGER REFERENCES locations(id),
+    to_company_name VARCHAR(255),
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
+    notes TEXT,
+    created_by INTEGER NOT NULL REFERENCES users(id),
+    confirmed_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT internal_requires_to_location 
+        CHECK (transfer_type = 'external' OR to_location_id IS NOT NULL),
+    CONSTRAINT external_requires_company_name 
+        CHECK (transfer_type = 'internal' OR to_company_name IS NOT NULL)
+);
+
+CREATE TABLE transfer_items (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    transfer_id INTEGER NOT NULL REFERENCES transfers(id) ON DELETE CASCADE,
+    package_id INTEGER NOT NULL REFERENCES packages(id),
+    quantity NUMERIC NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Audit Trail
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,

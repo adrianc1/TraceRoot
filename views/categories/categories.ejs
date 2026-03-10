@@ -1,40 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <%- include('../partials/head', { title: 'Categories Page' }) %>
+<head>
+    <%- include('../partials/head', { title: 'Categories' }) %>
 </head>
-	<body>
-		<%- include ('../partials/header.ejs') %>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-		<div class="mb-8 mt-4 relative">
+    <%- include('../partials/header.ejs') %>
 
-			<h1
-				class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 text-3xl font-bold text-gray-800"
-			>
-				Categories Page
-			</h1>
-		</div>
-		<p
-			class="inline-flex items-center text-green-600 hover:text-green-700 font-medium mb-6 transition-colors"
-		>
-			<a href="/packages/"><- Back to Packages</a>
-		</p>
+    <div class="max-w-4xl mx-auto px-6 py-8">
 
-		<div class="main-buttons">
-			<button class="btn-primary">
-				<a href="/categories/create-category">Create New Category</a>
-			</button>
-		</div>
+        <!-- Page header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-semibold tracking-tight text-gray-900">Categories</h1>
+                <p class="text-sm text-gray-400 font-light mt-0.5"><%= categories.length %> categor<%= categories.length !== 1 ? 'ies' : 'y' %> in your company</p>
+            </div>
+            <a href="/categories/create-category" class="btn-primary">
+                + New Category
+            </a>
+        </div>
 
-		<table class="products-table">
-			<tr class="products-table-headers">
-				<th class="table-header">Name</th>
-			</tr>
-			<% categories.map((category) => { %>
-			<tr class="product-row">
-				<td><a href="/categories/<%=category.id%>"><%= category.name %></a></td>
-			</tr>
-			<% }) %>
-		</table>
-	</body>
+        <!-- Table card -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+            <% if (categories.length === 0) { %>
+                <div class="px-6 py-12 text-center">
+                    <p class="text-[0.875rem] text-gray-400">No categories yet.</p>
+                    <a href="/categories/create-category" class="text-[0.875rem] text-green-mid hover:text-green-deep mt-1 inline-block">
+                        Create your first category →
+                    </a>
+                </div>
+            <% } else { %>
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-100">
+                            <th class="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Name</th>
+                            <th class="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% categories.forEach((category) => { %>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 text-[0.875rem] font-medium text-gray-900">
+                                <a href="/categories/<%= category.id %>"><%= category.name %></a>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="/categories/<%= category.id %>/edit"
+                                   class="inline-flex items-center justify-center px-3 py-[0.35rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+
+        </div>
+    </div>
+
+</body>
 </html>
