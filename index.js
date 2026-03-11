@@ -13,6 +13,8 @@ const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
+const transfersRouter = require('./routes/transfersRouter');
+
 const {
 	ensureAuthenticated,
 	setUserLocals,
