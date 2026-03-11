@@ -236,13 +236,13 @@ const getTransferByIdDB = async (transferId, companyId) => {
 			`SELECT
         ti.id,
         ti.quantity,
-        p.id AS package_id,
-        p.batch_id,
-        p.quantity AS current_quantity,
+        pk.id AS package_id,
+        pk.batch_id,
+        pk.quantity AS current_quantity,
         pr.name AS product_name
        FROM transfer_items ti
-       JOIN packages p ON ti.package_id = p.id
-       JOIN products pr ON p.product_id = pr.id
+       JOIN packages pk ON ti.package_id = pk.id
+       JOIN products pr ON pk.product_id = pr.id
        WHERE ti.transfer_id = $1`,
 			[transferId],
 		);
@@ -255,9 +255,28 @@ const getTransferByIdDB = async (transferId, companyId) => {
 		throw error;
 	}
 };
+
+const cancelTransferDB = async (transferId, companyId) => {
+	try {
+		const { rows } = await pool.query(
+			`UPDATE transfers
+       SET status = 'cancelled'
+       WHERE id = $1
+       AND company_id = $2
+       AND status = 'pending'
+       RETURNING *`,
+			[transferId, companyId],
+		);
+
+		return rows[0] || null;
+	} catch (error) {
+		throw error;
+	}
+};
 module.exports = {
 	createTransferDB,
 	confirmTransferDB,
 	getAllTransfersDB,
 	getTransferByIdDB,
+	cancelTransferDB,
 };
