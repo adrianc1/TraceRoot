@@ -180,4 +180,84 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 	}
 };
 
-module.exports = { createTransferDB, confirmTransferDB };
+const getAllTransfersDB = async (companyId) => {
+	try {
+		const { rows } = await pool.query(
+			`SELECT
+        t.id,
+        t.transfer_type,
+        t.status,
+        t.created_at,
+        fl.name AS from_location,
+        tl.name AS to_location,
+        t.to_company_name,
+        COUNT(ti.id) AS package_count
+       FROM transfers t
+       JOIN locations fl ON t.from_location_id = fl.id
+       LEFT JOIN locations tl ON t.to_location_id = tl.id
+       LEFT JOIN transfer_items ti ON t.transfer_id = ti.id
+       WHERE t.company_id = $1
+       GROUP BY t.id, t.transfer_type, t.status, t.created_at, fl.name, tl.name, t.to_company_name
+       ORDER BY t.created_at DESC`,
+			[companyId],
+		);
+		return rows;
+	} catch (error) {
+		throw error;
+	}
+};
+
+const getTransferByIdDB = async (transferId, companyId) => {
+	try {
+		const { rows: transferRows } = await pool.query(
+			`SELECT
+        t.id,
+        t.transfer_type,
+        t.status,
+        t.notes,
+        t.created_at,
+        t.confirmed_at,
+        fl.name AS from_location,
+        tl.name AS to_location,
+        t.to_company_name,
+        u.first_name || ' ' || u.last_name AS created_by
+       FROM transfers t
+       JOIN locations fl ON t.from_location_id = fl.id
+       LEFT JOIN locations tl ON t.to_location_id = tl.id
+       JOIN users u ON t.created_by = u.id
+       WHERE t.id = $1
+       AND t.company_id = $2`,
+			[transferId, companyId],
+		);
+
+		if (!transferRows.length) return null;
+
+		const { rows: items } = await pool.query(
+			`SELECT
+        ti.id,
+        ti.quantity,
+        p.id AS package_id,
+        p.batch_id,
+        p.quantity AS current_quantity,
+        pr.name AS product_name
+       FROM transfer_items ti
+       JOIN packages p ON ti.package_id = p.id
+       JOIN products pr ON p.product_id = pr.id
+       WHERE ti.transfer_id = $1`,
+			[transferId],
+		);
+
+		return {
+			...transferRows[0],
+			items,
+		};
+	} catch (error) {
+		throw error;
+	}
+};
+module.exports = {
+	createTransferDB,
+	confirmTransferDB,
+	getAllTransfersDB,
+	getTransferByIdDB,
+};
