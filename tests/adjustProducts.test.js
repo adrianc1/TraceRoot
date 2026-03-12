@@ -1,7 +1,7 @@
-const { adjustInventory } = require('../../controllers/inventoryController');
-const db = require('../../db/queries');
+const { adjustInventory } = require('../controllers/productsController');
+const db = require('../db/queries');
 
-jest.mock('../../db/queries');
+jest.mock('../db/queries');
 
 describe('adjustInventory Controller', () => {
 	test('adjusts inventory successfully', async () => {

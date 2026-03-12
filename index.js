@@ -66,6 +66,7 @@ app.use('/packages', ensureAuthenticated, productsRouter);
 app.use('/categories', ensureAuthenticated, categoryRouter);
 app.use('/strains', ensureAuthenticated, strainsRouter);
 app.use('/brands', ensureAuthenticated, brandsRouter);
+app.use('/transfers', ensureAuthenticated, transfersRouter);
 
 app.listen(PORT, () => {
 	console.log(`server running on PORT ${PORT}`);

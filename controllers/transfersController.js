@@ -19,6 +19,8 @@ const getTransfer = async (req, res) => {
 			req.user.company_id,
 		);
 
+		console.log('trasner shit!', transfer);
+
 		if (!transfer) {
 			return res.status(404).json({ error: 'Transfer not found' });
 		}
@@ -33,7 +35,14 @@ const getTransfer = async (req, res) => {
 const createTransferForm = async (req, res) => {
 	try {
 		const locations = await db.getLocations(req.user.company_id);
-		res.render('transfers/createTransferForm', { locations });
+		const packages = await db.getPackagesByStatus(
+			req.user.company_id,
+			'active',
+		);
+
+		console.log('packages:', packages);
+
+		res.render('transfers/createTransferForm', { locations, packages });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });
