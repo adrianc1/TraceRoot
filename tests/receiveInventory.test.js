@@ -1,7 +1,7 @@
 const { receiveInventory } = require('../../controllers/inventoryController');
-const db = require('../../db/queries');
+const db = require('../db/queries');
 
-jest.mock('../../db/queries');
+jest.mock('../db/queries');
 
 describe('receiveInventory Controller', () => {
 	test('receives inventory successfully', async () => {

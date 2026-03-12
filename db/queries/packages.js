@@ -95,6 +95,46 @@ const getPackagesByStatus = async (company_id, status) => {
 	}
 };
 
+const getPackagesByProductId = async (productId, companyId) => {
+	const { rows } = await pool.query(
+		`
+        SELECT 
+            pk.id,
+            pk.package_tag,
+            pk.product_id,
+            pk.quantity,
+            pk.unit,
+            pk.status,
+            pk.cost_price,
+            pk.lot_number,
+            pk.created_at,
+            pk.parent_package_id,
+            l.name AS location,
+            p.name AS product_name,
+            p.sku AS product_sku,
+            c.name AS category_name,
+            b.name AS brand_name,
+            s.name AS strain_name,
+            bt.batch_number,
+            parent_pk.package_tag AS parent_package_tag
+        FROM packages AS pk
+        INNER JOIN products AS p ON pk.product_id = p.id
+        JOIN locations l ON l.id = pk.location_id
+        LEFT JOIN categories AS c ON p.category_id = c.id
+        LEFT JOIN brands AS b ON p.brand_id = b.id
+        LEFT JOIN strains AS s ON p.strain_id = s.id
+        LEFT JOIN batches AS bt ON pk.batch_id = bt.id
+        LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
+        WHERE pk.product_id = $1
+        AND pk.company_id = $2
+		AND pk.status = 'active'
+        ORDER BY pk.created_at DESC
+        `,
+		[productId, companyId],
+	);
+	return rows;
+};
+
 // NEED TO CREATED AND FINISH THE SPLIT TRANSACTION
 
 const splitPackageTransaction = async (selectedPackage, splits, userId) => {
@@ -282,8 +322,8 @@ const applyInventoryMovement = async ({
 		} else {
 			const { rows } = await client.query(
 				`SELECT id, quantity FROM packages
-         WHERE product_id=$1 AND location_id=$2 FOR UPDATE`,
-				[product_id, location_id],
+     				WHERE package_tag = $1 FOR UPDATE`,
+				[package_tag],
 			);
 
 			if (rows.length) {
@@ -309,8 +349,8 @@ const applyInventoryMovement = async ({
 
 				await client.query(
 					`INSERT INTO inventory_movements
-     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+     (packages_id, movement_type, quantity, cost_per_unit, notes, user_id, starting_quantity, ending_quantity, company_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 					[
 						invId,
 						movement_type,
@@ -320,6 +360,7 @@ const applyInventoryMovement = async ({
 						userId,
 						currentQty,
 						newQty,
+						company_id,
 					],
 				);
 			} else {
@@ -542,13 +583,13 @@ const getInventoryId = async (productId) => {
 	return rows;
 };
 
-const getPackagesByProductId = async (productId) => {
-	const { rows } = await pool.query(
-		`SELECT * FROM packages WHERE product_id = $1 ORDER BY created_at`,
-		[productId],
-	);
-	return rows;
-};
+// const getPackagesByProductId = async (productId) => {
+// 	const { rows } = await pool.query(
+// 		`SELECT * FROM packages WHERE product_id = $1 ORDER BY created_at`,
+// 		[productId],
+// 	);
+// 	return rows;
+// };
 
 module.exports = {
 	getAllPackages,

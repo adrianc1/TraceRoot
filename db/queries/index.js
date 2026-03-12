@@ -7,6 +7,7 @@ const locations = require('./locations');
 const packages = require('./packages');
 const products = require('./products');
 const strains = require('./strains');
+const transfers = require('./transfers');
 
 module.exports = {
 	...auth,
@@ -18,4 +19,5 @@ module.exports = {
 	...packages,
 	...products,
 	...strains,
+	...transfers,
 };
