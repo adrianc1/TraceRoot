@@ -13,6 +13,8 @@ const productsRouter = require('./routes/productsRouter');
 const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
+const transfersRouter = require('./routes/transfersRouter');
+
 const {
 	ensureAuthenticated,
 	setUserLocals,
@@ -64,6 +66,7 @@ app.use('/packages', ensureAuthenticated, productsRouter);
 app.use('/categories', ensureAuthenticated, categoryRouter);
 app.use('/strains', ensureAuthenticated, strainsRouter);
 app.use('/brands', ensureAuthenticated, brandsRouter);
+app.use('/transfers', ensureAuthenticated, transfersRouter);
 
 app.listen(PORT, () => {
 	console.log(`server running on PORT ${PORT}`);

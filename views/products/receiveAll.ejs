@@ -1,275 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <%- include('../partials/head', { title: 'Receive Product' }) %>
+<head>
+    <%- include('../partials/head', { title: 'Receive New Package' }) %>
 </head>
-	<body class="bg-gray-50 min-h-screen">
-		<%- include ('../partials/header.ejs') %>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-		<form
-		    method="POST"
-			action="/packages/receive"
-			id="receive-form"
-			class="space-y-6 px-8"
-		>
-			<div class="flex items-center gap-2">
-				<p class="text-md font-semibold text-gray-700">Product Name:</p>
-				<div class="text-2xl font-bold text-emerald-800">
-					<select name="product-select" id="product-select">
-						<option>-- Select a Product --</option>
-                                <% products.forEach((p, index) => { %>
-                                <option value="<%= p.id %>"
-									data-description="<%= p.description || 'No description available' %>"
-									data-brand="<%= p.brand_name || 'No Brand' %>"
-									data-strain="<%= p.strain_name || 'No Strain' %>"
-									data-category="<%= p.category_name || 'No Category' %>"
-									data-unit="<%= p.unit %>"
-									data-product_id="<%= p.id %>"><%= p.name %></option>
-                                <% }) %>
-					</select>
-				</div>
-			</div>
+    <%- include('../partials/header.ejs') %>
 
-			<div class="">
-				<p class="text-md font-semibold text-gray-700">Description:</p>
-				<div id="display-description" class="text-lg text-gray-800"></div>
-			</div>
-			<div class="hidden">
-				<p class="text-md font-semibold text-gray-700">product_id:</p>
-				<div id="display-product_id" class="text-lg text-gray-800"></div>
-			</div>
+    <div class="max-w-2xl mx-auto px-6 py-8">
 
-			<div class="grid gap-4">
-				<div class="w-full flex justify-between">
-					<div class="">
-						<p class="text-md font-semibold text-gray-800">Brand:</p>
-						<div id="display-brand" class="text-lg text-gray-800">-</div>
-					</div>
-					<div class="">
-						<p class="text-md font-semibold text-gray-800">Strain:</p>
-						<div id="display-strain" class="text-lg text-gray-800">-</div>
-					</div>
-					<div class="">
-						<p class="text-md font-semibold text-gray-800">Category:</p>
-						<div id="display-category" class="text-lg text-gray-800">-</div>
-					</div>
-					<div class="">
-						<p class="text-md font-semibold text-gray-800">Unit of Measure:</p>
-						<div id="display-UoM" class="text-lg text-gray-800">-</div>
-					</div>
-				</div>
+        <!-- Back link -->
+        <a href="/packages"
+           class="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+            ← Back to packages
+        </a>
 
-				 <div>
-                        <label for="package_tag" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Package Tag
-                        </label>
-                        <input
-                         type="text"
-                         name="package_tag"
-                         id="package_tag"
-                         value=""
-                         required
-                         class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-                        >
-                        </div>
+        <!-- Page title -->
+        <div class="mb-6">
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900">Receive New Package</h1>
+            <p class="text-sm text-gray-400 font-light mt-0.5">Select a product and enter package details</p>
+        </div>
 
-				<div class="">
-					<label
-						for="quantity"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-					>
-						Quantity
-				 <div id="display-UoM" class="text-lg text-gray-800">-</div>
+        <!-- Form card -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <form
+                id="receive-form"
+                method="POST"
+                action="/packages/receive">
 
-					</label>
+                <!-- Section: Select Product -->
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Select Product</div>
+                    <div class="space-y-4">
 
-					<input
-						type="number"
-						name="quantity"
-						id="quantity"
-						value="0"
-						required
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-					/>						
-				</div>
-				
-
-			
-				<div id="package-size-container" class="hidden">
-					<input type="hidden" name="product_id" id="product_id">
-					<input type="hidden" name="unit" id="unit">
-					<label
-						for="package_size"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-					>
-						Weight per Unit (g)
-						<span class="text-xs font-normal text-gray-500"
-							>(e.g., 3.5 for a 1/8th jar)</span>
-					</label>
-					<input
-						type="number"
-						name="package_size"
-						id="package_size"
-						step="0.01"
-						placeholder="3.5"
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-					/>
-				</div>
-
-				<div>
-					<label
-						for="unit_price"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-					>
-						Unit Price ($)
-					</label>
-					<input
-						type="number"
-						name="unit_price"
-						id="unit_price"
-						step="0.01"
-						min="0"
-						placeholder="0.00"
-						required
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-					/>
-				</div>
-				<div>
-					<label
-						for="quantity"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-					>
-						Vendor/Supplier
-					</label>
-					<input
-						type="text"
-						name="vendor"
-						id="vendor"
-						placeholder="Big Weed Holdings"
-						required
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-					/>
-				</div>
-				<div>
-					<label
-						for="quantity"
-						class="block text-sm font-semibold text-gray-700 mb-2"
-					>
-						Batch Number
-					</label>
-					<input
-						type="text"
-						name="batch"
-						id="batch"
-						placeholder="CCK091827"
-						required
-						class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
-					/>
-				</div>
-			</div>
-
-			<div>
-				<label class="block text-sm font-semibold text-gray-700 mb-2">
-					Reason:
-				</label>
-				<p class="text-lg text-gray-800 font-medium"></p>
-
-				<input type="hidden" name="reason" value="Receive" />
-			</div>
-
-			      <div>
-                            <label for="location_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                Location
+                        <div>
+                            <label for="product-select" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Product <span class="text-red-400">*</span>
                             </label>
                             <select
-                                name="location_id"
-                                id="location_id"
-                                class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors bg-white"
+                                name="product-select"
+                                id="product-select"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white text-gray-700"
                             >
-                                <% locations.forEach((loc) => { %>
-                                <option value="<%= loc.id %>"><%= loc.name %></option>
+                                <option value="">— Select a product —</option>
+                                <% products.forEach((p) => { %>
+                                    <option
+                                        value="<%= p.id %>"
+                                        data-description="<%= p.description || '' %>"
+                                        data-brand="<%= p.brand_name || '—' %>"
+                                        data-strain="<%= p.strain_name || '—' %>"
+                                        data-category="<%= p.category_name || '—' %>"
+                                        data-unit="<%= p.unit %>"
+                                        data-product_id="<%= p.id %>">
+                                        <%= p.name %>
+                                    </option>
                                 <% }) %>
                             </select>
                         </div>
 
-			<div>
-				<label
-					for="notes"
-					class="block text-sm font-semibold text-gray-700 mb-2"
-				>
-					Notes:
-				</label>
-				<textarea
-					id="notes"
-					name="notes"
-					rows="3"
-					placeholder="Additional notes"
-					class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none transition-colors resize-none"
-				></textarea>
-			</div>
+                        <!-- Product info — populated on select -->
+                        <div id="product-info" class="hidden">
+                            <div class="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                                <div>
+                                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Brand</div>
+                                    <div id="display-brand" class="text-[0.875rem] font-medium text-gray-800">—</div>
+                                </div>
+                                <div>
+                                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Strain</div>
+                                    <div id="display-strain" class="text-[0.875rem] font-medium text-gray-800">—</div>
+                                </div>
+                                <div>
+                                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Category</div>
+                                    <div id="display-category" class="text-[0.875rem] font-medium text-gray-800">—</div>
+                                </div>
+                                <div>
+                                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Unit</div>
+                                    <div id="display-UoM" class="text-[0.875rem] font-medium text-gray-800">—</div>
+                                </div>
+                            </div>
+                            <div id="display-description" class="text-[0.8125rem] text-gray-500 mt-2"></div>
+                        </div>
 
-			<div class="flex gap-3 pt-4">
-				<button type="submit" id="receive-btn" class="btn-primary flex-1">
-					Update Quantity
-				</button>
-				<a href="/packages/" class="btn-secondary flex-1 text-center">
-					Cancel
-				</a>
-			</div>
-		</form>
-		<script>
-		document.addEventListener('DOMContentLoaded', () => {
+                        <!-- Hidden inputs -->
+                        <input type="hidden" name="product_id" id="product_id" />
+                        <input type="hidden" name="unit" id="unit" />
 
+                    </div>
+                </div>
 
+                <!-- Section: Package Details -->
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Package Details</div>
+                    <div class="space-y-4">
 
-				const packageSizeContainer = document.getElementById('package-size-container');
-				const productSelect = document.getElementById('product-select');
-				const displayDesc = document.getElementById('display-description');
-				const displayBrand = document.getElementById('display-brand');
-				const displayStrain = document.getElementById('display-strain');
-				const displayCategory = document.getElementById('display-category');
-				const displayUnit = document.getElementById('display-UoM');
-				const unitInput = document.getElementById('unit');
-				const product_id = document.getElementById('product_id');
+                        <div>
+                            <label for="package_tag" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Package Tag <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="package_tag"
+                                id="package_tag"
+                                placeholder="e.g. 1A4060300003B01000000001"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
+                            />
+                        </div>
 
+                        <div>
+                            <label for="batch" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Batch Number <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="batch"
+                                id="batch"
+                                placeholder="e.g. CCK091827"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
+                            />
+                        </div>
 
-				productSelect.addEventListener('change', (e) => {
-					const selectedOption = e.target.options[e.target.selectedIndex];
-					// select fixed field elements								
-					const desc = selectedOption.dataset.description
-					const brand = selectedOption.dataset.brand;
-					const strain = selectedOption.dataset.strain;
-					const category = selectedOption.dataset.category;
-					const unit = selectedOption.dataset.unit
-					const pId = selectedOption.dataset.product_id
+                        <div>
+                            <label for="location_id" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Location <span class="text-red-400">*</span>
+                            </label>
+                            <select
+                                name="location_id"
+                                id="location_id"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white text-gray-700"
+                            >
+                                <option value="">— Select location —</option>
+                                <% locations.forEach((loc) => { %>
+                                    <option value="<%= loc.id %>"><%= loc.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
 
+                    </div>
+                </div>
 
-			
-					// update ui
-					displayDesc.textContent = desc;
-					displayBrand.textContent = brand;
-					displayStrain.textContent = strain;
-					displayCategory.textContent = category;
-					displayUnit.textContent = unit;
-					unitInput.value = unit || '';
-					product_id.value = pId || 'shit'
-					displayUnit.value = unit
+                <!-- Section: Quantity & Pricing -->
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Quantity & Pricing</div>
+                    <div class="space-y-4">
 
-					
+                        <div>
+                            <label for="quantity" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Quantity <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                name="quantity"
+                                id="quantity"
+                                value="0"
+                                min="0"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                            />
+                        </div>
 
-					if (unitInput) {
-						unitInput.value = unit; 
-					}
+                        <!-- Package size — only shown when unit is 'each' -->
+                        <div id="package-size-container" class="hidden">
+                            <label for="package_size" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Weight per Unit (g)
+                                <span class="text-[0.75rem] text-gray-400 font-light ml-1">e.g. 3.5 for a 1/8th jar</span>
+                            </label>
+                            <input
+                                type="number"
+                                name="package_size"
+                                id="package_size"
+                                step="0.01"
+                                placeholder="3.5"
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
+                            />
+                        </div>
 
-					if (unit && unit.toLowerCase() !== 'each') {
-					packageSizeContainer.classList.add('hidden');
-					} else {
-					packageSizeContainer.classList.remove('hidden');
-					}
-				});
-			});
-		</script>
-				<!-- <script src="/js/receiveInventory.js"></script> -->
+                        <div>
+                            <label for="unit_price" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Unit Price <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[0.875rem]">$</span>
+                                <input
+                                    type="number"
+                                    name="unit_price"
+                                    id="unit_price"
+                                    step="0.01"
+                                    min="0"
+                                    placeholder="0.00"
+                                    required
+                                    class="w-full pl-7 pr-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                                />
+                            </div>
+                        </div>
 
-	</body>
+                    </div>
+                </div>
+
+                <!-- Section: Supplier & Notes -->
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Supplier & Notes</div>
+                    <div class="space-y-4">
+
+                        <div>
+                            <label for="vendor" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Vendor / Supplier <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="vendor"
+                                id="vendor"
+                                placeholder="e.g. Big Weed Holdings"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="notes" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Notes
+                                <span class="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+                            </label>
+                            <textarea
+                                id="notes"
+                                name="notes"
+                                rows="3"
+                                placeholder="Additional notes..."
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all resize-none bg-white placeholder-gray-300"
+                            ></textarea>
+                        </div>
+
+                        <input type="hidden" name="reason" value="Receive" />
+
+                    </div>
+                </div>
+
+                <!-- Form actions -->
+                <div class="px-6 py-4 bg-gray-50 flex items-center justify-between gap-3">
+                    <a href="/packages"
+                       class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-white hover:border-gray-400 transition-colors no-underline">
+                        Cancel
+                    </a>
+                    <button
+                        type="submit"
+                        id="receive-btn"
+                        class="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer">
+                        Receive Package
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productSelect = document.getElementById('product-select');
+            const productInfo = document.getElementById('product-info');
+            const packageSizeContainer = document.getElementById('package-size-container');
+            const displayDesc = document.getElementById('display-description');
+            const displayBrand = document.getElementById('display-brand');
+            const displayStrain = document.getElementById('display-strain');
+            const displayCategory = document.getElementById('display-category');
+            const displayUnit = document.getElementById('display-UoM');
+            const unitInput = document.getElementById('unit');
+            const productIdInput = document.getElementById('product_id');
+
+            productSelect.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+
+                if (!e.target.value) {
+                    productInfo.classList.add('hidden');
+                    return;
+                }
+
+                const desc = selectedOption.dataset.description;
+                const brand = selectedOption.dataset.brand;
+                const strain = selectedOption.dataset.strain;
+                const category = selectedOption.dataset.category;
+                const unit = selectedOption.dataset.unit;
+                const pId = selectedOption.dataset.product_id;
+
+                displayDesc.textContent = desc || '';
+                displayBrand.textContent = brand;
+                displayStrain.textContent = strain;
+                displayCategory.textContent = category;
+                displayUnit.textContent = unit;
+                unitInput.value = unit || '';
+                productIdInput.value = pId || '';
+
+                productInfo.classList.remove('hidden');
+
+                if (unit && unit.toLowerCase() !== 'each') {
+                    packageSizeContainer.classList.add('hidden');
+                } else {
+                    packageSizeContainer.classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+
+</body>
 </html>
