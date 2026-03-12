@@ -50,15 +50,20 @@ const createTransferDB = async (
 		const transfer = transferResult.rows[0];
 
 		for (const item of items) {
-			const newQuantity = item.current_quantity - item.quantity;
+			const newQuantity = Number(item.current_quantity - item.quantity);
+
+			// 		await client.query(
+			// 			`UPDATE packages
+			//  SET quantity = quantity - $1,
+			//    status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
+			//  WHERE id = $2`,
+			// 			[item.quantity, item.package_id],
+			// 		);
 
 			await client.query(
-				`UPDATE packages
-     SET 
-       quantity = quantity - $1,
-       status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
-     WHERE id = $2`,
-				[item.quantity, item.package_id],
+				`INSERT INTO transfer_items (transfer_id, package_id, quantity)
+     VALUES ($1, $2, $3)`,
+				[transfer.id, item.package_id, item.quantity],
 			);
 
 			await client.query(
@@ -72,8 +77,8 @@ const createTransferDB = async (
 					'transfer',
 					item.quantity,
 					item.current_quantity,
-					newQuantity,
-					`Transfer ID: ${transferId}`,
+					item.quantity,
+					`Transfer ID: ${transfer.id}`,
 				],
 			);
 		}
@@ -195,7 +200,7 @@ const getAllTransfersDB = async (companyId) => {
        FROM transfers t
        JOIN locations fl ON t.from_location_id = fl.id
        LEFT JOIN locations tl ON t.to_location_id = tl.id
-       LEFT JOIN transfer_items ti ON t.transfer_id = ti.id
+       LEFT JOIN transfer_items ti ON ti.transfer_id = t.id
        WHERE t.company_id = $1
        GROUP BY t.id, t.transfer_type, t.status, t.created_at, fl.name, tl.name, t.to_company_name
        ORDER BY t.created_at DESC`,
@@ -237,12 +242,19 @@ const getTransferByIdDB = async (transferId, companyId) => {
         ti.id,
         ti.quantity,
         pk.id AS package_id,
+		pk.package_tag,
+		pk.cost_price,
+		pk.unit,
         pk.batch_id,
         pk.quantity AS current_quantity,
-        pr.name AS product_name
+        pr.name AS product_name,
+		s.name AS strain_name,
+		c.name AS category_name
        FROM transfer_items ti
        JOIN packages pk ON ti.package_id = pk.id
        JOIN products pr ON pk.product_id = pr.id
+	   JOIN strains s ON pr.strain_id = s.id 
+	   JOIN categories c ON c.id = pr.category_id
        WHERE ti.transfer_id = $1`,
 			[transferId],
 		);

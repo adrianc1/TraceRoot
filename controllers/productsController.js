@@ -405,15 +405,12 @@ const adjustInventoryGet = async (req, res) => {
 
 	try {
 		const lotNumber = req.params.lotNumber;
-		const package = await db.getPackage(
+		const pkg = await db.getPackage(
 			Number(req.params.id),
 			Number(req.user.company_id),
 		);
 
-		const product = await db.getProductDB(
-			package.product_id,
-			req.user.company_id,
-		);
+		const product = await db.getProductDB(pkg.product_id, req.user.company_id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -452,7 +449,7 @@ const adjustInventoryGet = async (req, res) => {
 			units,
 			adjustmentReasons,
 			statusOptions,
-			package,
+			package: pkg,
 		});
 	} catch (error) {
 		console.error(error);
