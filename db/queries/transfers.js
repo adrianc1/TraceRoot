@@ -74,7 +74,7 @@ const createTransferDB = async (
 					companyId,
 					item.package_id,
 					null,
-					'transfer',
+					'Created transfer',
 					item.quantity,
 					item.current_quantity,
 					item.quantity,
@@ -138,16 +138,27 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 
 		// decrement pkg
 		for (const item of items) {
-			const newQuantity = item.current_quantity - item.quantity;
+			const newQuantity =
+				transfer.transfer_type === 'internal'
+					? item.current_quantity
+					: item.current_quantity - item.quantity;
 
-			await client.query(
-				`UPDATE packages
-         SET 
-           quantity = quantity - $1,
-           status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
+			if (transfer.transfer_type === 'internal') {
+				await client.query(
+					`UPDATE packages
+         SET location_id = $1
          WHERE id = $2`,
-				[item.quantity, item.package_id],
-			);
+					[transfer.to_location_id, item.package_id],
+				);
+			} else {
+				await client.query(
+					`UPDATE packages
+         SET quantity = quantity - $1,
+             status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
+         WHERE id = $2`,
+					[item.quantity, item.package_id],
+				);
+			}
 
 			await client.query(
 				`INSERT INTO inventory_movements 
