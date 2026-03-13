@@ -1,5 +1,6 @@
 const express = require('express');
 const authController = require('../../controllers/authController');
+const usersController = require('../../controllers/usersController');
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -13,6 +14,9 @@ router.get('/logout', (req, res) => {
 		res.redirect('/login');
 	});
 });
+
+router.get('/accept-invite', usersController.getAcceptInvite);
+router.post('/accept-invite', usersController.acceptInvite);
 router.post(
 	'/signup/create-account',
 	authController.validateUser,

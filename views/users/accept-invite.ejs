@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/tailwind.css" rel="stylesheet" />
+    <title>Accept Invite — Greenventory</title>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex items-center justify-center px-4 py-12">
+
+    <div class="w-full max-w-sm">
+
+        <div class="text-center mb-8">
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900">Greenventory</h1>
+            <p class="text-sm text-gray-400 font-light mt-1">You've been invited to join a team</p>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+            <!-- Invite context -->
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-100">
+                <p class="text-[0.8125rem] text-gray-500">
+                    Joining as
+                    <span class="font-medium text-gray-800"><%= invite.email %></span>
+                    with role
+                    <span class="font-mono text-[0.75rem] font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 ml-0.5"><%= invite.role %></span>
+                </p>
+            </div>
+
+            <form method="POST" action="/signup/accept-invite">
+                <input type="hidden" name="token" value="<%= invite.token %>" />
+
+                <div class="px-6 py-5 border-b border-gray-100 space-y-4">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="first_name" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                First Name <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                id="first_name"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                            />
+                        </div>
+                        <div>
+                            <label for="last_name" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                                Last Name <span class="text-red-400">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                id="last_name"
+                                required
+                                class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                            Password <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            autocomplete="new-password"
+                            required
+                            class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                        />
+                    </div>
+
+                    <div>
+                        <label for="confirm_password" class="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
+                            Confirm Password <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            id="confirm_password"
+                            autocomplete="new-password"
+                            required
+                            class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
+                        />
+                    </div>
+
+                </div>
+
+                <div class="px-6 py-4 bg-gray-50">
+                    <button
+                        type="submit"
+                        class="w-full py-2 text-[0.875rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer">
+                        Create Account
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+        <p class="text-center text-[0.75rem] text-gray-400 mt-4">
+            Already have an account?
+            <a href="/login" class="text-green-mid hover:text-green-deep transition-colors no-underline font-medium">Sign in</a>
+        </p>
+
+    </div>
+
+</body>
+</html>

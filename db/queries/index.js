@@ -8,6 +8,8 @@ const packages = require('./packages');
 const products = require('./products');
 const strains = require('./strains');
 const transfers = require('./transfers');
+const users = require('./users');
+const invites = require('./invites');
 
 module.exports = {
 	...auth,
@@ -20,4 +22,6 @@ module.exports = {
 	...products,
 	...strains,
 	...transfers,
+	...users,
+	...invites,
 };
