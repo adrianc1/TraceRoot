@@ -40,8 +40,6 @@ const createTransferForm = async (req, res) => {
 			'active',
 		);
 
-		console.log('packages:', packages);
-
 		res.render('transfers/createTransferForm', { locations, packages });
 	} catch (error) {
 		console.error(error);

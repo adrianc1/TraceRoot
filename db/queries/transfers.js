@@ -52,13 +52,12 @@ const createTransferDB = async (
 		for (const item of items) {
 			const newQuantity = Number(item.current_quantity - item.quantity);
 
-			// 		await client.query(
-			// 			`UPDATE packages
-			//  SET quantity = quantity - $1,
-			//    status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
-			//  WHERE id = $2`,
-			// 			[item.quantity, item.package_id],
-			// 		);
+			await client.query(
+				`UPDATE packages
+			 SET locked = true
+			 WHERE id = $1`,
+				[item.package_id],
+			);
 
 			await client.query(
 				`INSERT INTO transfer_items (transfer_id, package_id, quantity)
@@ -146,14 +145,16 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 			if (transfer.transfer_type === 'internal') {
 				await client.query(
 					`UPDATE packages
-         SET location_id = $1
+         SET location_id = $1,
+		 locked = false
          WHERE id = $2`,
 					[transfer.to_location_id, item.package_id],
 				);
 			} else {
 				await client.query(
 					`UPDATE packages
-         SET quantity = quantity - $1,
+         SET locked = false,
+		 quantity = quantity - $1,
              status = CASE WHEN quantity - $1 <= 0 THEN 'inactive' ELSE status END
          WHERE id = $2`,
 					[item.quantity, item.package_id],
@@ -280,20 +281,38 @@ const getTransferByIdDB = async (transferId, companyId) => {
 };
 
 const cancelTransferDB = async (transferId, companyId) => {
+	const client = await pool.connect();
 	try {
-		const { rows } = await pool.query(
+		await client.query('BEGIN');
+
+		const { rows } = await client.query(
 			`UPDATE transfers
-       SET status = 'cancelled'
-       WHERE id = $1
-       AND company_id = $2
-       AND status = 'pending'
-       RETURNING *`,
+             SET status = 'cancelled'
+             WHERE id = $1
+             AND company_id = $2
+             AND status = 'pending'
+             RETURNING *`,
 			[transferId, companyId],
 		);
 
-		return rows[0] || null;
+		if (!rows[0]) throw new Error('Transfer not found or already resolved');
+
+		await client.query(
+			`UPDATE packages
+             SET locked = false
+             WHERE id IN (
+                SELECT package_id FROM transfer_items WHERE transfer_id = $1
+             )`,
+			[transferId],
+		);
+
+		await client.query('COMMIT');
+		return rows[0];
 	} catch (error) {
+		await client.query('ROLLBACK');
 		throw error;
+	} finally {
+		client.release();
 	}
 };
 module.exports = {
