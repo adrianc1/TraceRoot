@@ -8,10 +8,16 @@ const getAllProducts = async (req, res) => {
 		const userCompanyId = req.user.company_id;
 		const status = req.query.status || 'active';
 		const packages = await db.getPackagesByStatus(userCompanyId, status);
+		const brands = await db.getAllBrands(userCompanyId);
+		const strains = await db.getAllStrains(userCompanyId);
+		const categories = await db.getAllCategories(userCompanyId);
 		res.render('products/products', {
 			message: 'All Packages',
 			packages,
 			currentStatus: status,
+			brands,
+			strains,
+			categories,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });

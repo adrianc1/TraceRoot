@@ -1,184 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
+<head>
     <%- include('../partials/head', { title: 'Split Package' }) %>
 </head>
-	<body>
-		<div class="max-w-4xl mx-auto px-6 py-8">
-			<!-- Back -->
-			<a
-				href="/packages/<%= product.id %>"
-				class="inline-flex items-center text-emerald-600 hover:text-green-700 font-medium mb-6"
-			>
-				← Back to package
-			</a>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
 
-			<div class="bg-white rounded-lg shadow-md p-8">
-				<h1 class="text-3xl font-bold text-gray-800 mb-2">Split Package</h1>
-				<p class="text-gray-600 mb-6">Create child lots from inventory</p>
+    <%- include('../partials/header.ejs') %>
 
-				<!-- Parent Package Info -->
-				<div class="bg-gray-50 border rounded-lg p-4 mb-8">
-					<h2 class="font-semibold text-gray-800 mb-2">Parent Lot</h2>
-					<div class="grid grid-cols-3 gap-4 text-sm">
-						<div>
-							<p class="text-gray-500">SKU</p>
-							<p class="font-semibold"><%= product.sku %></p>
-						</div>
-						<div>
-							<p class="text-gray-500">Product</p>
-							<p class="font-semibold"><%= product.name %></p>
-						</div>
-						<div>
-							<p class="text-gray-500">Available</p>
-							<p class="font-semibold">
-								<span id="availableQty"><%= selectedPackage.quantity %></span>
-								<%= product.unit %>
-							</p>
-						</div>
-					</div>
-				</div>
+    <div class="max-w-2xl mx-auto px-6 py-8">
 
-				<!-- Split Form -->
-				<form
-					method="POST"
-					action="/packages/<%= selectedPackage.id %>/split/<%= selectedPackage.lot_number %>"
-					id="splitForm"
-				>
-					<div
-						id="splitRows"
-						class="space-y-4"
-						data-initial-qty="<%= selectedPackage.quantity %>"
-						data-unit="<%= product.unit %>"
-					>
-						<!-- Split Row Template -->
-						<div class="split-row grid grid-cols-5 gap-3 border rounded-lg p-4">
-							<!-- Package Number -->
-							<div>
-								<label class="text-sm font-semibold text-gray-700"
-									>Package #</label
-								>
-								<input
-									type="text"
-									name="packageTag[]"
-									class="packageTag w-full border-2 rounded-lg px-2 py-2"
-								/>
-							</div>
+        <a href="/packages/<%= product.id %>"
+           class="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+            ← Back to product
+        </a>
 
-							<!-- Lot Number -->
-							<div>
-								<label class="text-sm font-semibold text-gray-700"
-									>Batch/Lot</label
-								>
-								<input
-									type="text"
-									name="batch[]"
-									class="batch w-full border-2 rounded-lg px-2 py-2"
-								/>
-							</div>
+        <div class="mb-6">
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900">Split Package</h1>
+            <p class="text-sm text-gray-400 font-light mt-0.5">Create child lots from existing inventory</p>
+        </div>
 
-							<!-- Product -->
-							<div>
-								<label class="text-sm font-semibold text-gray-700"
-									>Product</label
-								>
-								<input
-									type="text"
-									class="w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
-									value="<%= product.name %>"
-									readonly
-								/>
-								<input
-									type="hidden"
-									name="productId[]"
-									value="<%= product.id %>"
-								/>
-							</div>
+        <div class="space-y-4">
 
-							<!-- Package Size -->
-							<div>
-								<label class="text-sm font-semibold text-gray-700">
-									Package Size (<%= product.unit %>)
-								</label>
-								<input
-									type="number"
-									step="0.01"
-									name="packageSize[]"
-									class="package-size w-full border-2 rounded-lg px-3 py-2"
-									value="<%= product.package_size || 1 %>"
-								/>
-							</div>
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div class="px-6 py-5">
+                    <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Parent Package</div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">SKU</div>
+                            <div class="text-[0.875rem] font-mono font-medium text-gray-800"><%= product.sku %></div>
+                        </div>
+                        <div>
+                            <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Product</div>
+                            <div class="text-[0.875rem] font-medium text-gray-800"><%= product.name %></div>
+                        </div>
+                        <div>
+                            <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Available</div>
+                            <div class="text-[0.875rem] font-medium text-gray-800">
+                                <span id="availableQty"><%= selectedPackage.quantity %></span>
+                                <span class="text-gray-400"><%= product.unit %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-							<!-- Quantity (Number of Packages) -->
-							<!-- <div>
-            <label class="text-sm font-semibold text-gray-700"># Packages</label>
-            <input type="number"
-                   name="quantity[]"
-                   class="quantity w-full border-2 rounded-lg px-3 py-2"
-            />
-          </div> -->
+            <!-- Form card -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <form
+                    method="POST"
+                    action="/packages/<%= selectedPackage.id %>/split/<%= selectedPackage.lot_number %>"
+                    id="splitForm">
 
-							<!-- Total Weight -->
-							<div>
-								<label class="text-sm font-semibold text-gray-700"
-									>Total Weight (<%= product.unit %>)</label
-								>
-								<input
-									type="text"
-									class="total-weight w-full border-2 rounded-lg px-3 py-2 bg-gray-100"
-									readonly
-								/>
-							</div>
+                    <div class="px-6 py-5 border-b border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Split Rows</div>
+                            <button type="button" id="addRow"
+                                class="text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer">
+                                + Add Row
+                            </button>
+                        </div>
 
-							<!-- Remove Row -->
-							<div class="flex items-end">
-								<button
-									type="button"
-									class="remove-row text-red-600 font-semibold"
-								>
-									Remove
-								</button>
-							</div>
-						</div>
-					</div>
+                        <div
+                            id="splitRows"
+                            class="space-y-3"
+                            data-initial-qty="<%= selectedPackage.quantity %>"
+                            data-unit="<%= product.unit %>">
 
-					<!-- Add Row -->
-					<button
-						type="button"
-						id="addRow"
-						class="mt-4 text-emerald-600 font-semibold hover:text-emerald-700"
-					>
-						+ Add Split Row
-					</button>
+                            <div class="split-row grid grid-cols-4 gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                <div>
+                                    <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Package Tag</label>
+                                    <input
+                                        type="text"
+                                        name="packageTag[]"
+                                        class="packageTag w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Batch / Lot</label>
+                                    <input
+                                        type="text"
+                                        name="batch[]"
+                                        class="batch w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Size (<%= product.unit %>)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        name="packageSize[]"
+                                        class="package-size w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white"
+                                        value="<%= product.package_size || 1 %>"
+                                    />
+                                    <input type="hidden" name="productId[]" value="<%= product.id %>" />
+                                </div>
+                                <div>
+                                    <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total (<%= product.unit %>)</label>
+                                    <input
+                                        type="text"
+                                        class="total-weight w-full px-3 py-2 text-[0.875rem] border border-gray-200 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                                        readonly
+                                    />
+                                </div>
+                            </div>
 
-					<!-- Quantity Summary -->
-					<div class="mt-8 bg-emerald-50 border rounded-lg p-4" id="summaryBox">
-						<div class="flex justify-between">
-							<span>Total Used:</span>
-							<span id="totalUsed">0</span>
-						</div>
-						<div class="flex justify-between font-semibold">
-							<span>Remaining:</span>
-							<span id="remainingQty"><%= selectedPackage.quantity %></span>
-						</div>
-					</div>
+                        </div>
+                    </div>
 
-					<!-- Submit -->
-					<div class="flex gap-3 pt-6">
-						<button type="submit" class="btn-primary flex-1" id="submitSplit">
-							Create Split Lot
-						</button>
-						<a
-							href="/packages/<%= selectedPackage.id %>"
-							class="btn-secondary flex-1 text-center"
-						>
-							Cancel
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <div class="flex items-center justify-between text-[0.8125rem] text-gray-500 mb-1">
+                            <span>Total Used</span>
+                            <span id="totalUsed" class="font-mono">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[0.8125rem] font-medium text-gray-800">
+                            <span>Remaining</span>
+                            <span id="remainingQty" class="font-mono"><%= selectedPackage.quantity %></span>
+                        </div>
+                    </div>
 
-		<script src="/js/splitPackages.js"></script>
-	</body>
+                    <div class="px-6 py-4 bg-gray-50 flex items-center justify-between gap-3">
+                        <a href="/packages/<%= selectedPackage.id %>"
+                           class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-white hover:border-gray-400 transition-colors no-underline">
+                            Cancel
+                        </a>
+                        <button
+                            type="submit"
+                            id="submitSplit"
+                            class="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer">
+                            Create Split
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/js/splitPackages.js"></script>
+
+</body>
 </html>

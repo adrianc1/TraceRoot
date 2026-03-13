@@ -14,6 +14,7 @@ const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
+const usersRouter = require('./routes/usersRouter');
 
 const {
 	ensureAuthenticated,
@@ -61,6 +62,8 @@ app.use(setUserLocals);
 
 app.use('/', signupRouter);
 app.use('/login', loginRouter);
+app.use('/signup', signupRouter);
+app.use('/users', usersRouter);
 
 app.use('/packages', ensureAuthenticated, productsRouter);
 app.use('/categories', ensureAuthenticated, categoryRouter);

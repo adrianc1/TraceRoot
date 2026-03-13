@@ -165,6 +165,18 @@ CREATE TABLE transfer_items (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE invites (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    company_id INTEGER NOT NULL REFERENCES companies(id),
+    email VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'manager', 'staff')),
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    created_by INTEGER REFERENCES users(id),
+    accepted_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- Audit Trail
 CREATE TABLE inventory_movements (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
