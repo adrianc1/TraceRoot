@@ -129,6 +129,7 @@ CREATE TABLE packages (
     cost_price DECIMAL(10,2),
     supplier_name VARCHAR(255),
     lot_number VARCHAR(100),
+    locked BOOLEAN NOT NULL DEFAULT FALSE,
     updated_at TIMESTAMP DEFAULT NOW(),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE (package_tag),

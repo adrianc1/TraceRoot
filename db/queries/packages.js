@@ -57,6 +57,7 @@ const getPackagesByStatus = async (company_id, status) => {
 				pk.product_id,
                 pk.quantity,
                 pk.unit,
+				pk.location_id,
                 l.name AS location,
                 pk.status,
                 pk.cost_price,
@@ -84,6 +85,7 @@ const getPackagesByStatus = async (company_id, status) => {
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
             WHERE pk.company_id = $1 
 			AND pk.status = $2
+			AND pk.locked = false
             ORDER BY pk.created_at DESC;
             `,
 			[company_id, status],
@@ -128,6 +130,7 @@ const getPackagesByProductId = async (productId, companyId) => {
         WHERE pk.product_id = $1
         AND pk.company_id = $2
 		AND pk.status = 'active'
+		AND pk.locked = false
         ORDER BY pk.created_at DESC
         `,
 		[productId, companyId],
@@ -280,6 +283,10 @@ const applyInventoryMovement = async ({
 				`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
 				[packages_id],
 			);
+
+			if (rows[0]?.locked) {
+				throw new Error('Package is locked pending a transfer');
+			}
 
 			if (!rows.length) throw new Error('Inventory not found');
 
