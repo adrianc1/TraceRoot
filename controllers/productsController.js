@@ -8,9 +8,15 @@ const getAllProducts = async (req, res) => {
 		const page = parseInt(req.query.page) || 1;
 		const limit = 25;
 		const offset = (page - 1) * limit;
+		const filters = {
+			search:   req.query.search   || '',
+			brand:    req.query.brand    || '',
+			category: req.query.category || '',
+			sort:     req.query.sort     || 'newest',
+		};
 		const [packages, total, brands, strains, categories] = await Promise.all([
-			db.getPackagesByStatus(userCompanyId, status, limit, offset),
-			db.getPackagesCountByStatus(userCompanyId, status),
+			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
+			db.getPackagesCountByStatus(userCompanyId, status, filters),
 			db.getAllBrands(userCompanyId),
 			db.getAllStrains(userCompanyId),
 			db.getAllCategories(userCompanyId),
@@ -24,6 +30,10 @@ const getAllProducts = async (req, res) => {
 			brands,
 			strains,
 			categories,
+			search:   filters.search,
+			brand:    filters.brand,
+			category: filters.category,
+			sort:     filters.sort,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });

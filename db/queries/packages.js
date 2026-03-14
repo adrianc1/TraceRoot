@@ -4,7 +4,7 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 	try {
 		const { rows } = await pool.query(
 			`
-            SELECT 
+            SELECT
                 pk.id,
                 pk.package_tag,
 				pk.product_id,
@@ -24,7 +24,7 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
                 s.name AS strain_name,
                 -- Batch Details
                 bt.batch_number,
-                -- source Info 
+                -- source Info
                 pk.parent_package_id,
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
@@ -35,7 +35,7 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
             LEFT JOIN strains AS s ON p.strain_id = s.id
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
-            WHERE pk.company_id = $1 
+            WHERE pk.company_id = $1
 			AND pk.locked = false
             ORDER BY pk.created_at DESC
 			LIMIT $2 OFFSET $3;
@@ -49,12 +49,43 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 	}
 };
 
-const getPackagesCountByStatus = async (company_id, status) => {
+const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
+	const { search = '', brand = '', category = '' } = filters;
+	const params = [company_id, status];
+	const conditions = ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
+
+	if (search) {
+		params.push(`%${search}%`);
+		const idx = params.length;
+		conditions.push(`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`);
+	}
+	if (brand) {
+		params.push(brand);
+		conditions.push(`b.name = $${params.length}`);
+	}
+	if (category) {
+		params.push(category);
+		conditions.push(`c.name = $${params.length}`);
+	}
+
 	const { rows } = await pool.query(
-		`SELECT COUNT(*) FROM packages WHERE company_id = $1 AND status = $2 AND locked = false`,
-		[company_id, status],
+		`SELECT COUNT(*) FROM packages AS pk
+		 INNER JOIN products AS p ON pk.product_id = p.id
+		 LEFT JOIN categories AS c ON p.category_id = c.id
+		 LEFT JOIN brands AS b ON p.brand_id = b.id
+		 WHERE ${conditions.join(' AND ')}`,
+		params,
 	);
 	return parseInt(rows[0].count);
+};
+
+const sortMap = {
+	newest:   'pk.created_at DESC',
+	oldest:   'pk.created_at ASC',
+	qty_asc:  'pk.quantity ASC',
+	qty_desc: 'pk.quantity DESC',
+	az:       'p.name ASC',
+	za:       'p.name DESC',
 };
 
 const getPackagesByStatus = async (
@@ -62,11 +93,37 @@ const getPackagesByStatus = async (
 	status,
 	limit = 25,
 	offset = 0,
+	filters = {},
 ) => {
+	const { search = '', brand = '', category = '', sort = 'newest' } = filters;
+	const params = [company_id, status];
+	const conditions = ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
+
+	if (search) {
+		params.push(`%${search}%`);
+		const idx = params.length;
+		conditions.push(`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`);
+	}
+	if (brand) {
+		params.push(brand);
+		conditions.push(`b.name = $${params.length}`);
+	}
+	if (category) {
+		params.push(category);
+		conditions.push(`c.name = $${params.length}`);
+	}
+
+	params.push(limit);
+	const limitIdx = params.length;
+	params.push(offset);
+	const offsetIdx = params.length;
+
+	const orderBy = sortMap[sort] || 'pk.created_at DESC';
+
 	try {
 		const { rows } = await pool.query(
 			`
-            SELECT 
+            SELECT
                 pk.id,
                 pk.package_tag,
 				pk.product_id,
@@ -78,16 +135,13 @@ const getPackagesByStatus = async (
                 pk.cost_price,
                 pk.lot_number,
                 pk.created_at,
-                -- Product Details
                 p.name AS product_name,
                 p.sku AS product_sku,
                 c.name AS category_name,
 				c.id AS category_id,
                 b.name AS brand_name,
                 s.name AS strain_name,
-                -- Batch Details
                 bt.batch_number,
-                -- source Info 
                 pk.parent_package_id,
                 parent_pk.package_tag AS parent_package_tag
             FROM packages AS pk
@@ -98,13 +152,11 @@ const getPackagesByStatus = async (
             LEFT JOIN strains AS s ON p.strain_id = s.id
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
-            WHERE pk.company_id = $1 
-			AND pk.status = $2
-			AND pk.locked = false
-            ORDER BY pk.created_at DESC
-			LIMIT $3 OFFSET $4;
+            WHERE ${conditions.join(' AND ')}
+            ORDER BY ${orderBy}
+			LIMIT $${limitIdx} OFFSET $${offsetIdx}
             `,
-			[company_id, status, limit, offset],
+			params,
 		);
 		return rows;
 	} catch (error) {
@@ -116,7 +168,7 @@ const getPackagesByStatus = async (
 const getPackagesByProductId = async (productId, companyId) => {
 	const { rows } = await pool.query(
 		`
-        SELECT 
+        SELECT
             pk.id,
             pk.package_tag,
             pk.product_id,
@@ -523,8 +575,8 @@ const adjustProductInventory = async (
 		);
 
 		const inventoryUpdate = await client.query(
-			`UPDATE packages 
-             SET quantity = $1 
+			`UPDATE packages
+             SET quantity = $1
              WHERE id = $2`,
 			[endingQty, packages_id],
 		);
@@ -572,13 +624,13 @@ const receiveInventory = async (
 		const newQty = Number(currentQty) + delta;
 
 		await client.query(
-			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id) 
+			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
              VALUES ($1, $2, $3, $4, $5, $6)`,
 			[packages_id, reason, delta, unit_price, notes, userId],
 		);
 
 		await client.query(
-			`UPDATE packages 
+			`UPDATE packages
      SET quantity = $1,
          cost_price = $2,
          supplier_name = $3,
@@ -605,14 +657,6 @@ const getInventoryId = async (productId) => {
 	);
 	return rows;
 };
-
-// const getPackagesByProductId = async (productId) => {
-// 	const { rows } = await pool.query(
-// 		`SELECT * FROM packages WHERE product_id = $1 ORDER BY created_at`,
-// 		[productId],
-// 	);
-// 	return rows;
-// };
 
 module.exports = {
 	getAllPackages,
