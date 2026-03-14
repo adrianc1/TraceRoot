@@ -15,11 +15,9 @@ const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
 const usersRouter = require('./routes/usersRouter');
-
-const {
-	ensureAuthenticated,
-	setUserLocals,
-} = require('./middleware/authMiddleware.js');
+const { formatQuantity, formatCurrency } = require('./utils/format');
+const { setLocals } = require('./middleware/appMiddleware');
+const { ensureAuthenticated, redirectIfAuthenticated } = require('./middleware/authMiddleware.js');
 
 const app = express();
 const PORT = 3000;
@@ -58,11 +56,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(setUserLocals);
+app.use(setLocals);
 
 app.use('/', signupRouter);
-app.use('/login', loginRouter);
-app.use('/signup', signupRouter);
+app.use('/login', redirectIfAuthenticated, loginRouter);
+app.use('/signup', redirectIfAuthenticated, signupRouter);
 app.use('/users', usersRouter);
 
 app.use('/packages', ensureAuthenticated, productsRouter);

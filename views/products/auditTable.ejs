@@ -35,10 +35,10 @@
                         </td>
                      
                         <td class="px-4 py-3 text-sm font-semibold">
-                            <%= package.quantity %> <span class="text-gray-400 font-normal"><%= package.package_unit || '' %></span>
+                            <%= formatQuantity(package.quantity, package.package_unit || '') %> <%= product.unit %>
                         </td>
                         <td class="px-4 py-3 text-sm font-semibold text-gray-700">
-                            $<%= (Number(package.quantity) * Number(package.cost_price || 0)).toFixed(2) %>
+                            $<%= formatCurrency(package.quantity * (package.cost_price || 0)) %>
                         </td>
                         <td class="px-4 py-3">
                             <span class="inline-block px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide <%= statusClass %>">
