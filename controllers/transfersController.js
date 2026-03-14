@@ -19,8 +19,6 @@ const getTransfer = async (req, res) => {
 			req.user.company_id,
 		);
 
-		console.log('trasner shit!', transfer);
-
 		if (!transfer) {
 			return res.status(404).json({ error: 'Transfer not found' });
 		}

@@ -57,7 +57,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(setLocals);
-app.use(ensureAuthenticated);
 
 app.use('/', signupRouter);
 app.use('/login', loginRouter);

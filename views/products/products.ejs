@@ -3,7 +3,7 @@
 <head>
     <%- include('../partials/head', { title: 'Packages' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden">
 
     <%- include('../partials/header.ejs') %>
 
@@ -27,11 +27,25 @@
             </div>
         </div>
 
-        <div class="flex gap-1 border-b border-gray-200 mb-4">
+        <!-- Mobile: dropdown -->
+        <div class="sm:hidden mb-4">
+            <select
+                onchange="window.location.href='/packages?status=' + this.value"
+                class="w-full px-3 py-2 text-[0.8125rem] border border-gray-300 rounded-md bg-white text-gray-700">
+                <% ['active', 'inactive', 'quarantine', 'expired', 'damaged', 'reserved'].forEach(s => { %>
+                    <option value="<%= s %>" <%= currentStatus === s ? 'selected' : '' %>>
+                        <%= s.charAt(0).toUpperCase() + s.slice(1) %>
+                    </option>
+                <% }) %>
+            </select>
+        </div>
+
+        <!-- Desktop: tabs -->
+        <div class="hidden sm:flex gap-1 border-b border-gray-200 mb-4">
             <% ['active', 'inactive', 'quarantine', 'expired', 'damaged', 'reserved'].forEach(s => { %>
                 <a href="/packages?status=<%= s %>"
                 class="px-4 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors
-                <%= locals.currentStatus === s ? 'border-green-mid text-green-mid' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
+                <%= currentStatus === s ? 'border-green-mid text-green-mid' : 'border-transparent text-gray-500 hover:text-gray-700' %>">
                     <%= s.charAt(0).toUpperCase() + s.slice(1) %>
                 </a>
             <% }) %>
@@ -53,7 +67,7 @@
             type="text"
             id="search"
             placeholder="Search tag, product, category..."
-            value="<%= locals.search || '' %>"
+            value="<%= search %>"
             class="w-full pl-8 pr-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white transition-all"
         />
     </div>
@@ -63,7 +77,7 @@
         class="px-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white text-gray-700">
         <option value="">All Brands</option>
         <% brands.forEach(b => { %>
-            <option value="<%= b.name %>" <%= locals.brand === b.name ? 'selected' : '' %>><%= b.name %></option>
+            <option value="<%= b.name %>" <%= brand === b.name ? 'selected' : '' %>><%= b.name %></option>
         <% }) %>
     </select> 
 
@@ -72,20 +86,25 @@
         class="px-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white text-gray-700">
         <option value="">All Categories</option>
         <% categories.forEach(c => { %>
-            <option value="<%= c.name %>" <%= locals.category === c.name ? 'selected' : '' %>><%= c.name %></option>
+            <option value="<%= c.name %>" <%= category === c.name ? 'selected' : '' %>><%= c.name %></option>
         <% }) %>
     </select>
 
     <!-- Sort -->
     <select id="sort"
         class="px-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white text-gray-700">
-        <option value="newest" <%= locals.sort === 'newest' ? 'selected' : '' %>>Newest</option>
-        <option value="oldest" <%= locals.sort === 'oldest' ? 'selected' : '' %>>Oldest</option>
-        <option value="qty_asc" <%= locals.sort === 'qty_asc' ? 'selected' : '' %>>Qty: Low → High</option>
-        <option value="qty_desc" <%= locals.sort === 'qty_desc' ? 'selected' : '' %>>Qty: High → Low</option>
-        <option value="az" <%= locals.sort === 'az' ? 'selected' : '' %>>A → Z</option>
-        <option value="za" <%= locals.sort === 'za' ? 'selected' : '' %>>Z → A</option>
+        <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
+        <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+        <option value="qty_asc" <%= sort === 'qty_asc' ? 'selected' : '' %>>Qty: Low → High</option>
+        <option value="qty_desc" <%= sort === 'qty_desc' ? 'selected' : '' %>>Qty: High → Low</option>
+        <option value="az" <%= sort === 'az' ? 'selected' : '' %>>A → Z</option>
+        <option value="za" <%= sort === 'za' ? 'selected' : '' %>>Z → A</option>
     </select>
+
+    <button onclick="navigate()"
+        class="px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors">
+        Search
+    </button>
 
 </div>
 
@@ -95,9 +114,10 @@
 
         <!-- Table card -->
         <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <div class="overflow-x-auto">
 
             <!-- Table -->
-            <table class="w-full border-collapse">
+            <table class="w-full border-collapse min-w-225">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
@@ -212,6 +232,7 @@
                     <% }) %>
                 </tbody>
             </table>
+            </div><!-- /overflow-x-auto -->
 
             <!-- Empty state -->
             <% if (!packages || packages.length === 0) { %>
@@ -232,22 +253,25 @@
                 <span class="font-mono text-[0.72rem] text-gray-400">
                     <span class="text-gray-600 font-medium"><%= packages.length %></span> packages
                 </span>
-                <span class="font-mono text-[0.72rem] text-gray-400">
-                    Total value:
-                    <span class="text-green-mid font-medium">
-                        $<%= formatCurrency(packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0)) %>
-                    </span>
-                </span>
-
                 <!-- Pagination -->
+                <%
+                    function pageUrl(p) {
+                        const q = new URLSearchParams({ status: currentStatus, page: p });
+                        if (search)   q.set('search',   search);
+                        if (brand)    q.set('brand',    brand);
+                        if (category) q.set('category', category);
+                        if (sort && sort !== 'newest') q.set('sort', sort);
+                        return '?' + q.toString();
+                    }
+                %>
                 <div class="flex items-center gap-1">
                     <% if (currentPage > 1) { %>
-                        <a href="?status=<%= currentStatus %>&page=<%= currentPage - 1 %>"
+                        <a href="<%= pageUrl(currentPage - 1) %>"
                         class="px-2 py-1 text-[0.75rem] text-gray-500 hover:text-gray-700 font-medium no-underline">← Prev</a>
                     <% } %>
 
                     <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?status=<%= currentStatus %>&page=<%= i %>"
+                        <a href="<%= pageUrl(i) %>"
                         class="px-2 py-1 text-[0.75rem] rounded no-underline
                         <%= i === currentPage ? 'bg-green-mid text-white font-medium' : 'text-gray-500 hover:text-gray-700' %>">
                             <%= i %>
@@ -255,67 +279,36 @@
                     <% } %>
 
                     <% if (currentPage < totalPages) { %>
-                        <a href="?status=<%= currentStatus %>&page=<%= currentPage + 1 %>"
+                        <a href="<%= pageUrl(currentPage + 1) %>"
                         class="px-2 py-1 text-[0.75rem] text-gray-500 hover:text-gray-700 font-medium no-underline">Next →</a>
                     <% } %>
                 </div>
 
-                <span class="font-mono text-[0.72rem] text-gray-400">
-                    Total value:
-                    <span class="text-green-mid font-medium">
-                        $<%= formatCurrency(packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0)) %>
-                    </span>
-                </span>
             </div>
             <% } %>
         </div>
     </div>
 <script>
-    const rows = [...document.querySelectorAll('tbody tr')];
-
-    function applyFilters() {
-        const search = document.getElementById('search').value.toLowerCase();
-        const brand = document.getElementById('filter-brand').value.toLowerCase();
-        const category = document.getElementById('filter-category').value.toLowerCase();
-
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            const matchSearch = !search || text.includes(search);
-            const matchBrand = !brand || text.includes(brand);
-            const matchCategory = !category || text.includes(category);
-            row.style.display = matchSearch && matchBrand && matchCategory ? '' : 'none';
-        });
+    function navigate() {
+        const params = new URLSearchParams();
+        params.set('status', '<%= currentStatus %>');
+        const search   = document.getElementById('search').value;
+        const brand    = document.getElementById('filter-brand').value;
+        const category = document.getElementById('filter-category').value;
+        const sort     = document.getElementById('sort').value;
+        if (search)   params.set('search',   search);
+        if (brand)    params.set('brand',    brand);
+        if (category) params.set('category', category);
+        if (sort && sort !== 'newest') params.set('sort', sort);
+        window.location.href = '/packages?' + params.toString();
     }
 
-    function applySort() {
-        const sort = document.getElementById('sort').value;
-        const tbody = document.querySelector('tbody');
-
-        const sorted = [...rows].sort((a, b) => {
-            const aName = a.querySelector('td:nth-child(2)')?.innerText.trim().toLowerCase() || '';
-            const bName = b.querySelector('td:nth-child(2)')?.innerText.trim().toLowerCase() || '';
-            const aQty = parseFloat(a.querySelector('td:nth-child(3)')?.innerText) || 0;
-            const bQty = parseFloat(b.querySelector('td:nth-child(3)')?.innerText) || 0;
-            const aDate = a.dataset.created || '';
-            const bDate = b.dataset.created || '';
-
-            if (sort === 'newest') return bDate.localeCompare(aDate);
-            if (sort === 'oldest') return aDate.localeCompare(bDate);
-            if (sort === 'qty_asc') return aQty - bQty;
-            if (sort === 'qty_desc') return bQty - aQty;
-            if (sort === 'az') return aName.localeCompare(bName);
-            if (sort === 'za') return bName.localeCompare(aName);
-            return 0;
-        });
-
-        sorted.forEach(row => tbody.appendChild(row));
-        applyFilters();
-    }
-
-    document.getElementById('search').addEventListener('input', applyFilters);
-    document.getElementById('filter-brand').addEventListener('change', applyFilters);
-    document.getElementById('filter-category').addEventListener('change', applyFilters);
-    document.getElementById('sort').addEventListener('change', applySort);
+    document.getElementById('search').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') navigate();
+    });
+    document.getElementById('filter-brand').addEventListener('change', navigate);
+    document.getElementById('filter-category').addEventListener('change', navigate);
+    document.getElementById('sort').addEventListener('change', navigate);
 </script>
 </body>
 </html>
