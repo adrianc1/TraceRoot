@@ -15,13 +15,13 @@
                 <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= message %></h1>
                 <p class="text-sm text-gray-500 font-light mt-0.5">All active packages across your inventory</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <a href="/packages/receive"
-                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
                     Receive
                 </a>
                 <a href="/packages/create-product"
-                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
                     + Add Product
                 </a>
             </div>
@@ -109,15 +109,12 @@
 </div>
 
 
-
-
-
         <!-- Table card -->
         <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
             <div class="overflow-x-auto">
 
             <!-- Table -->
-            <table class="w-full border-collapse min-w-225">
+            <table class="w-full border-collapse min-w-300">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
@@ -288,6 +285,7 @@
             <% } %>
         </div>
     </div>
+    <%- include('../partials/footer') %>
 <script>
     function navigate() {
         const params = new URLSearchParams();
