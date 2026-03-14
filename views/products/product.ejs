@@ -70,14 +70,19 @@
                 <div class="px-6 py-4">
                     <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total Quantity</div>
                     <div class="text-[1.25rem] font-semibold tracking-tight text-gray-900">
-                        <%= product.total_quantity || '—' %>
-                        <span class="text-[0.8rem] font-normal text-gray-400"><%= product.unit %></span>
-                    </div>
+                        <%= formatQuantity(product.total_quantity, product.unit) %>
+                        <span class="ml-1 text-[0.8rem] font-normal text-gray-400">
+                            <%= product.unit %>
+                        </span>
+                        </div>
                 </div>
                 <div class="px-6 py-4">
                     <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total Valuation</div>
-                    <div class="text-[1.25rem] font-semibold tracking-tight text-green-mid">
-                        $<%= product.total_valuation %>
+                  <div class="text-[1.25rem] font-semibold tracking-tight text-green-mid">
+                    $<%= Number(product.total_valuation || 0).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) %>
                     </div>
                 </div>
             </div>

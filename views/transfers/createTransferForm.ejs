@@ -146,85 +146,109 @@
     </div>
 
 <script>
-    const pkgList = <%- JSON.stringify(packages) %>;
-    console.log('pkgList:', pkgList);
+   const pkgList = <%- JSON.stringify(packages) %>;
 
-    let filteredPackages = [];
-    let itemCount = 0;
+let filteredPackages = [];
+let itemCount = 0;
 
-    function addItem() {
-        if (!filteredPackages.length) {
-            alert('Please select a from location first');
-            return;
-        }
+function getSelectedIds() {
+    return [...document.querySelectorAll('[name^="items"][name$="[package_id]"]')]
+        .map(s => parseInt(s.value))
+        .filter(Boolean);
+}
 
-        const list = document.getElementById('items-list');
-        const msg = document.getElementById('no-items-msg');
-        msg.classList.add('hidden');
+function buildOptions(excludeId = null) {
+    const selected = getSelectedIds();
+    return filteredPackages
+        .filter(p => p.id === excludeId || !selected.includes(p.id))
+        .map(p => `<option data-quantity="${p.quantity}" value="${p.id}">${p.package_tag} — ${p.quantity} ${p.unit}</option>`)
+        .join('');
+}
 
-        const options = filteredPackages.map(p =>
-            `<option data-quantity="${p.quantity}" value="${p.id}">${p.package_tag} — ${p.quantity} ${p.unit}</option>`
-        ).join('');
-
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-3';
-        row.innerHTML = `
-            <select
-                name="items[${itemCount}][package_id]"
-                required
-                onchange="this.nextElementSibling.value = this.options[this.selectedIndex].dataset.quantity || ''"
-                class="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white text-gray-700"
-            >
-                <option value="" data-quantity="">— Select package —</option>
-                ${options}
-            </select>
-            <input type="hidden" name="items[${itemCount}][quantity]" value="" />
-            <button type="button" onclick="this.parentElement.remove(); checkEmpty()"
-                class="text-gray-300 hover:text-red-400 transition-colors text-lg cursor-pointer">
-                ×
-            </button>
-        `;
-        list.appendChild(row);
-        itemCount++;
-    }
-
-    function checkEmpty() {
-        const list = document.getElementById('items-list');
-        const msg = document.getElementById('no-items-msg');
-        if (list.children.length === 0) msg.classList.remove('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('from_location_id').addEventListener('change', function() {
-            const locationId = parseInt(this.value);
-            console.log('selected locationId:', locationId);
-            console.log('first package location_id:', pkgList[0]?.location_id, typeof pkgList[0]?.location_id);
-            filteredPackages = pkgList.filter(p => p.location_id === locationId);
-            console.log('filtered packages:', filteredPackages);
-            document.getElementById('items-list').innerHTML = '';
-            itemCount = 0;
-            checkEmpty();
-        });
-
-        document.getElementById('transfer_type').addEventListener('change', function () {
-            const toLocation = document.getElementById('to-location-wrapper');
-            const toCompany = document.getElementById('to-company-wrapper');
-            const toLocationSelect = document.getElementById('to_location_id');
-            const toCompanyInput = document.getElementById('to_company_name');
-
-            if (this.value === 'external') {
-                toLocation.classList.add('hidden');
-                toCompany.classList.remove('hidden');
-                toLocationSelect.removeAttribute('required');
-                toCompanyInput.setAttribute('required', true);
-            } else {
-                toLocation.classList.remove('hidden');
-                toCompany.classList.add('hidden');
-                toLocationSelect.setAttribute('required', true);
-                toCompanyInput.removeAttribute('required');
-            }
-        });
+function refreshAllRows() {
+    document.querySelectorAll('[name^="items"][name$="[package_id]"]').forEach(select => {
+        const currentVal = parseInt(select.value);
+        select.innerHTML = `<option value="" data-quantity="">— Select package —</option>` + buildOptions(currentVal);
+        select.value = currentVal || '';
     });
+}
+
+function checkEmpty() {
+    const list = document.getElementById('items-list');
+    const msg = document.getElementById('no-items-msg');
+    if (list.children.length === 0) msg.classList.remove('hidden');
+}
+
+function addItem() {
+    if (!filteredPackages.length) {
+        alert('Please select a from location first');
+        return;
+    }
+
+    const list = document.getElementById('items-list');
+    document.getElementById('no-items-msg').classList.add('hidden');
+
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-3';
+    row.innerHTML = `
+        <select
+            name="items[${itemCount}][package_id]"
+            required
+            class="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white text-gray-700"
+        >
+            <option value="" data-quantity="">— Select package —</option>
+            ${buildOptions()}
+        </select>
+        <input type="hidden" name="items[${itemCount}][quantity]" value="" />
+        <button type="button"
+            class="text-gray-300 hover:text-red-400 transition-colors text-lg cursor-pointer remove-btn">
+            ×
+        </button>
+    `;
+
+    row.querySelector('select').addEventListener('change', function () {
+        this.nextElementSibling.value = this.options[this.selectedIndex].dataset.quantity || '';
+        refreshAllRows();
+    });
+
+    row.querySelector('.remove-btn').addEventListener('click', function () {
+        this.parentElement.remove();
+        checkEmpty();
+        refreshAllRows();
+    });
+
+    list.appendChild(row);
+    itemCount++;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('from_location_id').addEventListener('change', function () {
+        const locationId = parseInt(this.value);
+        filteredPackages = pkgList.filter(p => p.location_id === locationId);
+        document.getElementById('items-list').innerHTML = '';
+        itemCount = 0;
+        checkEmpty();
+    });
+
+    document.getElementById('transfer_type').addEventListener('change', function () {
+        const toLocation = document.getElementById('to-location-wrapper');
+        const toCompany = document.getElementById('to-company-wrapper');
+        const toLocationSelect = document.getElementById('to_location_id');
+        const toCompanyInput = document.getElementById('to_company_name');
+
+        if (this.value === 'external') {
+            toLocation.classList.add('hidden');
+            toCompany.classList.remove('hidden');
+            toLocationSelect.removeAttribute('required');
+            toCompanyInput.setAttribute('required', true);
+        } else {
+            toLocation.classList.remove('hidden');
+            toCompany.classList.add('hidden');
+            toLocationSelect.setAttribute('required', true);
+            toCompanyInput.removeAttribute('required');
+        }
+    });
+});
 
 </script>
 

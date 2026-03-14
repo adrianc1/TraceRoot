@@ -1,5 +1,3 @@
-const { body } = require('express-validator');
-const { totalCount } = require('../db/pool');
 const db = require('../db/queries');
 const { convertQuantity } = require('../utils/conversion');
 
@@ -7,20 +5,63 @@ const getAllProducts = async (req, res) => {
 	try {
 		const userCompanyId = req.user.company_id;
 		const status = req.query.status || 'active';
-		const packages = await db.getPackagesByStatus(userCompanyId, status);
-		const brands = await db.getAllBrands(userCompanyId);
-		const strains = await db.getAllStrains(userCompanyId);
-		const categories = await db.getAllCategories(userCompanyId);
+		const page = parseInt(req.query.page) || 1;
+		const limit = 25;
+		const offset = (page - 1) * limit;
+		const filters = {
+			search:   req.query.search   || '',
+			brand:    req.query.brand    || '',
+			category: req.query.category || '',
+			sort:     req.query.sort     || 'newest',
+		};
+		const [packages, total, brands, strains, categories] = await Promise.all([
+			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
+			db.getPackagesCountByStatus(userCompanyId, status, filters),
+			db.getAllBrands(userCompanyId),
+			db.getAllStrains(userCompanyId),
+			db.getAllCategories(userCompanyId),
+		]);
 		res.render('products/products', {
 			message: 'All Packages',
 			packages,
 			currentStatus: status,
+			currentPage: page,
+			totalPages: Math.ceil(total / limit),
 			brands,
 			strains,
 			categories,
+			search:   filters.search,
+			brand:    filters.brand,
+			category: filters.category,
+			sort:     filters.sort,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+const getProduct = async (req, res) => {
+	try {
+		const product = await db.getProductWithInventoryDB(req.params.id);
+		const productInventory = await db.getPackagesByProductId(
+			req.params.id,
+			req.user.company_id,
+		);
+		const packages = await db.getAuditTrail(req.params.id);
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+
+		res.render('products/product', {
+			product,
+			productInventory,
+			packages,
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error retrieving single product' });
 	}
 };
 
@@ -95,31 +136,6 @@ const receiveNewPackagesPOST = async (req, res) => {
 		unit,
 	});
 	res.redirect(`/packages/${product_id}`);
-};
-
-const getProduct = async (req, res) => {
-	try {
-		const product = await db.getProductWithInventoryDB(req.params.id);
-		const productInventory = await db.getPackagesByProductId(
-			req.params.id,
-			req.user.company_id,
-		);
-		const packages = await db.getAuditTrail(req.params.id);
-
-		if (!product) {
-			res.status(404).json({ error: 'Product not found' });
-			return;
-		}
-
-		res.render('products/product', {
-			product,
-			productInventory,
-			packages,
-		});
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: 'Database error retrieving single product' });
-	}
 };
 
 const createProductForm = async (req, res) => {
