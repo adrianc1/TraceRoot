@@ -5,4 +5,10 @@ module.exports = {
 		}
 		res.redirect('/login');
 	},
+	redirectIfAuthenticated: (req, res, next) => {
+		if (req.isAuthenticated()) {
+			return res.redirect('/packages');
+		}
+		next();
+	},
 };
