@@ -1,6 +1,6 @@
 const pool = require('../pool');
 
-const getAllPackages = async (company_id) => {
+const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 	try {
 		const { rows } = await pool.query(
 			`
@@ -36,9 +36,11 @@ const getAllPackages = async (company_id) => {
             LEFT JOIN batches AS bt ON pk.batch_id = bt.id
             LEFT JOIN packages AS parent_pk ON pk.parent_package_id = parent_pk.id
             WHERE pk.company_id = $1 
-            ORDER BY pk.created_at DESC;
+			AND pk.locked = false
+            ORDER BY pk.created_at DESC
+			LIMIT $2 OFFSET $3;
             `,
-			[company_id],
+			[company_id, limit, offset],
 		);
 		return rows;
 	} catch (error) {
@@ -47,7 +49,20 @@ const getAllPackages = async (company_id) => {
 	}
 };
 
-const getPackagesByStatus = async (company_id, status) => {
+const getPackagesCountByStatus = async (company_id, status) => {
+	const { rows } = await pool.query(
+		`SELECT COUNT(*) FROM packages WHERE company_id = $1 AND status = $2 AND locked = false`,
+		[company_id, status],
+	);
+	return parseInt(rows[0].count);
+};
+
+const getPackagesByStatus = async (
+	company_id,
+	status,
+	limit = 25,
+	offset = 0,
+) => {
 	try {
 		const { rows } = await pool.query(
 			`
@@ -86,9 +101,10 @@ const getPackagesByStatus = async (company_id, status) => {
             WHERE pk.company_id = $1 
 			AND pk.status = $2
 			AND pk.locked = false
-            ORDER BY pk.created_at DESC;
+            ORDER BY pk.created_at DESC
+			LIMIT $3 OFFSET $4;
             `,
-			[company_id, status],
+			[company_id, status, limit, offset],
 		);
 		return rows;
 	} catch (error) {
@@ -610,4 +626,5 @@ module.exports = {
 	receiveInventory,
 	getInventoryId,
 	getPackagesByProductId,
+	getPackagesCountByStatus,
 };

@@ -13,7 +13,7 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= message %></h1>
-                <p class="text-sm text-gray-400 font-light mt-0.5">All active packages across your inventory</p>
+                <p class="text-sm text-gray-500 font-light mt-0.5">All active packages across your inventory</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="/packages/receive"
@@ -65,7 +65,7 @@
         <% brands.forEach(b => { %>
             <option value="<%= b.name %>" <%= locals.brand === b.name ? 'selected' : '' %>><%= b.name %></option>
         <% }) %>
-    </select>
+    </select> 
 
     <!-- Category -->
     <select id="filter-category"
@@ -100,15 +100,16 @@
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Product</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Quantity</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Category</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Status</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Cost</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Total Val.</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Source</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3"></th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Product</th>
+                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Brand</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Quantity</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Category</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Status</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Cost</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Total Val.</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Source</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3"></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -117,9 +118,9 @@
                         const statusStyles = {
                             active:     'bg-green-light text-green-deep',
                             inactive:   'bg-gray-100 text-gray-500',
-                            quarantine: 'bg-amber-light text-amber-dark',
+                            quarantine: 'bg-yellow-50 text-yellow-800',
                             damaged:    'bg-red-50 text-red-700',
-                            expired:    'bg-orange-50 text-orange-700',
+                            expired:    'bg-slate-50 text-slate-900',
                             reserved:   'bg-blue-50 text-blue-700',
                         };
                         const statusStyle = statusStyles[pkg.status] || 'bg-gray-100 text-gray-500';
@@ -139,10 +140,16 @@
                             </a>
                             <div class="font-mono text-[0.7rem] text-gray-400 mt-0.5"><%= pkg.strain_name || '—' %></div>
                         </td>
+                        <td class="px-4 py-3">
+                            <a href="/packages/<%= pkg.product_id %>"
+                               class="text-[0.8125rem] font-medium text-gray-900 hover:text-green-mid transition-colors no-underline">
+                                <%= pkg.brand_name %>
+                            </a>
+                        </td>
 
                         <!-- Quantity -->
                         <td class="px-4 py-3">
-                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= pkg.quantity %></span>
+                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= formatQuantity(pkg.quantity, pkg.unit || '') %></span>
                             <span class="text-[0.75rem] text-gray-400 ml-1"><%= pkg.unit || 'each' %></span>
                         </td>
 
@@ -156,31 +163,33 @@
 
                         <!-- Status badge -->
                         <td class="px-4 py-3">
-                            <span class="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= statusStyle %>">
+                            <span class="inline-flex items-center gap-1 font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= statusStyle %>">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+
                                 <%= pkg.status %>
                             </span>
                         </td>
 
                         <!-- Avg cost -->
                         <td class="px-4 py-3 text-[0.8125rem] text-gray-500">
-                            $<%= Number(pkg.cost_price || 0).toFixed(2) %>
+                            $<%= formatCurrency(pkg.cost_price) %>
                         </td>
 
                         <!-- Total value -->
-                        <td class="px-4 py-3">
+                      <td class="px-4 py-3">
                             <span class="text-[0.8125rem] font-semibold text-green-mid">
-                                $<%= (Number(pkg.quantity) * Number(pkg.cost_price || 0)).toFixed(2) %>
+                                $<%= formatCurrency(pkg.quantity * (pkg.cost_price || 0)) %>
                             </span>
                         </td>
 
                         <!-- Source tag -->
                         <td class="px-4 py-3">
                             <% if (pkg.parent_package_tag) { %>
-                                <span class="font-mono text-[0.72rem] text-gray-400" title="<%= pkg.parent_package_tag %>">
+                                <span class="font-mono text-[0.72rem] text-gray-500" title="<%= pkg.parent_package_tag %>">
                                     ...<%= pkg.parent_package_tag.slice(-6) %>
                                 </span>
                             <% } else { %>
-                                <span class="text-[0.75rem] text-gray-300 italic">Direct</span>
+                                <span class="text-[0.75rem] text-gray-400 italic">Intake</span>
                             <% } %>
                         </td>
 
@@ -188,7 +197,7 @@
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 <a href="/packages/<%= pkg.id %>/adjust/<%= pkg.lot_number %>"
-                                   class="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline">
+                                   class="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline">
                                     Adjust
                                 </a>
                                 <% if (Number(pkg.quantity) > 0) { %>
@@ -226,7 +235,35 @@
                 <span class="font-mono text-[0.72rem] text-gray-400">
                     Total value:
                     <span class="text-green-mid font-medium">
-                        $<%= packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0).toFixed(2) %>
+                        $<%= formatCurrency(packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0)) %>
+                    </span>
+                </span>
+
+                <!-- Pagination -->
+                <div class="flex items-center gap-1">
+                    <% if (currentPage > 1) { %>
+                        <a href="?status=<%= currentStatus %>&page=<%= currentPage - 1 %>"
+                        class="px-2 py-1 text-[0.75rem] text-gray-500 hover:text-gray-700 font-medium no-underline">← Prev</a>
+                    <% } %>
+
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a href="?status=<%= currentStatus %>&page=<%= i %>"
+                        class="px-2 py-1 text-[0.75rem] rounded no-underline
+                        <%= i === currentPage ? 'bg-green-mid text-white font-medium' : 'text-gray-500 hover:text-gray-700' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <a href="?status=<%= currentStatus %>&page=<%= currentPage + 1 %>"
+                        class="px-2 py-1 text-[0.75rem] text-gray-500 hover:text-gray-700 font-medium no-underline">Next →</a>
+                    <% } %>
+                </div>
+
+                <span class="font-mono text-[0.72rem] text-gray-400">
+                    Total value:
+                    <span class="text-green-mid font-medium">
+                        $<%= formatCurrency(packages.reduce((sum, p) => sum + (Number(p.quantity) * Number(p.cost_price || 0)), 0)) %>
                     </span>
                 </span>
             </div>

@@ -114,6 +114,7 @@
                                     id="quantity"
                                     value="0"
                                     min="0"
+                                    step="<%= product.unit === 'each' ? '1' : '0.01' %>"
                                     required
                                     class="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white"
                                 />
