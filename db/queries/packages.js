@@ -51,12 +51,11 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 
 const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 	const { search = '', brand = '', category = '' } = filters;
-	const params = [company_id, status];
-	const conditions = [
-		'pk.company_id = $1',
-		'pk.status = $2',
-		'pk.locked = false',
-	];
+	const params = status === 'all' ? [company_id] : [company_id, status];
+	const conditions =
+		status === 'all'
+			? ['pk.company_id = $1', 'pk.locked = false']
+			: ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
 
 	if (search) {
 		params.push(`%${search}%`);
@@ -102,12 +101,11 @@ const getPackagesByStatus = async (
 	filters = {},
 ) => {
 	const { search = '', brand = '', category = '', sort = 'newest' } = filters;
-	const params = [company_id, status];
-	const conditions = [
-		'pk.company_id = $1',
-		'pk.status = $2',
-		'pk.locked = false',
-	];
+	const params = status === 'all' ? [company_id] : [company_id, status];
+	const conditions =
+		status === 'all'
+			? ['pk.company_id = $1', 'pk.locked = false']
+			: ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
 
 	if (search) {
 		params.push(`%${search}%`);
