@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -35,7 +37,6 @@ app.use(express.json());
 
 // sessions
 require('./auth/passport')(passport);
-require('dotenv').config();
 
 app.use(
 	// session({
