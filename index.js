@@ -16,6 +16,7 @@ const strainsRouter = require('./routes/strainsRouter');
 const signupRouter = require('./routes/auth/signupRouter');
 const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
+const locationsRouter = require('./routes/locationsRouter');
 const usersRouter = require('./routes/usersRouter');
 const { formatQuantity, formatCurrency } = require('./utils/format');
 const { setLocals } = require('./middleware/appMiddleware');
@@ -72,6 +73,7 @@ app.use('/categories', ensureAuthenticated, categoryRouter);
 app.use('/strains', ensureAuthenticated, strainsRouter);
 app.use('/brands', ensureAuthenticated, brandsRouter);
 app.use('/transfers', ensureAuthenticated, transfersRouter);
+app.use('/locations', ensureAuthenticated, locationsRouter);
 
 app.listen(PORT, () => {
 	// console.log(`server running on PORT ${PORT}`);

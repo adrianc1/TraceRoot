@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Settings' }) %>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+
+    <%- include('../partials/header.ejs') %>
+
+    <div class="max-w-2xl mx-auto px-6 py-8">
+
+        <div class="mb-6">
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900">Settings</h1>
+            <p class="text-sm text-gray-400 font-light mt-0.5">Manage your preferences</p>
+        </div>
+
+        <!-- Danger zone -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-100">
+                <div class="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Session</div>
+            </div>
+            <div class="px-6 py-5 flex items-center justify-between">
+                <div>
+                    <div class="text-[0.875rem] font-medium text-gray-900">Log out</div>
+                    <div class="text-[0.8125rem] text-gray-400 mt-0.5">Sign out of your account on this device</div>
+                </div>
+                <a href="/logout"
+                   class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-red-600 border border-red-200 rounded-md hover:bg-red-50 hover:border-red-300 transition-colors no-underline">
+                    Log out
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

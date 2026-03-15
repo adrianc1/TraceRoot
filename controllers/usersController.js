@@ -103,10 +103,20 @@ const acceptInvite = async (req, res) => {
 	}
 };
 
+const getAccount = async (req, res) => {
+	res.render('users/account', { user: req.user });
+};
+
+const getSettings = async (req, res) => {
+	res.render('users/settings', { user: req.user });
+};
+
 module.exports = {
 	getUsers,
 	getInviteForm,
 	createInvite,
 	getAcceptInvite,
 	acceptInvite,
+	getAccount,
+	getSettings,
 };

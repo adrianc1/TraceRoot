@@ -273,6 +273,15 @@ const insertProduct = async (req, res) => {
 	res.redirect(`/packages/${product.id}`);
 };
 
+const getProductsList = async (req, res) => {
+	try {
+		const products = await db.getAllProductsDB(req.user.company_id);
+		res.render('products/product-list', { products });
+	} catch (error) {
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
 const deleteProduct = async (req, res) => {
 	const result = await db.deleteProduct(req.params.id, req.user.company_id);
 
@@ -551,6 +560,7 @@ const receiveInventoryGet = async (req, res) => {
 
 module.exports = {
 	getAllProducts,
+	getProductsList,
 	getProduct,
 	createProductForm,
 	updateProduct,
