@@ -54,8 +54,6 @@ const editStrainForm = async (req, res) => {
 		return;
 	}
 
-	console.log('strain', strain);
-
 	res.render('strains/editStrainForm', { strain });
 };
 
@@ -68,7 +66,6 @@ const updateStrain = async (req, res) => {
 
 const deleteStrain = async (req, res) => {
 	try {
-		console.log('deleting', req.params.id);
 		await db.deleteStrain(req.params.id);
 		res.status(200).json({ success: true });
 	} catch (error) {

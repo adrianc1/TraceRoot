@@ -11,14 +11,12 @@ const getAllCategories = async (req, res) => {
 
 const getCategory = async (req, res) => {
 	try {
-		console.log('Fetching category...');
 
 		const categoryId = req.params.id;
 		const category = await db.getCategoryById(categoryId, req.user.company_id);
 		const products = await db.getCategory(req.params.id, req.user.company_id);
 
-		console.log(products);
-		res.render('categories/categoryProducts', {
+=		res.render('categories/categoryProducts', {
 			products: products || [],
 			category,
 			categoryId,
@@ -42,7 +40,6 @@ const editCategoryForm = async (req, res) => {
 		return;
 	}
 
-	console.log(category, 'the category');
 
 	res.render('categories/editCategoryForm', { category });
 };
@@ -56,7 +53,6 @@ const insertCategory = async (req, res) => {
 			req.user.company_id,
 			description,
 		);
-		console.log(result);
 		res.redirect(`/categories/${result.id}`);
 	} catch (error) {}
 };
@@ -70,7 +66,6 @@ const updateCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
 	try {
-		console.log('deleting', req.params);
 		await db.deleteCategory(req.params.id);
 		res.render();
 	} catch (error) {

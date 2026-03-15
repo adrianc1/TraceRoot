@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			status: formData.get('status'),
 		};
 
-		console.log('Data to send:', data);
-
 		const res = await fetch(`/packages/${productId}/adjust/${lotNumber}`, {
 			method: 'PUT',
 			headers: {

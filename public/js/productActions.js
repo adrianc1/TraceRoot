@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				method: 'PUT',
 			});
 
-			console.log(res.ok);
-
 			if (res.ok) {
 				window.location.href = '/packages';
 				return;

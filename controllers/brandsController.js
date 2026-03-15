@@ -27,7 +27,6 @@ const createBrand = async (req, res) => {
 const editBrandForm = async (req, res) => {
 	const brand = await db.getBrandById(req.params.id, req.user.company_id);
 
-	console.log('the brand infor!', brand);
 	res.render('brands/edit-brand', { brand });
 };
 

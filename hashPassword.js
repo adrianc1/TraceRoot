@@ -1,4 +1,5 @@
-//For development purposes only! Used on DB reset. Feel free to sign up with your own password!
+// For development purposes only!
+// Password hash generator. Do not use in production.
 
 const bcrypt = require('bcryptjs');
 
