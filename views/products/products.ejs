@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: 'Packages' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
 
         <!-- Page header -->
         <div class="flex items-center justify-between mb-6">
@@ -119,13 +119,13 @@
                     <tr class="border-b border-gray-200 bg-gray-50">
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Product</th>
-                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Brand</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Quantity</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Brand</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Category</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Location</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Status</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Cost</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Total Val.</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Source</th>
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -157,17 +157,17 @@
                             </a>
                             <div class="font-mono text-[0.7rem] text-gray-400 mt-0.5"><%= pkg.strain_name || '—' %></div>
                         </td>
+                        <!-- Quantity -->
+                        <td class="px-4 py-3">
+                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= formatQuantity(pkg.quantity, pkg.unit || '') %></span>
+                            <span class="text-[0.75rem] text-gray-400 ml-1"><%= pkg.unit || 'each' %></span>
+                        </td>
+
                         <td class="px-4 py-3">
                             <a href="/packages/<%= pkg.product_id %>"
                                class="text-[0.8125rem] font-medium text-gray-900 hover:text-green-mid transition-colors no-underline">
                                 <%= pkg.brand_name %>
                             </a>
-                        </td>
-
-                        <!-- Quantity -->
-                        <td class="px-4 py-3">
-                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= formatQuantity(pkg.quantity, pkg.unit || '') %></span>
-                            <span class="text-[0.75rem] text-gray-400 ml-1"><%= pkg.unit || 'each' %></span>
                         </td>
 
                         <!-- Category -->
@@ -176,6 +176,11 @@
                                class="text-[0.8125rem] text-gray-600 hover:text-green-mid transition-colors no-underline">
                                 <%= pkg.category_name %>
                             </a>
+                        </td>
+
+                        <!-- Location -->
+                        <td class="px-4 py-3">
+                            <span class="text-[0.8125rem] text-gray-600"><%= pkg.location || '—' %></span>
                         </td>
 
                         <!-- Status badge -->
@@ -197,17 +202,6 @@
                             <span class="text-[0.8125rem] font-semibold text-green-mid">
                                 $<%= formatCurrency(pkg.quantity * (pkg.cost_price || 0)) %>
                             </span>
-                        </td>
-
-                        <!-- Source tag -->
-                        <td class="px-4 py-3">
-                            <% if (pkg.parent_package_tag) { %>
-                                <span class="font-mono text-[0.72rem] text-gray-500" title="<%= pkg.parent_package_tag %>">
-                                    ...<%= pkg.parent_package_tag.slice(-6) %>
-                                </span>
-                            <% } else { %>
-                                <span class="text-[0.75rem] text-gray-400 italic">Intake</span>
-                            <% } %>
                         </td>
 
                         <!-- Actions -->
