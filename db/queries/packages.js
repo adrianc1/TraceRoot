@@ -61,7 +61,7 @@ const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 		params.push(`%${search}%`);
 		const idx = params.length;
 		conditions.push(
-			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`,
+			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx} OR l.name ILIKE $${idx})`,
 		);
 	}
 	if (brand) {
@@ -76,6 +76,7 @@ const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 	const { rows } = await pool.query(
 		`SELECT COUNT(*) FROM packages AS pk
 		 INNER JOIN products AS p ON pk.product_id = p.id
+		 JOIN locations AS l ON l.id = pk.location_id
 		 LEFT JOIN categories AS c ON p.category_id = c.id
 		 LEFT JOIN brands AS b ON p.brand_id = b.id
 		 WHERE ${conditions.join(' AND ')}`,
@@ -111,7 +112,7 @@ const getPackagesByStatus = async (
 		params.push(`%${search}%`);
 		const idx = params.length;
 		conditions.push(
-			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`,
+			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx} OR l.name ILIKE $${idx})`,
 		);
 	}
 	if (brand) {
