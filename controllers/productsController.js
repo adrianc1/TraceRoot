@@ -246,7 +246,7 @@ const insertProduct = async (req, res) => {
 	}
 
 	if (newBrandName?.trim()) {
-		newBrand = await db.insertBrand(newBrandName, req.user.company_id);
+		newBrand = await db.insertBrand(newBrandName, null, req.user.company_id);
 	} else {
 		newBrand = null;
 	}
