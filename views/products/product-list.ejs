@@ -48,18 +48,19 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 text-[0.875rem] font-medium text-gray-900">
                                 <%= product.name %>
-                                <% if (product.unit) { %>
+                                <!-- <% if (product.unit) { %>
                                     <span class="text-[0.75rem] text-gray-400 font-normal ml-1">(<%= product.unit %>)</span>
-                                <% } %>
+                                <% } %> -->
                             </td>
                             <td class="px-6 py-4 text-[0.875rem] text-gray-500"><%= product.brand_name || '—' %></td>
                             <td class="px-6 py-4 text-[0.875rem] text-gray-500"><%= product.category_name || '—' %></td>
                             <td class="px-6 py-4 text-[0.875rem] text-gray-500"><%= product.strain_name || '—' %></td>
                             <td class="px-6 py-4 text-[0.875rem] text-gray-900 text-right font-mono">
                                 <%= formatQuantity(product.product_qty) %>
+                                <%= product.unit ? product.unit : '' %>
                             </td>
                             <td class="px-6 py-4 text-[0.875rem] text-gray-500 text-right font-mono">
-                                <%= product.average_cost > 0 ? formatCurrency(product.average_cost) : '—' %>
+                                $<%= product.average_cost > 0 ? formatCurrency(product.average_cost) : '—' %>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-2">
