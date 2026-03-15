@@ -1,14 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const deleteBtn = document.getElementById('delete-cat-btn');
-	const tableRow = document.querySelectorAll('.category-row');
 
 	if (!deleteBtn) return;
 
 	deleteBtn.addEventListener('click', async (e) => {
 		e.preventDefault();
-		console.log('hey clicked!');
 		const confirmed = confirm(
-			'Are you sure you want to delete this category? This action cannot be undone.'
+			'Are you sure you want to delete this category? This action cannot be undone.',
 		);
 
 		if (!confirmed) return;
@@ -22,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		const res = await fetch(`/categories/${categoryId}`, {
 			method: 'DELETE',
 		});
-
-		console.log(res.ok);
 
 		if (res.ok) {
 			window.location.href = '/categories';

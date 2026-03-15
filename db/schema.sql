@@ -193,6 +193,16 @@ CREATE TABLE inventory_movements (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE  session (
+    sid VARCHAR NOT NULL COLLATE "default",
+    sess JSON NOT NULL,
+    expire TIMESTAMP(6) NOT NULL,
+    CONSTRAINT session_pkey PRIMARY KEY (sid)
+);
+
+CREATE INDEX idx_session_expire 
+    ON session (expire);
+
 CREATE INDEX idx_locations_company 
     ON locations(company_id);
 

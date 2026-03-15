@@ -17,7 +17,10 @@ const transfersRouter = require('./routes/transfersRouter');
 const usersRouter = require('./routes/usersRouter');
 const { formatQuantity, formatCurrency } = require('./utils/format');
 const { setLocals } = require('./middleware/appMiddleware');
-const { ensureAuthenticated, redirectIfAuthenticated } = require('./middleware/authMiddleware.js');
+const {
+	ensureAuthenticated,
+	redirectIfAuthenticated,
+} = require('./middleware/authMiddleware.js');
 
 const app = express();
 const PORT = 3000;
@@ -70,5 +73,5 @@ app.use('/brands', ensureAuthenticated, brandsRouter);
 app.use('/transfers', ensureAuthenticated, transfersRouter);
 
 app.listen(PORT, () => {
-	console.log(`server running on PORT ${PORT}`);
+	// console.log(`server running on PORT ${PORT}`);
 });

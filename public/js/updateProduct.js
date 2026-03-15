@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			sku: formData.get('sku'),
 		};
 
-		console.log('Data to send:', data);
-
 		const res = await fetch(`/packages/${productId}`, {
 			method: 'PUT',
 			headers: {

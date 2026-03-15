@@ -9,10 +9,10 @@ const getAllProducts = async (req, res) => {
 		const limit = 25;
 		const offset = (page - 1) * limit;
 		const filters = {
-			search:   req.query.search   || '',
-			brand:    req.query.brand    || '',
+			search: req.query.search || '',
+			brand: req.query.brand || '',
 			category: req.query.category || '',
-			sort:     req.query.sort     || 'newest',
+			sort: req.query.sort || 'newest',
 		};
 		const [packages, total, brands, strains, categories] = await Promise.all([
 			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
@@ -30,10 +30,10 @@ const getAllProducts = async (req, res) => {
 			brands,
 			strains,
 			categories,
-			search:   filters.search,
-			brand:    filters.brand,
+			search: filters.search,
+			brand: filters.brand,
 			category: filters.category,
-			sort:     filters.sort,
+			sort: filters.sort,
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
@@ -286,7 +286,6 @@ const deleteProduct = async (req, res) => {
 };
 
 const unarchiveProduct = async (req, res) => {
-	console.log('yoooo');
 	try {
 		const unarchive = await db.unarchiveProduct(
 			req.params.id,
@@ -362,8 +361,6 @@ const receiveInventoryPut = async (req, res) => {
 	const userId = req.user.id;
 	const company_id = req.user.company_id;
 	const product_id = req.params.id;
-
-	console.log(req.body);
 
 	const {
 		quantity,

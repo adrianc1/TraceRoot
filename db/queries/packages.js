@@ -52,12 +52,18 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 	const { search = '', brand = '', category = '' } = filters;
 	const params = [company_id, status];
-	const conditions = ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
+	const conditions = [
+		'pk.company_id = $1',
+		'pk.status = $2',
+		'pk.locked = false',
+	];
 
 	if (search) {
 		params.push(`%${search}%`);
 		const idx = params.length;
-		conditions.push(`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`);
+		conditions.push(
+			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`,
+		);
 	}
 	if (brand) {
 		params.push(brand);
@@ -80,12 +86,12 @@ const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 };
 
 const sortMap = {
-	newest:   'pk.created_at DESC',
-	oldest:   'pk.created_at ASC',
-	qty_asc:  'pk.quantity ASC',
+	newest: 'pk.created_at DESC',
+	oldest: 'pk.created_at ASC',
+	qty_asc: 'pk.quantity ASC',
 	qty_desc: 'pk.quantity DESC',
-	az:       'p.name ASC',
-	za:       'p.name DESC',
+	az: 'p.name ASC',
+	za: 'p.name DESC',
 };
 
 const getPackagesByStatus = async (
@@ -97,12 +103,18 @@ const getPackagesByStatus = async (
 ) => {
 	const { search = '', brand = '', category = '', sort = 'newest' } = filters;
 	const params = [company_id, status];
-	const conditions = ['pk.company_id = $1', 'pk.status = $2', 'pk.locked = false'];
+	const conditions = [
+		'pk.company_id = $1',
+		'pk.status = $2',
+		'pk.locked = false',
+	];
 
 	if (search) {
 		params.push(`%${search}%`);
 		const idx = params.length;
-		conditions.push(`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`);
+		conditions.push(
+			`(pk.package_tag ILIKE $${idx} OR p.name ILIKE $${idx} OR c.name ILIKE $${idx})`,
+		);
 	}
 	if (brand) {
 		params.push(brand);
@@ -334,8 +346,6 @@ const applyInventoryMovement = async ({
 	let delta;
 	try {
 		await client.query('BEGIN');
-
-		console.log('debug:', packages_id);
 
 		let invId = packages_id;
 		let newQty;

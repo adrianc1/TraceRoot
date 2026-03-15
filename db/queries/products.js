@@ -171,8 +171,6 @@ const updateProduct = async (
 ) => {
 	const client = await pool.connect();
 
-	console.log('starting product update...');
-
 	try {
 		await client.query('BEGIN');
 		const product = await client.query(

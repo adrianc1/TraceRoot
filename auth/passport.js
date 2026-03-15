@@ -9,16 +9,12 @@ module.exports = function (passport) {
 			{ usernameField: 'email' },
 			async (email, password, done) => {
 				try {
-					console.log('attemping to login as', email, 'with:', password);
 					const user = await db.getUserByEmail(email);
-
-					console.log('User fetched from DB:', user);
 
 					if (!user) {
 						return done(null, false, { message: 'Incorrect email' });
 					}
 					const match = await bcrypt.compare(password, user.password_hash);
-					console.log('Password comparison result:', match);
 
 					if (!match) {
 						return done(null, false, { message: 'Incorrect password' });
