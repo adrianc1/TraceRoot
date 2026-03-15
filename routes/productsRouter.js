@@ -9,6 +9,11 @@ router.get(
 	productsController.getAllProducts,
 );
 router.get(
+	'/products',
+	authorizeRole('admin', 'manager', 'staff'),
+	productsController.getProductsList,
+);
+router.get(
 	'/create-product',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.createProductForm,
