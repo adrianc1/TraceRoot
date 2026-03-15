@@ -11,12 +11,11 @@ const getAllCategories = async (req, res) => {
 
 const getCategory = async (req, res) => {
 	try {
-
 		const categoryId = req.params.id;
 		const category = await db.getCategoryById(categoryId, req.user.company_id);
 		const products = await db.getCategory(req.params.id, req.user.company_id);
 
-=		res.render('categories/categoryProducts', {
+		res.render('categories/categoryProducts', {
 			products: products || [],
 			category,
 			categoryId,
@@ -39,7 +38,6 @@ const editCategoryForm = async (req, res) => {
 		res.status(404).json({ error: 'Category not found' });
 		return;
 	}
-
 
 	res.render('categories/editCategoryForm', { category });
 };
