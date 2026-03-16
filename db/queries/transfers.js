@@ -76,7 +76,7 @@ const createTransferDB = async (
 					'Created transfer',
 					item.quantity,
 					item.current_quantity,
-					item.quantity,
+					newQuantity,
 					`Transfer ID: ${transfer.id}`,
 				],
 			);
@@ -170,7 +170,7 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 					item.package_id,
 					confirmedBy,
 					movementType,
-					item.quantity,
+					transfer.transfer_type === 'internal' ? 0 : -item.quantity,
 					item.current_quantity,
 					newQuantity,
 					`Transfer ID: ${transferId}`,

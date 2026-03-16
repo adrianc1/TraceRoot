@@ -109,13 +109,47 @@
 
         </div>
 
-        <%- include('./productInventory', {productInventory}) %>
-        <%- include('./auditTable', {packages}) %>
+        <!-- Tab nav -->
+        <div class="flex items-center gap-1 mb-4 border-b border-gray-200">
+            <button id="tab-inventory"
+                class="tab-btn px-4 py-2.5 text-[0.8125rem] font-medium text-gray-900 border-b-2 border-gray-900 -mb-px transition-colors"
+                data-tab="panel-inventory">
+                Active Inventory
+            </button>
+            <button id="tab-audit"
+                class="tab-btn px-4 py-2.5 text-[0.8125rem] font-medium text-gray-400 border-b-2 border-transparent -mb-px hover:text-gray-700 transition-colors"
+                data-tab="panel-audit">
+                Transaction History
+            </button>
+        </div>
+
+        <!-- Tab panels -->
+        <div id="panel-inventory">
+            <%- include('./productInventory', {productInventory}) %>
+        </div>
+        <div id="panel-audit" class="hidden">
+            <%- include('./auditTable', {packages}) %>
+        </div>
 
     </div>
 
     <script src="/js/auditToggle.js"></script>
     <script src="/js/productActions.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.replace('text-gray-900', 'text-gray-400');
+                    b.classList.replace('border-gray-900', 'border-transparent');
+                });
+                btn.classList.replace('text-gray-400', 'text-gray-900');
+                btn.classList.replace('border-transparent', 'border-gray-900');
+
+                document.querySelectorAll('#panel-inventory, #panel-audit').forEach(p => p.classList.add('hidden'));
+                document.getElementById(btn.dataset.tab).classList.remove('hidden');
+            });
+        });
+    </script>
 
 </body>
 </html>
