@@ -10,15 +10,21 @@
     <div class="max-w-7xl mx-auto px-6 py-8">
 
         <!-- page header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
             <div>
                 <h1 class="text-xl font-semibold tracking-tight text-gray-900">Transfers</h1>
                 <p class="text-sm text-gray-400 font-light mt-0.5">All inventory transfers for your company</p>
             </div>
-            <a href="/transfers/create"
-               class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
-                + New Transfer
-            </a>
+            <div class="flex flex-row items-center gap-2">
+                <a href="/transfers/export"
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                    Export CSV
+                </a>
+                <a href="/transfers/create"
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+                    + New Transfer
+                </a>
+            </div>
         </div>
 
         <!-- table contaaner -->

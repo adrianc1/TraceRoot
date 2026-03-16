@@ -36,6 +36,18 @@ router.post(
 );
 
 router.get(
+	'/export',
+	authorizeRole('admin', 'manager', 'staff'),
+	productsController.exportPackagesCsv,
+);
+
+router.get(
+	'/products/export',
+	authorizeRole('admin', 'manager', 'staff'),
+	productsController.exportProductsCsv,
+);
+
+router.get(
 	'/:id/receive',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.receiveInventoryGet,
@@ -84,6 +96,12 @@ router.put(
 	authorizeRole('admin'),
 	productsController.unarchiveProduct,
 );
+router.get(
+	'/:id/audit/export',
+	authorizeRole('admin', 'manager', 'staff'),
+	productsController.exportAuditCsv,
+);
+
 router.get(
 	'/:id',
 	authorizeRole('admin', 'manager', 'staff'),

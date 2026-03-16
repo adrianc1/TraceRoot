@@ -1,4 +1,5 @@
 const db = require('../db/queries');
+const { toCsv, sendCsv } = require('../utils/csvExport');
 
 const getAllTransfers = async (req, res) => {
 	try {
@@ -123,6 +124,35 @@ const cancelTransfer = async (req, res) => {
 	}
 };
 
+const exportTransfersCsv = async (req, res) => {
+	try {
+		const transfers = await db.getAllTransfersDB(req.user.company_id);
+		const csv = toCsv(transfers, [
+			{ header: 'ID', value: 'id' },
+			{ header: 'Type', value: 'transfer_type' },
+			{ header: 'From', value: 'from_location' },
+			{
+				header: 'To',
+				value: (row) => row.to_location || row.to_company_name || '',
+			},
+			{ header: 'Package Count', value: 'package_count' },
+			{ header: 'Status', value: 'status' },
+			{
+				header: 'Date',
+				value: (row) =>
+					row.created_at
+						? new Date(row.created_at).toLocaleString('en-US')
+						: '',
+			},
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `transfers-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
 module.exports = {
 	getAllTransfers,
 	getTransfer,
@@ -130,4 +160,5 @@ module.exports = {
 	createTransfer,
 	confirmTransfer,
 	cancelTransfer,
+	exportTransfersCsv,
 };
