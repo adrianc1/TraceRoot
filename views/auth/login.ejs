@@ -25,9 +25,20 @@
 
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
 
+            <% if (locals.successMessage) { %>
+                <div class="px-6 py-3 bg-green-light border-b border-green-mid/20 flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-green-mid shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm3.707-9.293a1 1 0 0 0-1.414-1.414L9 10.586 7.707 9.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-[0.8125rem] text-green-deep"><%= successMessage %></span>
+                </div>
+            <% } %>
             <% if (locals.message) { %>
-                <div class="px-6 py-3 bg-red-50 border-b border-red-100 text-[0.8125rem] text-red-600">
-                    <%= message %>
+                <div class="px-6 py-3 bg-red-50 border-b border-red-100 flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-[0.8125rem] text-red-600"><%= message %></span>
                 </div>
             <% } %>
 

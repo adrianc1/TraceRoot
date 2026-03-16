@@ -74,7 +74,8 @@ const postSignUpForm = async (req, res) => {
 const getLoginForm = async (req, res) => {
 	const registered = req.query.registered === 'true';
 	res.render('auth/login', {
-		message: registered ? 'Account created! Please log in.' : null,
+		message: null,
+		successMessage: registered ? 'Account created! Please log in.' : null,
 	});
 };
 

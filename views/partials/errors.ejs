@@ -1,7 +1,14 @@
-<% if (locals.errors) {%>
-<ul >
-	<% errors.forEach(function(error) { %>
-	<li><%= error.msg %></li>
-	<% }); %>
-</ul>
+<% if (locals.errors && errors.length > 0) { %>
+<div class="bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4">
+    <div class="flex items-start gap-2">
+        <svg class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0zm-7-4a1 1 0 1 0-2 0v4a1 1 0 0 0 2 0V6zm-1 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" clip-rule="evenodd"/>
+        </svg>
+        <ul class="space-y-0.5">
+            <% errors.forEach(function(error) { %>
+                <li class="text-[0.8125rem] text-red-600"><%= error.msg %></li>
+            <% }); %>
+        </ul>
+    </div>
+</div>
 <% } %>
