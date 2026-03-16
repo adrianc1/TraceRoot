@@ -162,8 +162,8 @@ const createProductForm = async (req, res) => {
 };
 
 const splitPackageProductForm = async (req, res) => {
-	const selectedPackage = await db.getPackage(
-		req.params.id,
+	const selectedPackage = await db.getPackageByTag(
+		req.params.packageTag,
 		req.user.company_id,
 	);
 	const product = await db.getProductDB(
@@ -171,7 +171,6 @@ const splitPackageProductForm = async (req, res) => {
 		selectedPackage.company_id,
 	);
 	const products = await db.getAllProductsDB(req.user.company_id);
-	// const selectedPackage = await db.getPackageByLot(product.id, lotNumber);
 
 	res.render('products/splitPackageProductForm', {
 		product,
@@ -181,14 +180,13 @@ const splitPackageProductForm = async (req, res) => {
 };
 
 const splitPackagePost = async (req, res) => {
-	const package_id = req.params.id;
 	const userId = req.user.id;
-	const selectedBatch = await db.getPackage(
-		package_id,
+	const selectedBatch = await db.getPackageByTag(
+		req.params.packageTag,
 		Number(req.user.company_id),
 	);
 
-	const { productId, packageSize, quantity, batch, packageTag } = req.body;
+	const { productId, packageSize, quantity, packageTag } = req.body;
 
 	const unit = selectedBatch.unit;
 	let totalUsed = 0;
@@ -197,10 +195,7 @@ const splitPackagePost = async (req, res) => {
 	const packageSizes = packageSize || quantity.map(() => 1);
 
 	const splits = productId.map((_, i) => {
-		// const qty = 1;
 		const size = parseFloat(packageSizes[i]) || 1;
-
-		// const weight = unit === 'each' ? qty : size * qty;
 		const weight = size;
 
 		totalUsed += weight;
@@ -210,7 +205,6 @@ const splitPackagePost = async (req, res) => {
 			packageSize: unit === 'each' ? null : size,
 			quantity: size,
 			totalWeight: weight,
-			childLotNumber: batch[i],
 			package_tag: packageTag[i],
 		};
 	});
@@ -436,9 +430,8 @@ const adjustInventoryGet = async (req, res) => {
 	];
 
 	try {
-		const lotNumber = req.params.lotNumber;
-		const pkg = await db.getPackage(
-			Number(req.params.id),
+		const pkg = await db.getPackageByTag(
+			req.params.packageTag,
 			Number(req.user.company_id),
 		);
 
@@ -489,11 +482,12 @@ const adjustInventoryGet = async (req, res) => {
 };
 
 const updateInventory = async (req, res) => {
-	const id = req.params.id;
-	const lotNumber = req.params.lotNumber;
 	const userId = req.user.id;
 
-	const selectedBatch = await db.getPackage(id, req.user.company_id);
+	const selectedBatch = await db.getPackageByTag(
+		req.params.packageTag,
+		req.user.company_id,
+	);
 
 	const { quantity, movement_type, notes, cost_price_unit, status, unit } =
 		req.body;
@@ -504,12 +498,12 @@ const updateInventory = async (req, res) => {
 	try {
 		await db.applyInventoryMovement({
 			package_tag: selectedBatch.package_tag,
-			product_id: id,
+			product_id: selectedBatch.product_id,
 			packages_id: selectedBatch.id,
 			batch_id: selectedBatch.batch_id,
 			company_id: selectedBatch.company_id,
 			location: selectedBatch.location_id,
-			batch: lotNumber,
+			batch: selectedBatch.lot_number,
 			targetQty: Number(quantity),
 			movement_type,
 			notes,

@@ -65,22 +65,22 @@ router.get(
 );
 
 router.get(
-	'/:id/split/:lotNumber',
+	'/:packageTag/split',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.splitPackageProductForm,
 );
 router.post(
-	'/:id/split/:lotNumber',
+	'/:packageTag/split',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.splitPackagePost,
 );
 router.put(
-	'/:id/adjust/:lotNumber',
+	'/:packageTag/adjust',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.updateInventory,
 );
 router.get(
-	'/:id/adjust/:lotNumber',
+	'/:packageTag/adjust',
 	authorizeRole('admin', 'manager', 'staff'),
 	productsController.adjustInventoryGet,
 );
