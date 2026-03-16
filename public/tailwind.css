@@ -782,6 +782,12 @@
   .border-green-mid {
     border-color: var(--color-green-mid);
   }
+  .border-green-mid\/20 {
+    border-color: color-mix(in srgb, #006144 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-green-mid) 20%, transparent);
+    }
+  }
   .border-red-100 {
     border-color: var(--color-red-100);
   }
@@ -1234,6 +1240,9 @@
   }
   .text-red-400 {
     color: var(--color-red-400);
+  }
+  .text-red-500 {
+    color: var(--color-red-500);
   }
   .text-red-600 {
     color: var(--color-red-600);
