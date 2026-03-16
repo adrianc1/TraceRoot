@@ -489,8 +489,14 @@
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
+  .w-32 {
+    width: calc(var(--spacing) * 32);
+  }
   .w-44 {
     width: calc(var(--spacing) * 44);
+  }
+  .w-48 {
+    width: calc(var(--spacing) * 48);
   }
   .w-52 {
     width: calc(var(--spacing) * 52);
@@ -1270,8 +1276,17 @@
   .opacity-0 {
     opacity: 0%;
   }
+  .opacity-20 {
+    opacity: 20%;
+  }
+  .opacity-40 {
+    opacity: 40%;
+  }
   .opacity-50 {
     opacity: 50%;
+  }
+  .opacity-80 {
+    opacity: 80%;
   }
   .shadow-2xl {
     --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
