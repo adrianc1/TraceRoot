@@ -1,8 +1,8 @@
-<div class="max-w-4xl mx-auto my-8">
-    <div class="flex items-center justify-between mb-4">
+<div>
+    <div class="flex items-center justify-between mb-3">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Inventory Transaction History</h2>
-            <p class="text-sm text-gray-500 mt-1">Detailed audit trail of all inventory movements for this product.</p>
+            <h2 class="text-[0.875rem] font-semibold text-gray-900">Transaction History</h2>
+            <p class="text-[0.8125rem] text-gray-400 font-light mt-0.5">Audit trail of all inventory movements</p>
         </div>
         <a href="/packages/<%= product.id %>/audit/export"
            class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
@@ -10,121 +10,116 @@
         </a>
     </div>
 
-    <div class="overflow-hidden border border-gray-300 rounded-lg shadow-sm">
-        <table class="w-full border-collapse bg-white">
-            <thead>
-                <tr class="bg-gray-200 text-left text-xs uppercase tracking-wider text-gray-700">
-                    <th class="px-4 py-3 border-b border-gray-300">Package Details</th>
-                    <th class="px-4 py-3 border-b border-gray-300">Location</th>
-                    <th class="px-4 py-3 border-b border-gray-300">Current Qty</th>
-                    <th class="px-4 py-3 border-b border-gray-300">Total Value</th>
-                    <th class="px-4 py-3 border-b border-gray-300">Status</th>
-                    <th class="px-4 py-3 border-b border-gray-300 text-right">Audit</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                <% packages.forEach(package => { %>
-                    <% 
-                        const statusClasses = { 
-                            active: 'bg-green-100 text-green-800',
-                            inactive: 'bg-gray-200 text-gray-700',
-                            quarantine: 'bg-yellow-100 text-yellow-800',
-                            damaged: 'bg-red-100 text-red-800',
+    <div class="border border-gray-200 rounded-xl overflow-hidden bg-white">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="border-b border-gray-200 bg-gray-50">
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Package Tag</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Location</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Current Qty</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Total Val.</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Status</th>
+                        <th class="text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3 text-right">Audit</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <% packages.forEach(package => { %>
+                    <%
+                        const statusStyles = {
+                            active:     'bg-green-light text-green-deep',
+                            inactive:   'bg-gray-100 text-gray-500',
+                            quarantine: 'bg-yellow-50 text-yellow-800',
+                            damaged:    'bg-red-50 text-red-700',
+                            expired:    'bg-slate-50 text-slate-900',
+                            reserved:   'bg-blue-50 text-blue-700',
                         };
-                        const statusClass = statusClasses[package.status] || 'bg-gray-100 text-gray-800';
+                        const statusStyle = statusStyles[package.status] || 'bg-gray-100 text-gray-500';
                     %>
-
-                    <tr class="bg-gray-50 hover:bg-white transition-colors">
-                        <td class="px-4 py-3 font-mono text-sm text-emerald-800 font-bold">
-                            <%= package.package_tag %>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3">
+                            <span class="font-mono text-[0.75rem] text-gray-500"><%= package.package_tag %></span>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            <%= package.location || 'Unassigned' %>
-                        </td>
-                     
-                        <td class="px-4 py-3 text-sm font-semibold">
-                            <%= formatQuantity(package.quantity, package.package_unit || '') %> <%= product.unit %>
-                        </td>
-                        <td class="px-4 py-3 text-sm font-semibold text-gray-700">
-                            $<%= formatCurrency(package.quantity * (package.cost_price || 0)) %>
+                        <td class="px-4 py-3 text-[0.8125rem] text-gray-600">
+                            <%= package.location || '—' %>
                         </td>
                         <td class="px-4 py-3">
-                            <span class="inline-block px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide <%= statusClass %>">
+                            <span class="text-[0.8125rem] font-semibold text-gray-900"><%= formatQuantity(package.quantity, package.package_unit || '') %></span>
+                            <span class="text-[0.75rem] text-gray-400 ml-1"><%= product.unit %></span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="text-[0.8125rem] font-semibold text-green-mid">
+                                $<%= formatCurrency(package.quantity * (package.cost_price || 0)) %>
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center gap-1 font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= statusStyle %>">
+                                <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                                 <%= package.status %>
                             </span>
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <button 
-                                class="toggle-audit-btn text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center justify-end gap-1 w-full cursor-pointer"
-                                data-id="<%= package.package_id %>"
-                            >
+                            <button
+                                class="toggle-audit-btn inline-flex items-center gap-1 text-[0.75rem] font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
+                                data-id="<%= package.package_id %>">
                                 <span>View History</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                         </td>
                     </tr>
 
-                    <tr id="audit-<%= package.package_id %>" class="hidden bg-white">
-                        <td colspan="6" class="px-8 py-4 bg-gray-50/50">
-                            <div class="border rounded-md overflow-hidden shadow-inner">
+                    <tr id="audit-<%= package.package_id %>" class="hidden">
+                        <td colspan="6" class="px-6 py-4 bg-gray-50/60">
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
                                 <table class="w-full text-left">
-                                    <thead class="bg-gray-100 text-[10px] uppercase text-gray-500 font-bold">
-                                        <tr>
-                                        <th class="px-4 py-2">Timestamp</th>
-                                        <th class="px-4 py-2">Authorized User</th>
-                                        <th class="px-4 py-2">Transaction Type</th>
-                                        <th class="px-4 py-2 text-right">Start</th>
-                                        <th class="px-4 py-2 text-right">Change</th>
-                                        <th class="px-4 py-2 text-right">End</th>
-                                        <th class="px-4 py-2">Notes</th>
-                                    </tr>
+                                    <thead>
+                                        <tr class="border-b border-gray-200 bg-white">
+                                            <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">Timestamp</th>
+                                            <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">User</th>
+                                            <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">Type</th>
+                                            <th class="text-right text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">Start</th>
+                                            <th class="text-right text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">Change</th>
+                                            <th class="text-right text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">End</th>
+                                            <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-2.5">Notes</th>
+                                        </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
                                         <% if (package.movements && package.movements.length > 0) { %>
                                             <% package.movements.forEach(mv => { %>
-                                                <tr class="text-xs">
-    <td class="px-4 py-2 text-gray-500 whitespace-nowrap">
-        <%= new Date(mv.created_at).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }) %>
-    </td>
-
-    <td class="px-4 py-2 font-medium">
-        <%= mv.user_name %>
-    </td>
-
-    <td class="px-4 py-2 capitalize">
-        <%= mv.movement_type %>
-    </td>
-
-    <!-- STARTING QTY -->
-    <td class="px-4 py-2 text-right text-gray-600 font-medium">
-        <%= mv.starting_quantity %>
-    </td>
-
-    <!-- DELTA -->
-    <td class="px-4 py-2 text-right font-bold <%= mv.quantity > 0 ? 'text-green-600' : 'text-red-600' %>">
-        <%= mv.quantity > 0 ? '+' : '' %><%= mv.quantity %>
-    </td>
-
-    <!-- ENDING QTY -->
-    <td class="px-4 py-2 text-right font-semibold text-gray-800">
-        <%= mv.ending_quantity %>
-    </td>
-
-    <td class="px-4 py-2 text-gray-400 italic">
-        <%= mv.notes || '--' %>
-    </td>
-</tr>
+                                            <tr class="hover:bg-white transition-colors">
+                                                <td class="px-4 py-2.5 font-mono text-[0.72rem] text-gray-400 whitespace-nowrap">
+                                                    <%= new Date(mv.created_at).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    }) %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-[0.8125rem] font-medium text-gray-700">
+                                                    <%= mv.user_name %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-[0.8125rem] text-gray-600 capitalize">
+                                                    <%= mv.movement_type %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-right font-mono text-[0.8125rem] text-gray-500">
+                                                    <%= mv.starting_quantity %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-right font-mono text-[0.8125rem] font-semibold <%= mv.quantity > 0 ? 'text-green-mid' : 'text-red-500' %>">
+                                                    <%= mv.quantity > 0 ? '+' : '' %><%= mv.quantity %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-right font-mono text-[0.8125rem] font-semibold text-gray-800">
+                                                    <%= mv.ending_quantity %>
+                                                </td>
+                                                <td class="px-4 py-2.5 text-[0.8125rem] text-gray-400">
+                                                    <%= mv.notes || '—' %>
+                                                </td>
+                                            </tr>
                                             <% }) %>
                                         <% } else { %>
                                             <tr>
-                                                <td colspan="7" class="px-4 py-4 text-center text-gray-400 italic text-xs">No transaction history recorded for this package.</td>
+                                                <td colspan="7" class="px-4 py-4 text-center text-[0.8125rem] text-gray-400">No transaction history for this package.</td>
                                             </tr>
                                         <% } %>
                                     </tbody>
@@ -132,9 +127,16 @@
                             </div>
                         </td>
                     </tr>
-                <% }) %>
-            </tbody>
-        </table>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (!packages || packages.length === 0) { %>
+        <div class="py-8 text-center">
+            <p class="text-sm font-medium text-gray-500">No packages found</p>
+        </div>
+        <% } %>
     </div>
 </div>
 
@@ -145,14 +147,9 @@
                 const id = btn.dataset.id;
                 const auditRow = document.getElementById(`audit-${id}`);
                 const svg = btn.querySelector('svg');
-                
+
                 auditRow.classList.toggle('hidden');
-                
-                if (auditRow.classList.contains('hidden')) {
-                    svg.style.transform = 'rotate(0deg)';
-                } else {
-                    svg.style.transform = 'rotate(180deg)';
-                }
+                svg.style.transform = auditRow.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
             });
         });
     });
