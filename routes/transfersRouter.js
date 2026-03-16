@@ -10,6 +10,12 @@ router.get(
 );
 
 router.get(
+	'/export',
+	authorizeRole('admin', 'manager', 'staff'),
+	transfersController.exportTransfersCsv,
+);
+
+router.get(
 	'/create',
 	authorizeRole('admin', 'manager'),
 	transfersController.createTransferForm,

@@ -1,5 +1,6 @@
 const db = require('../db/queries');
 const { convertQuantity } = require('../utils/conversion');
+const { toCsv, sendCsv } = require('../utils/csvExport');
 
 const getAllProducts = async (req, res) => {
 	try {
@@ -558,6 +559,127 @@ const receiveInventoryGet = async (req, res) => {
 	}
 };
 
+const exportPackagesCsv = async (req, res) => {
+	try {
+		const status = req.query.status || 'active';
+		const filters = {
+			search: req.query.search || '',
+			brand: req.query.brand || '',
+			category: req.query.category || '',
+			sort: req.query.sort || 'newest',
+		};
+		const packages = await db.getPackagesByStatus(
+			req.user.company_id,
+			status,
+			50000,
+			0,
+			filters,
+		);
+		const csv = toCsv(packages, [
+			{ header: 'Package Tag', value: 'package_tag' },
+			{ header: 'Product', value: 'product_name' },
+			{ header: 'SKU', value: 'product_sku' },
+			{ header: 'Brand', value: 'brand_name' },
+			{ header: 'Category', value: 'category_name' },
+			{ header: 'Strain', value: 'strain_name' },
+			{ header: 'Location', value: 'location' },
+			{ header: 'Status', value: 'status' },
+			{ header: 'Quantity', value: 'quantity' },
+			{ header: 'Unit', value: 'unit' },
+			{ header: 'Cost Price', value: 'cost_price' },
+			{
+				header: 'Total Value',
+				value: (row) =>
+					(Number(row.quantity || 0) * Number(row.cost_price || 0)).toFixed(2),
+			},
+			{ header: 'Batch Number', value: 'batch_number' },
+			{ header: 'Lot Number', value: 'lot_number' },
+			{
+				header: 'Created At',
+				value: (row) =>
+					row.created_at
+						? new Date(row.created_at).toLocaleString('en-US')
+						: '',
+			},
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `packages-${status}-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
+const exportProductsCsv = async (req, res) => {
+	try {
+		const products = await db.getAllProductsDB(req.user.company_id);
+		const csv = toCsv(products, [
+			{ header: 'Name', value: 'name' },
+			{ header: 'Brand', value: 'brand_name' },
+			{ header: 'Category', value: 'category_name' },
+			{ header: 'Strain', value: 'strain_name' },
+			{ header: 'Unit', value: 'unit' },
+			{ header: 'On Hand', value: 'product_qty' },
+			{ header: 'Avg Cost', value: 'average_cost' },
+			{ header: 'Total Value', value: 'total_valuation' },
+			{ header: 'Status', value: 'status' },
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `products-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
+const exportAuditCsv = async (req, res) => {
+	try {
+		const packages = await db.getAuditTrail(req.params.id);
+		const rows = [];
+		packages.forEach((pkg) => {
+			if (pkg.movements && pkg.movements.length > 0) {
+				pkg.movements.forEach((mv) => {
+					rows.push({
+						package_tag: pkg.package_tag,
+						location: pkg.location,
+						status: pkg.status,
+						movement_type: mv.movement_type,
+						user_name: mv.user_name,
+						starting_quantity: mv.starting_quantity,
+						quantity: mv.quantity,
+						ending_quantity: mv.ending_quantity,
+						notes: mv.notes,
+						created_at: mv.created_at,
+					});
+				});
+			}
+		});
+		const csv = toCsv(rows, [
+			{ header: 'Package Tag', value: 'package_tag' },
+			{ header: 'Location', value: 'location' },
+			{ header: 'Status', value: 'status' },
+			{ header: 'Movement Type', value: 'movement_type' },
+			{ header: 'User', value: 'user_name' },
+			{ header: 'Starting Qty', value: 'starting_quantity' },
+			{ header: 'Change', value: 'quantity' },
+			{ header: 'Ending Qty', value: 'ending_quantity' },
+			{ header: 'Notes', value: 'notes' },
+			{
+				header: 'Timestamp',
+				value: (row) =>
+					row.created_at
+						? new Date(row.created_at).toLocaleString('en-US')
+						: '',
+			},
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `audit-product-${req.params.id}-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
 module.exports = {
 	getAllProducts,
 	getProductsList,
@@ -576,4 +698,7 @@ module.exports = {
 	receiveNewPackageForm,
 	receiveNewPackagesPOST,
 	unarchiveProduct,
+	exportPackagesCsv,
+	exportProductsCsv,
+	exportAuditCsv,
 };

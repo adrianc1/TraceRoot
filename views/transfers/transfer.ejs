@@ -155,18 +155,62 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/40" onclick="closeModal()"></div>
+        <div class="relative bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-sm mx-4 p-6">
+            <h2 class="text-[0.9375rem] font-semibold text-gray-900 mb-1" id="modalTitle"></h2>
+            <p class="text-[0.8125rem] text-gray-500 mb-6">This action cannot be reversed.</p>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModal()"
+                    class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer">
+                    Go Back
+                </button>
+                <button id="modalConfirmBtn"
+                    class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white rounded-md transition-colors cursor-pointer">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        async function confirmTransfer(id) {
-            const res = await fetch(`/transfers/${id}/confirm`, { method: 'PUT' });
-            if (res.ok) window.location.reload();
-            else alert('Could not confirm transfer');
+        let pendingAction = null;
+
+        function openModal(action, id) {
+            pendingAction = { action, id };
+            const btn = document.getElementById('modalConfirmBtn');
+            if (action === 'confirm') {
+                document.getElementById('modalTitle').textContent = 'Are you sure you want to confirm this transfer?';
+                btn.textContent = 'Confirm Transfer';
+                btn.className = btn.className.replace(/bg-\S+/g, '');
+                btn.classList.add('bg-green-mid', 'border', 'border-green-mid', 'hover:bg-green-deep');
+            } else {
+                document.getElementById('modalTitle').textContent = 'Are you sure you want to cancel this transfer?';
+                btn.textContent = 'Cancel Transfer';
+                btn.className = btn.className.replace(/bg-\S+/g, '');
+                btn.classList.add('bg-red-600', 'border', 'border-red-600', 'hover:bg-red-700');
+            }
+            document.getElementById('confirmModal').classList.remove('hidden');
         }
 
-        async function cancelTransfer(id) {
-            const res = await fetch(`/transfers/${id}/cancel`, { method: 'PUT' });
-            if (res.ok) window.location.reload();
-            else alert('Could not cancel transfer');
+        function closeModal() {
+            pendingAction = null;
+            document.getElementById('confirmModal').classList.add('hidden');
         }
+
+        document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+            if (!pendingAction) return;
+            const { action, id } = pendingAction;
+            closeModal();
+            const endpoint = action === 'confirm' ? 'confirm' : 'cancel';
+            const res = await fetch(`/transfers/${id}/${endpoint}`, { method: 'PUT' });
+            if (res.ok) window.location.reload();
+            else alert(`Could not ${action} transfer`);
+        });
+
+        function confirmTransfer(id) { openModal('confirm', id); }
+        function cancelTransfer(id)  { openModal('cancel',  id); }
     </script>
 
 </body>

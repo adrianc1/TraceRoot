@@ -7,23 +7,28 @@
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
+    <div class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
 
         <!-- Page header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
             <div>
                 <h1 class="text-xl font-semibold tracking-tight text-gray-900"><%= message %></h1>
                 <p class="text-sm text-gray-500 font-light mt-0.5">All active packages across your inventory</p>
             </div>
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <a href="/packages/receive"
-                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
-                    Receive
-                </a>
+            <div class="flex flex-row items-center gap-2">
                 <a href="/packages/create-product"
                    class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
                     + Add Product
                 </a>
+                <a href="/packages/receive"
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                    Receive
+                </a>
+                <a id="export-csv-btn" href="/packages/export?status=<%= currentStatus %>&search=<%= search %>&brand=<%= brand %>&category=<%= category %>&sort=<%= sort %>"
+                   class="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+                    Export CSV
+                </a>
+
             </div>
         </div>
 
@@ -223,7 +228,7 @@
                     <% }) %>
                 </tbody>
             </table>
-            </div><!-- /overflow-x-auto -->
+            </div>
 
             <!-- Empty state -->
             <% if (!packages || packages.length === 0) { %>
