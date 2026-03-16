@@ -489,9 +489,6 @@
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
-  .w-32 {
-    width: calc(var(--spacing) * 32);
-  }
   .w-44 {
     width: calc(var(--spacing) * 44);
   }
@@ -587,9 +584,6 @@
   }
   .grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .flex-col {
     flex-direction: column;
@@ -1284,12 +1278,6 @@
   }
   .opacity-0 {
     opacity: 0%;
-  }
-  .opacity-20 {
-    opacity: 20%;
-  }
-  .opacity-40 {
-    opacity: 40%;
   }
   .opacity-50 {
     opacity: 50%;

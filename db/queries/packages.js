@@ -217,8 +217,6 @@ const getPackagesByProductId = async (productId, companyId) => {
 	return rows;
 };
 
-// NEED TO CREATED AND FINISH THE SPLIT TRANSACTION
-
 const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 	const client = await pool.connect();
 	try {
@@ -259,7 +257,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 					split.packageSize,
 					source.unit,
 					source.id,
-					split.childLotNumber,
+					source.lot_number,
 					source.cost_price,
 					source.batch_id,
 					split.package_tag,
@@ -528,6 +526,14 @@ const getPackage = async (packageId, companyId) => {
 	return rows[0];
 };
 
+const getPackageByTag = async (packageTag, companyId) => {
+	const { rows } = await pool.query(
+		`SELECT * FROM packages WHERE package_tag=$1 AND company_id=$2`,
+		[packageTag, companyId],
+	);
+	return rows[0];
+};
+
 const adjustProductInventory = async (
 	packages_id,
 	movement_type,
@@ -675,6 +681,7 @@ module.exports = {
 	applyInventoryMovement,
 	getPackageByLot,
 	getPackage,
+	getPackageByTag,
 	adjustProductInventory,
 	receiveInventory,
 	getInventoryId,

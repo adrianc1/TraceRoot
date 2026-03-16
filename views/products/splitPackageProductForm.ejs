@@ -48,7 +48,7 @@
             <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 <form
                     method="POST"
-                    action="/packages/<%= selectedPackage.id %>/split/<%= selectedPackage.lot_number %>"
+                    action="/packages/<%= selectedPackage.package_tag %>/split"
                     id="splitForm">
 
                     <div class="px-6 py-5 border-b border-gray-100">
@@ -66,21 +66,13 @@
                             data-initial-qty="<%= selectedPackage.quantity %>"
                             data-unit="<%= product.unit %>">
 
-                            <div class="split-row grid grid-cols-4 gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <div class="split-row grid grid-cols-3 gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                 <div>
                                     <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Package Tag</label>
                                     <input
                                         type="text"
                                         name="packageTag[]"
                                         class="packageTag w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Batch / Lot</label>
-                                    <input
-                                        type="text"
-                                        name="batch[]"
-                                        class="batch w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white"
                                     />
                                 </div>
                                 <div>

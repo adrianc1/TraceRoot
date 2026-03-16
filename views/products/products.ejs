@@ -212,12 +212,12 @@
                         <!-- Actions -->
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
-                                <a href="/packages/<%= pkg.id %>/adjust/<%= pkg.lot_number %>"
+                                <a href="/packages/<%= pkg.package_tag %>/adjust"
                                    class="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline">
                                     Adjust
                                 </a>
                                 <% if (Number(pkg.quantity) > 0) { %>
-                                <a href="/packages/<%= pkg.id %>/split/<%= pkg.lot_number %>"
+                                <a href="/packages/<%= pkg.package_tag %>/split"
                                    class="text-[0.75rem] text-green-mid hover:text-green-deep transition-colors font-medium no-underline">
                                     Split
                                 </a>

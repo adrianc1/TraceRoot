@@ -2,8 +2,7 @@ const formEl = document.getElementById('adjust-form');
 
 document.addEventListener('DOMContentLoaded', () => {
 	const adjustInventoryFunction = async () => {
-		const productId = formEl.dataset.id;
-		const lotNumber = formEl.dataset.lot;
+		const packageTag = formEl.dataset.tag;
 
 		const formData = new FormData(formEl);
 		const data = {
@@ -15,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			status: formData.get('status'),
 		};
 
-		const res = await fetch(`/packages/${productId}/adjust/${lotNumber}`, {
+		const res = await fetch(`/packages/${packageTag}/adjust`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
