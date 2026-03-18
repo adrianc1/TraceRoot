@@ -29,6 +29,7 @@
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
                         <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Name</th>
+                        <th class="hidden md:table-cell text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Description</th>
                         <th class="text-right text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -38,6 +39,7 @@
                         <td class="px-4 py-3">
                             <span class="text-[0.8125rem] font-medium text-gray-900"><%= brand.name %></span>
                         </td>
+                        <td class="hidden md:table-cell px-4 py-3 text-[0.8125rem] text-gray-500"><%= brand.description || '' %></td>
                         <td class="px-4 py-3 text-right">
                             <a href="/brands/<%= brand.id %>/edit"
                                class="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline">
