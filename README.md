@@ -16,28 +16,32 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Backend | Node.js, Express.js |
-| Database | PostgreSQL |
-| Auth | Passport.js (local strategy, session-based) |
+| Layer    | Technology                                   |
+| -------- | -------------------------------------------- |
+| Backend  | Node.js, Express.js                          |
+| Database | PostgreSQL                                   |
+| Auth     | Passport.js (local strategy, session-based)  |
 | Frontend | EJS (server-side rendering), Tailwind CSS v4 |
-| Testing | Jest |
+| Testing  | Jest                                         |
 
 ---
 
 ## Architecture Decisions
 
 ### Ledger-based inventory model
+
 Inventory quantities are never mutated in place. Every change — receive, adjust, split, transfer — writes an immutable row to `inventory_movements` with `starting_quantity`, `quantity` (delta), and `ending_quantity`. This mirrors how financial and compliance systems track state over time and makes the audit trail a first-class feature rather than an afterthought.
 
 ### Package locking during transfers
+
 When a transfer is created, the source package is immediately flagged `locked = true`. Any attempt to adjust, split, or re-transfer a locked package is blocked until the transfer is confirmed or cancelled. This prevents double-counting during pending transfers and preserves data integrity at the database level.
 
 ### Multi-tenancy via company_id scoping
+
 Every table carries a `company_id` foreign key. All queries are scoped to the authenticated user's company at the middleware level, providing hard data isolation between tenants with no risk of cross-company data leakage.
 
 ### Composite foreign key on packages → locations
+
 `packages` enforces `FOREIGN KEY (location_id, company_id) REFERENCES locations(id, company_id)` — a composite key that prevents a package from being assigned to a location belonging to a different company, even if the location ID is otherwise valid.
 
 ---
@@ -63,6 +67,19 @@ companies ──► users
 ```
 
 See [`db/schema.sql`](db/schema.sql) for the full schema.
+
+---
+
+## Demo
+
+A live demo is available at [traceroot.io](https://traceroot.io). Use the following credentials to log in, or click **Try Demo Account** on the login page.
+
+| Field    | Value               |
+| -------- | ------------------- |
+| Email    | `demo@traceroot.io` |
+| Password | `demo123`           |
+
+> The demo account is read-only seeded data. Feel free to explore — any changes you make are scoped to the demo company.
 
 ---
 
