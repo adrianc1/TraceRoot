@@ -4,6 +4,7 @@ const passport = require('passport');
 const router = express.Router();
 
 router.get('/', authController.getLoginForm);
+router.get('/demo', authController.demoLogin);
 
 router.post(
 	'/',

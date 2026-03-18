@@ -79,9 +79,25 @@ const getLoginForm = async (req, res) => {
 	});
 };
 
+const demoLogin = async (req, res, next) => {
+	try {
+		const user = await db.getUserByEmail('demo@traceroot.io');
+		if (!user) {
+			return res.redirect('/login');
+		}
+		req.login(user, (err) => {
+			if (err) return next(err);
+			res.redirect('/packages');
+		});
+	} catch (err) {
+		next(err);
+	}
+};
+
 module.exports = {
 	getSignUpForm,
 	postSignUpForm,
 	getLoginForm,
+	demoLogin,
 	validateUser,
 };

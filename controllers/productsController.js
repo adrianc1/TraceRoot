@@ -283,7 +283,7 @@ const deleteProduct = async (req, res) => {
 	if (result.rowCount === 0) {
 		return res.status(400).json({
 			success: false,
-			message: 'Cannot delete product with exisiting inventory quantity',
+			error: 'Cannot archive — product has active inventory',
 		});
 	}
 	res.status(200).json({ success: true });
