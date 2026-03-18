@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/adrianblaze/Desktop/projects/cannabis-inventory/*.js)",
+      "Bash(ls /Users/adrianblaze/Desktop/projects/cannabis-inventory/src/*.js)",
+      "Bash(npm install:*)"
+    ]
+  }
+}

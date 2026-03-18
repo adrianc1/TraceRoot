@@ -8,6 +8,7 @@ const pool = require('./db/pool.js');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const pgSession = require('connect-pg-simple')(session);
+const flash = require('connect-flash');
 const path = require('node:path');
 const brandsRouter = require('./routes/brandsRouter');
 const categoryRouter = require('./routes/categoryRouter');
@@ -60,6 +61,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 app.use(setLocals);
 
