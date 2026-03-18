@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						fontFamily: {
+							sans: ['DM Sans', 'sans-serif'],
+							mono: ['DM Mono', 'monospace'],
+						},
+						colors: {
+							green: {
+								deep: '#004d35',
+								mid: '#006144',
+								light: '#e6f7ef',
+								border: '#b8e4ce',
+							},
+						},
+					},
+				},
+			};
+		</script>
+		<style>
+			body { -webkit-font-smoothing: antialiased; }
+		</style>
+		<title>Privacy Policy — TraceRoot</title>
+	</head>
+	<body class="bg-white text-gray-900 font-sans text-[15px] leading-relaxed">
+		<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+			<div class="max-w-5xl mx-auto px-6 h-[60px] flex items-center justify-between">
+				<a href="/" class="flex items-center gap-2 no-underline shrink-0">
+					<img src="/tracerootheader.png" alt="TraceRoot" class="h-10" />
+				</a>
+				<div class="flex items-center gap-2">
+					<a href="/login" class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">
+						Login
+					</a>
+					<a href="/signup/create-account" class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+						Get started
+					</a>
+				</div>
+			</div>
+		</nav>
+
+		<main class="max-w-3xl mx-auto px-6 py-16">
+			<div class="font-mono text-[0.7rem] text-gray-400 uppercase tracking-widest mb-3">Legal</div>
+			<h1 class="text-[2rem] font-semibold tracking-tight text-gray-900 mb-2">Privacy Policy</h1>
+			<p class="text-[0.8125rem] text-gray-400 font-mono mb-12">Last updated: March 18, 2026</p>
+
+			<div class="space-y-10 text-[0.9rem] text-gray-600 font-light leading-[1.8]">
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">1. Information We Collect</h2>
+					<p>When you create an account, we collect your name, email address, and a hashed password. We also collect information you enter into the platform, including inventory data, product details, batch records, and movement logs associated with your dispensary account.</p>
+					<p class="mt-3">We automatically collect certain usage data when you access TraceRoot, including IP address, browser type, pages visited, and timestamps. This data is used solely to operate and improve the service.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">2. How We Use Your Information</h2>
+					<p>We use the information we collect to provide, maintain, and improve TraceRoot. Specifically, we use it to authenticate users, display inventory data scoped to your organization, and maintain audit logs. We do not sell your data to third parties.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">3. Data Isolation</h2>
+					<p>TraceRoot is a multi-tenant application. Each dispensary account is logically isolated — your inventory, products, users, and records are only accessible to authenticated users within your organization. We enforce this at the application and database level on every query.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">4. Cookies and Sessions</h2>
+					<p>We use session cookies to keep you logged in. Sessions are stored server-side and expire after 30 days of inactivity. We do not use tracking cookies or third-party advertising cookies.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">5. Data Retention</h2>
+					<p>We retain your account and inventory data for as long as your account is active. If you close your account, we will delete or anonymize your personal data within 30 days, except where we are required to retain it by law.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">6. Security</h2>
+					<p>We take reasonable technical measures to protect your data, including encrypted connections (HTTPS), hashed passwords, and session-based authentication. No system is completely secure — if you believe your account has been compromised, contact us immediately.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">7. Third-Party Services</h2>
+					<p>We use a small number of third-party services to operate the platform, including cloud hosting and database infrastructure. These providers are contractually bound to handle your data in accordance with this policy and applicable law.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">8. Your Rights</h2>
+					<p>You may request access to, correction of, or deletion of your personal data at any time by contacting us at <a href="mailto:hello@traceroot.io" class="text-green-mid hover:underline">hello@traceroot.io</a>. We will respond within 30 days.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">9. Changes to This Policy</h2>
+					<p>We may update this policy from time to time. We will notify you of material changes by posting a notice on the platform or emailing the address on file. Continued use of TraceRoot after changes take effect constitutes acceptance of the updated policy.</p>
+				</section>
+
+				<section>
+					<h2 class="text-[1rem] font-semibold text-gray-900 mb-3">10. Contact</h2>
+					<p>Questions about this policy can be directed to <a href="mailto:hello@traceroot.io" class="text-green-mid hover:underline">hello@traceroot.io</a>.</p>
+				</section>
+
+			</div>
+		</main>
+
+		<footer class="border-t border-gray-200 bg-white mt-20">
+			<div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+				<p class="text-[0.75rem] font-mono text-gray-400">&copy; <%= new Date().getFullYear() %> TraceRoot. All rights reserved.</p>
+				<div class="flex gap-4">
+					<a href="/privacy" class="text-[0.75rem] text-gray-400 hover:text-gray-600 transition-colors no-underline">Privacy Policy</a>
+					<a href="/terms" class="text-[0.75rem] text-gray-400 hover:text-gray-600 transition-colors no-underline">Terms of Service</a>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>

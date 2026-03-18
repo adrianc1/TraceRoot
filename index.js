@@ -65,6 +65,9 @@ app.use(flash());
 
 app.use(setLocals);
 
+app.get('/privacy', (_req, res) => res.render('privacy'));
+app.get('/terms', (_req, res) => res.render('terms'));
+
 app.use('/', signupRouter);
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/signup', redirectIfAuthenticated, signupRouter);
