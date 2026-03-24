@@ -270,23 +270,29 @@ const insertProduct = async (req, res) => {
 
 const getProductsList = async (req, res) => {
 	try {
-		const products = await db.getAllProductsDB(req.user.company_id);
-		res.render('products/product-list', { products });
+		const status = req.query.status === 'archived' ? 'archived' : 'active';
+		const products = await db.getAllProductsDB(req.user.company_id, status);
+		res.render('products/product-list', { products, currentStatus: status });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
 };
 
 const deleteProduct = async (req, res) => {
-	const result = await db.deleteProduct(req.params.id, req.user.company_id);
+	try {
+		const result = await db.deleteProduct(req.params.id, req.user.company_id);
 
-	if (result.rowCount === 0) {
-		return res.status(400).json({
-			success: false,
-			error: 'Cannot archive — product has active inventory',
-		});
+		if (result.rowCount === 0) {
+			return res.status(400).json({
+				success: false,
+				error: 'Cannot archive — product has active inventory',
+			});
+		}
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ success: false, error: 'Failed to archive product' });
 	}
-	res.status(200).json({ success: true });
 };
 
 const unarchiveProduct = async (req, res) => {

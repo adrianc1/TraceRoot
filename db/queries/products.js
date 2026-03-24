@@ -1,21 +1,22 @@
 const pool = require('../pool');
 
-const getAllProductsDB = async (user_id) => {
+const getAllProductsDB = async (user_id, status = 'active') => {
 	try {
 		const { rows } = await pool.query(
 			`
-      SELECT 
+      SELECT
         p.id,
         p.name,
         p.description,
         p.unit,
+        p.status,
         p.category_id,
         brands.name AS brand_name,
         categories.name AS category_name,
         strains.name AS strain_name,
         COALESCE(SUM(i.quantity),0) AS product_qty,
         COALESCE(SUM(i.quantity * COALESCE(i.cost_price,0)),0)::FLOAT AS total_valuation,
-        CASE 
+        CASE
           WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * COALESCE(i.cost_price,0)) / SUM(i.quantity), 2)
           ELSE 0
         END::FLOAT AS average_cost
@@ -24,18 +25,19 @@ const getAllProductsDB = async (user_id) => {
       LEFT JOIN categories ON p.category_id = categories.id
       LEFT JOIN strains ON p.strain_id = strains.id
       LEFT JOIN packages AS i ON p.id = i.product_id
-      WHERE p.company_id=$1
-      GROUP BY 
+      WHERE p.company_id=$1 AND p.status=$2
+      GROUP BY
         p.id,
         p.name,
         p.description,
         p.unit,
+        p.status,
         p.category_id,
         brand_name,
         category_name,
         strain_name
       `,
-			[user_id],
+			[user_id, status],
 		);
 		return rows;
 	} catch (error) {
