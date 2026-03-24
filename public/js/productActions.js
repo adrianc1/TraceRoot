@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			deleteBtn.textContent = 'Archiving...';
 			const res = await fetch(`/packages/${productId}/archive`, {
 				method: 'PUT',
+				headers: { 'Accept': 'application/json' },
 			});
 
 			if (res.ok) {
