@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: 'Account' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-2xl mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
 
         <div class="mb-6">
             <h1 class="text-xl font-semibold tracking-tight text-gray-900">Account</h1>
@@ -65,5 +65,6 @@
 
     </div>
 
+    <%- include('../partials/footer') %>
 </body>
 </html>

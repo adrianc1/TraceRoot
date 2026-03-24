@@ -232,14 +232,19 @@
 
             <!-- Empty state -->
             <% if (!packages || packages.length === 0) { %>
-            <div class="py-8 text-center flex flex-col items-center gap-4">
-                <img src="/tracerootlogo.png" alt="Traceroot" class="w-48 opacity-80">
+            <div class="py-16 text-center">
+                <img src="/tracerootlogo.png" alt="Traceroot" class="w-48 opacity-80 mx-auto mb-3">
+                <% if (currentStatus === 'all' || currentStatus === 'active') { %>
                 <p class="text-sm font-medium text-gray-500">No packages yet</p>
-                <p class="text-xs text-gray-400">Add a product before receiving inventory</p>
+                <p class="text-xs text-gray-400 mt-1 mb-4">Add a product before receiving inventory</p>
                 <a href="/packages/create-product"
                    class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep transition-colors no-underline">
                     Add product
                 </a>
+                <% } else { %>
+                <p class="text-sm font-medium text-gray-500">No <%= currentStatus %> packages</p>
+                <p class="text-xs text-gray-400">Packages with <%= currentStatus %> status will appear here</p>
+                <% } %>
             </div>
             <% } %>
 

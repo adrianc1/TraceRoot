@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: 'Strains' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
 
         <!-- Page header -->
         <div class="flex items-center justify-between mb-6">
@@ -75,7 +75,7 @@
             <!-- Empty state -->
             <% if (strains.length === 0) { %>
             <div class="py-16 text-center">
-                <div class="text-gray-300 text-4xl mb-3">□</div>
+                <img src="/tracerootlogo.png" alt="Traceroot" class="w-48 opacity-80 mx-auto mb-3">
                 <p class="text-sm font-medium text-gray-500">No strains yet</p>
                 <p class="text-xs text-gray-400 mt-1 mb-4">Create your first strain to get started</p>
                 <a href="/strains/create-strain"

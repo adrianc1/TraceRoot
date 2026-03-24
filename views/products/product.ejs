@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: `Product — ${product.name}` }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
 
         <!-- Back link -->
         <a href="/packages"

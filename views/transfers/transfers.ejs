@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: 'Transfers' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
 
         <!-- page header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
@@ -32,14 +32,14 @@
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="border-b border-gray-200 bg-gray-50">
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">#</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Type</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">From</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">To</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Packages</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Status</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">Date</th>
-                        <th class="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3"></th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">#</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Type</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">From</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">To</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Packages</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Status</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">Date</th>
+                        <th class="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3"></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -139,5 +139,6 @@
         </div>
     </div>
 
+    <%- include('../partials/footer') %>
 </body>
 </html>

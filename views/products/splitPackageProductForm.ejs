@@ -3,11 +3,11 @@
 <head>
     <%- include('../partials/head', { title: 'Split Package' }) %>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 min-h-screen">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 
     <%- include('../partials/header.ejs') %>
 
-    <div class="max-w-2xl mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
 
         <a href="/packages/<%= product.id %>"
            class="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
