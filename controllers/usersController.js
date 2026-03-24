@@ -104,7 +104,8 @@ const acceptInvite = async (req, res) => {
 };
 
 const getAccount = async (req, res) => {
-	res.render('users/account', { user: req.user });
+	const company = await db.getCompanyById(req.user.company_id);
+	res.render('users/account', { user: req.user, companyName: company ? company.name : '' });
 };
 
 const getSettings = async (req, res) => {

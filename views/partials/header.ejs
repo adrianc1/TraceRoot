@@ -153,6 +153,11 @@
 						<div class="text-[0.75rem] text-gray-400 font-mono mt-0.5">
 							<%= locals.email || '' %>
 						</div>
+						<% if (locals.companyName) { %>
+						<div class="text-[0.7rem] text-gray-400 mt-1 truncate">
+							<%= locals.companyName %>
+						</div>
+						<% } %>
 					</div>
 
 					<!-- Menu items -->

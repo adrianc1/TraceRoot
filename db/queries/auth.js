@@ -52,4 +52,12 @@ const getCompanyByName = async (name) => {
 	return rows[0];
 };
 
-module.exports = { signupAdmin, getUserByEmail, getCompanyByName };
+const getCompanyById = async (id) => {
+	const { rows } = await pool.query(
+		'SELECT id, name FROM companies WHERE id = $1',
+		[id],
+	);
+	return rows[0];
+};
+
+module.exports = { signupAdmin, getUserByEmail, getCompanyByName, getCompanyById };
