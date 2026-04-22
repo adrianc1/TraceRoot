@@ -1,4 +1,4 @@
-/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -78,7 +78,7 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
-    --tracking-tighter: -0.05em;
+    --tracking-tighter: -0.03em;
     --tracking-tight: -0.025em;
     --tracking-wide: 0.025em;
     --tracking-widest: 0.1em;
@@ -95,6 +95,7 @@
     --color-green-deep: #004d35;
     --color-green-mid: #006144;
     --color-green-light: #e6f7ef;
+    --color-green-border: #b8e4ce;
     --color-amber-dark: #92600a;
     --color-amber-light: #fdf3e0;
   }
@@ -515,6 +516,9 @@
   .w-\[18px\] {
     width: 18px;
   }
+  .w-auto {
+    width: auto;
+  }
   .w-full {
     width: 100%;
   }
@@ -797,6 +801,9 @@
   }
   .border-green-300 {
     border-color: var(--color-green-300);
+  }
+  .border-green-border {
+    border-color: var(--color-green-border);
   }
   .border-green-mid {
     border-color: var(--color-green-mid);

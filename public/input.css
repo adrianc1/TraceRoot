@@ -8,11 +8,15 @@
 	--color-green-deep: #004d35;
 	--color-green-mid: #006144;
 	--color-green-light: #e6f7ef;
+	--color-green-border: #b8e4ce;
 	--color-amber-dark: #92600a;
 	--color-amber-light: #fdf3e0;
 
 	--font-sans: 'DM Sans', sans-serif;
 	--font-mono: 'DM Mono', monospace;
+
+	--tracking-tightest: -0.04em;
+	--tracking-tighter: -0.03em;
 }
 
 body {
