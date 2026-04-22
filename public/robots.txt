@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /signup/
+Allow: /privacy
+Allow: /terms
+
+Disallow: /packages
+Disallow: /categories
+Disallow: /strains
+Disallow: /brands
+Disallow: /transfers
+Disallow: /locations
+Disallow: /users
+
+Sitemap: https://traceroot.io/sitemap.xml
