@@ -119,6 +119,13 @@
 			</nav>
 		</div>
 
+		<!-- Trial expired banner -->
+		<% if (typeof query !== 'undefined' && query.expired) { %>
+		<div class="bg-amber-50 border-b border-amber-200 px-6 py-3 text-center">
+			<p class="text-[0.8125rem] text-amber-800">Your 14-day trial has ended. Choose a plan below to keep access to your data.</p>
+		</div>
+		<% } %>
+
 		<!-- HEADER -->
 		<section class="max-w-5xl mx-auto px-6 pt-12 pb-10 text-center">
 			<div class="inline-flex items-center gap-2 font-mono text-[0.72rem] text-green-mid uppercase tracking-[0.08em] mb-5">
@@ -224,6 +231,7 @@
 						</ul>
 
 						<a
+							id="checkout-btn"
 							href="/signup/create-account"
 							class="flex items-center justify-center w-full px-5 py-[0.65rem] text-[0.9rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline"
 						>
@@ -309,6 +317,10 @@
 				</div>
 
 			</div>
+
+			<p class="text-center text-[0.8125rem] text-gray-400 font-light mt-8">
+				Flat pricing. No per-package, per-SKU, or per-location fees.
+			</p>
 		</section>
 
 		<!-- FAQ -->
@@ -416,6 +428,9 @@
 		</footer>
 
 		<script>
+			const checkoutBtn = document.getElementById('checkout-btn');
+			const isLoggedIn = <%- locals.user ? 'true' : 'false' %>;
+
 			function setBilling(type) {
 				const priceDisplay = document.getElementById('price-display');
 				const billingNote = document.getElementById('billing-note');
@@ -429,6 +444,7 @@
 					btnAnnual.classList.remove('text-gray-500');
 					btnMonthly.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
 					btnMonthly.classList.add('text-gray-500');
+					if (isLoggedIn) checkoutBtn.href = '/billing/checkout?plan=annual';
 				} else {
 					priceDisplay.textContent = '$99';
 					billingNote.textContent = '';
@@ -436,8 +452,12 @@
 					btnMonthly.classList.remove('text-gray-500');
 					btnAnnual.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
 					btnAnnual.classList.add('text-gray-500');
+					if (isLoggedIn) checkoutBtn.href = '/billing/checkout?plan=monthly';
 				}
 			}
+
+			// Set initial href based on default (annual)
+			if (isLoggedIn) checkoutBtn.href = '/billing/checkout?plan=annual';
 		</script>
 	</body>
 </html>

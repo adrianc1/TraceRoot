@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head', { title: 'Subscription Active' }) %>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
+
+    <%- include('../partials/header.ejs') %>
+
+    <div class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-md w-full text-center">
+            <div class="w-12 h-12 rounded-full bg-green-light flex items-center justify-center mx-auto mb-5">
+                <svg class="w-6 h-6 text-green-deep" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h1 class="text-xl font-semibold tracking-tight text-gray-900 mb-2">You're all set</h1>
+            <p class="text-[0.9rem] text-gray-500 font-light mb-8">Your subscription is active. Your team can keep using TraceRoot without interruption.</p>
+            <a href="/packages"
+               class="inline-flex items-center justify-center px-5 py-[0.6rem] text-[0.9rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+                Go to dashboard
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

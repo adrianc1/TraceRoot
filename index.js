@@ -19,12 +19,14 @@ const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
 const locationsRouter = require('./routes/locationsRouter');
 const usersRouter = require('./routes/usersRouter');
+const billingRouter = require('./routes/billingRouter');
 const { formatQuantity, formatCurrency } = require('./utils/format');
 const { setLocals } = require('./middleware/appMiddleware');
 const {
 	ensureAuthenticated,
 	redirectIfAuthenticated,
 } = require('./middleware/authMiddleware.js');
+const { checkTrial } = require('./middleware/trialMiddleware');
 
 const app = express();
 const PORT = 3000;
@@ -34,6 +36,10 @@ app.use(cors());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+
+// Webhook must receive raw body — register before express.json()
+app.post('/billing/webhook', express.raw({ type: 'application/json' }), billingRouter);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -64,17 +70,19 @@ app.use(passport.session());
 app.use(flash());
 
 app.use(setLocals);
+app.use(checkTrial);
 
 app.get('/privacy', (_req, res) => res.render('privacy'));
 app.get('/terms', (_req, res) => res.render('terms'));
 app.get('/features', (_req, res) => res.render('features'));
-app.get('/pricing', (_req, res) => res.render('pricing'));
+app.get('/pricing', (req, res) => res.render('pricing', { query: req.query }));
 app.get('/contact', (_req, res) => res.render('contact'));
 
 app.use('/', signupRouter);
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/signup', redirectIfAuthenticated, signupRouter);
 app.use('/users', usersRouter);
+app.use('/billing', billingRouter);
 
 app.use('/packages', ensureAuthenticated, productsRouter);
 app.use('/categories', ensureAuthenticated, categoryRouter);

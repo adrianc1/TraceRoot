@@ -1,4 +1,5 @@
 const auth = require('./auth');
+const billing = require('./billing');
 const batches = require('./batches');
 const brands = require('./brands');
 const categories = require('./categories');
@@ -13,6 +14,7 @@ const invites = require('./invites');
 
 module.exports = {
 	...auth,
+	...billing,
 	...batches,
 	...brands,
 	...categories,
