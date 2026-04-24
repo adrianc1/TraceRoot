@@ -132,7 +132,8 @@ const getAccount = async (req, res) => {
 };
 
 const getSettings = async (req, res) => {
-	res.render('users/settings', { user: req.user });
+	const billing = await db.getCompanyBilling(req.user.company_id);
+	res.render('users/settings', { user: req.user, billing });
 };
 
 module.exports = {

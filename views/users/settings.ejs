@@ -35,6 +35,45 @@
                 </a>
             </div>
             <% } %>
+            <% if (locals.user && locals.user.role === 'admin') { %>
+            <% const status = billing && billing.stripe_subscription_status; %>
+            <% const trialEnds = billing && billing.trial_ends_at; %>
+            <% const isActive = status === 'active'; %>
+            <% const isTrial = !isActive && trialEnds && new Date(trialEnds) > new Date(); %>
+            <% const isExpired = !isActive && (!trialEnds || new Date(trialEnds) <= new Date()); %>
+            <div class="px-6 py-5 border-b border-gray-100">
+                <div class="text-[0.7rem] font-mono text-gray-700 uppercase tracking-[0.08em]">Subscription</div>
+            </div>
+            <div class="px-6 py-5 flex items-center justify-between gap-4 border-b border-gray-100">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <div class="text-[0.875rem] font-medium text-gray-900">Plan status</div>
+                        <% if (isActive) { %>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.7rem] font-medium bg-green-light text-green-deep border border-green-border">Active</span>
+                        <% } else if (isTrial) { %>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.7rem] font-medium bg-amber-50 text-amber-700 border border-amber-200">Trial</span>
+                        <% } else { %>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.7rem] font-medium bg-red-50 text-red-600 border border-red-200">Expired</span>
+                        <% } %>
+                    </div>
+                    <div class="text-[0.8125rem] text-gray-400 mt-0.5">
+                        <% if (isActive) { %>
+                            Your subscription is active.
+                        <% } else if (isTrial) { %>
+                            Trial ends <%= new Date(trialEnds).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>.
+                        <% } else { %>
+                            Your trial has expired. Activate a plan to restore access.
+                        <% } %>
+                    </div>
+                </div>
+                <% if (!isActive) { %>
+                <a href="/pricing"
+                   class="inline-flex items-center justify-center whitespace-nowrap shrink-0 px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">
+                    Upgrade
+                </a>
+                <% } %>
+            </div>
+            <% } %>
             <div class="px-6 py-5 border-b border-gray-100">
                 <div class="text-[0.7rem] font-mono text-gray-700 uppercase tracking-[0.08em]">Session</div>
             </div>
