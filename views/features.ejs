@@ -179,60 +179,48 @@
 	</head>
 	<body class="bg-white text-gray-900 font-sans text-[15px] leading-relaxed">
 		<!-- NAV -->
-		<nav
-			class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200"
-		>
-			<div
-				class="max-w-5xl mx-auto px-6 h-[60px] flex items-center justify-between"
-			>
+		<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+			<div class="max-w-5xl mx-auto px-6 h-[60px] flex items-center justify-between">
 				<a href="/" class="flex items-center gap-2 no-underline shrink-0">
-					<img
-						src="/tracerootheader.png"
-						alt="TraceRoot"
-						class="h-10 w-auto"
-						width="179"
-						height="40"
-					/>
+					<img src="/tracerootheader.png" alt="TraceRoot" class="h-10 w-auto" width="179" height="40" />
 				</a>
 				<ul class="hidden md:flex items-center gap-8 list-none">
-					<li>
-						<a
-							href="/features"
-							class="text-sm text-gray-900 font-medium no-underline"
-							>Features</a
-						>
-					</li>
-					<li>
-						<a
-							href="/pricing"
-							class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline"
-							>Pricing</a
-						>
-					</li>
-					<li>
-						<a
-							href="/contact"
-							class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline"
-							>Contact</a
-						>
-					</li>
+					<li><a href="/features" class="text-sm text-gray-900 font-medium no-underline">Features</a></li>
+					<li><a href="/pricing" class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline">Pricing</a></li>
+					<li><a href="/contact" class="text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline">Contact</a></li>
 				</ul>
-				<div class="flex items-center gap-2">
-					<a
-						href="/login"
-						class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline"
-					>
-						Login
-					</a>
-					<a
-						href="/signup/create-account"
-						class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline"
-					>
-						Get started
-					</a>
+				<div class="hidden md:flex items-center gap-2">
+					<a href="/login" class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors no-underline">Login</a>
+					<a href="/signup/create-account" class="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline">Get started</a>
+				</div>
+				<button id="mobile-menu-btn" class="md:hidden flex items-center justify-center w-9 h-9 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" aria-label="Toggle menu">
+					<svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+					<svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+				</button>
+			</div>
+			<div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md">
+				<div class="max-w-5xl mx-auto px-6 py-4 flex flex-col gap-1">
+					<a href="/features" class="px-3 py-2.5 text-[0.9rem] font-medium text-gray-900 bg-gray-50 rounded-lg no-underline">Features</a>
+					<a href="/pricing" class="px-3 py-2.5 text-[0.9rem] text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors no-underline">Pricing</a>
+					<a href="/contact" class="px-3 py-2.5 text-[0.9rem] text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors no-underline">Contact</a>
+					<div class="border-t border-gray-100 mt-2 pt-3 flex flex-col gap-2">
+						<a href="/login" class="px-3 py-2.5 text-[0.9rem] font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors no-underline">Login</a>
+						<a href="/signup/create-account" class="px-3 py-2.5 text-[0.9rem] font-medium text-white bg-green-mid rounded-lg hover:bg-green-deep transition-colors no-underline text-center">Get started</a>
+					</div>
 				</div>
 			</div>
 		</nav>
+		<script>
+			const btn = document.getElementById('mobile-menu-btn');
+			const menu = document.getElementById('mobile-menu');
+			const iconOpen = document.getElementById('icon-open');
+			const iconClose = document.getElementById('icon-close');
+			btn.addEventListener('click', () => {
+				menu.classList.toggle('hidden');
+				iconOpen.classList.toggle('hidden');
+				iconClose.classList.toggle('hidden');
+			});
+		</script>
 
 		<!-- BREADCRUMB -->
 		<div class="max-w-5xl mx-auto px-6 pt-5 pb-0">
