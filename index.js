@@ -67,6 +67,8 @@ app.use(setLocals);
 
 app.get('/privacy', (_req, res) => res.render('privacy'));
 app.get('/terms', (_req, res) => res.render('terms'));
+app.get('/features', (_req, res) => res.render('features'));
+app.get('/contact', (_req, res) => res.render('contact'));
 
 app.use('/', signupRouter);
 app.use('/login', redirectIfAuthenticated, loginRouter);
