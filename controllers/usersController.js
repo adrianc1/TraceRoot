@@ -103,6 +103,29 @@ const acceptInvite = async (req, res) => {
 	}
 };
 
+const getEditUser = async (req, res) => {
+	try {
+		const user = await db.getUserById(req.params.id, req.user.company_id);
+		if (!user) return res.status(404).send('User not found');
+		res.render('users/edit-user', { editUser: user, currentUser: req.user });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+const updateUser = async (req, res) => {
+	try {
+		const { role } = req.body;
+		const updated = await db.updateUserRole(req.params.id, req.user.company_id, role);
+		if (!updated) return res.status(404).send('User not found');
+		res.redirect('/users');
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
 const getAccount = async (req, res) => {
 	const company = await db.getCompanyById(req.user.company_id);
 	res.render('users/account', { user: req.user, companyName: company ? company.name : '' });
@@ -118,6 +141,8 @@ module.exports = {
 	createInvite,
 	getAcceptInvite,
 	acceptInvite,
+	getEditUser,
+	updateUser,
 	getAccount,
 	getSettings,
 };
