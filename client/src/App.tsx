@@ -5,6 +5,7 @@ import EditBrand from './pages/brands/EditBrand';
 import Categories from './pages/categories/Categories';
 import CreateCategory from './pages/categories/CreateCategory';
 import EditCategory from './pages/categories/EditCategory';
+import CategoryProducts from './pages/categories/CategoryProducts';
 
 function App() {
 	return (
@@ -17,6 +18,7 @@ function App() {
 				<Route path="/categories" element={<Categories />} />
 				<Route path="/categories/create" element={<CreateCategory />} />
 				<Route path="/categories/:id/edit" element={<EditCategory />} />
+				<Route path="/categories/:id" element={<CategoryProducts />} />
 			</Routes>
 		</BrowserRouter>
 	);
