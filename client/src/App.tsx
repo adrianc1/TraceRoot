@@ -9,6 +9,9 @@ import CategoryProducts from './pages/categories/CategoryProducts';
 import Strains from './pages/strains/Strains';
 import CreateStrain from './pages/strains/CreateStrain';
 import EditStrain from './pages/strains/EditStrain';
+import Locations from './pages/locations/Locations';
+import CreateLocation from './pages/locations/CreateLocation';
+import EditLocation from './pages/locations/EditLocation';
 
 function App() {
 	return (
@@ -25,6 +28,10 @@ function App() {
 				<Route path="/strains" element={<Strains />} />
 				<Route path="/strains/create" element={<CreateStrain />} />
 				<Route path="/strains/:id/edit" element={<EditStrain />} />
+
+				<Route path="/locations" element={<Locations />} />
+				<Route path="/locations/create" element={<CreateLocation />} />
+				<Route path="/locations/:id/edit" element={<EditLocation />} />
 			</Routes>
 		</BrowserRouter>
 	);
