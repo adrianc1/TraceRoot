@@ -31,7 +31,7 @@ function App() {
 
 				<Route path="/locations" element={<Locations />} />
 				<Route path="/locations/create" element={<CreateLocation />} />
-				<Route path="/locations/:id/edit" element={<EditLocation />} />
+				<Route path="/locations/:id" element={<EditLocation />} />
 			</Routes>
 		</BrowserRouter>
 	);

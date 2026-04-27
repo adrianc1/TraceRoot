@@ -48,6 +48,9 @@ const Locations = () => {
 									<th className="hidden md:table-cell text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">
 										Description
 									</th>
+									<th className="text-left text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3">
+										Status
+									</th>
 									<th className="text-right text-[0.7rem] font-medium text-gray-600 uppercase tracking-[0.06em] px-4 py-3"></th>
 								</tr>
 							</thead>
@@ -68,9 +71,23 @@ const Locations = () => {
 										<td className="hidden md:table-cell px-4 py-3 text-[0.8125rem] text-gray-500">
 											{location.description || ''}
 										</td>
+
+										<td className="hidden md:table-cell px-4 py-3 text-[0.8125rem] text-gray-500">
+											{location.is_active === true ? (
+												<span className="inline-flex items-center gap-1 font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded bg-green-light text-green-deep">
+													<span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+													Active
+												</span>
+											) : (
+												<span className="inline-flex items-center gap-1 font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded bg-gray-100 text-gray-500">
+													<span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+													Inactive
+												</span>
+											)}
+										</td>
 										<td className="px-4 py-3 text-right">
 											<Link
-												to={`/locations/${location.id}/edit`}
+												to={`/locations/${location.id}`}
 												className="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline"
 											>
 												Edit

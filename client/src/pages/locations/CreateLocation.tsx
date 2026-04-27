@@ -16,6 +16,7 @@ const CreateLocation = () => {
 			body: JSON.stringify({
 				name: formData.get('name'),
 				description: formData.get('description'),
+				is_active: true,
 			}),
 		});
 
@@ -91,19 +92,6 @@ const CreateLocation = () => {
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all resize-none bg-white placeholder-gray-300"
 									></textarea>
 								</div>
-
-								<select
-									name="type"
-									id="type"
-									className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white text-gray-700"
-								>
-									<option value="indica">Indica</option>
-									<option value="sativa">Sativa</option>
-									<option value="hybrid">Hybrid</option>
-									<option value="indica-dominant">Indica-Dominant</option>
-									<option value="sativa-dominant">Sativa-Dominant</option>
-									<option value="cbd">CBD</option>
-								</select>
 							</div>
 						</div>
 
