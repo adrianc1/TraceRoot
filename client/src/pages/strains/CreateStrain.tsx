@@ -1,28 +1,16 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import type { Category } from '../../types/category';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import type CreateCategory from '../categories/CreateCategory';
 
-const EditCategory = () => {
-	const { id } = useParams();
+const CreateStrain = () => {
 	const navigate = useNavigate();
-	const [category, setCategory] = useState<Category | null>(null);
-
-	useEffect(() => {
-		const fetchCategory = async () => {
-			const response = await fetch(`/api/categories/${id}`);
-			const data = await response.json();
-			setCategory(data);
-		};
-		fetchCategory();
-	}, [id]);
 
 	const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
-
 		const formData = new FormData(e.currentTarget);
 
-		const response = await fetch(`/api/categories/${id}`, {
-			method: 'PUT',
+		const response = await fetch('/api/strains', {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -33,45 +21,40 @@ const EditCategory = () => {
 		});
 
 		if (response.ok) {
-			navigate('/categories');
+			navigate('/strains');
 		} else {
-			console.error('Failed to update category');
+			console.error('Failed to create strain');
 		}
 	};
 
-	if (!category) return <div>Loading...</div>;
-
 	return (
-		<div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
+		<div className="bg-gray-50 font-sans text-gray-900 min-h-screen overflow-x-hidden flex flex-col">
 			<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
-				{/* backlink */}
-				<Link
-					to="/categories"
+				{/* <!-- Back link --> */}
+				<a
+					href="/strains"
 					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
 				>
-					← Back to categories
-				</Link>
+					← Back to strains
+				</a>
 
-				{/* Page title */}
+				{/* <!-- Page title --> */}
 				<div className="mb-6">
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">
-						Edit Category
+						Add New Strain
 					</h1>
 					<p className="text-sm text-gray-400 font-light mt-0.5">
-						Categories can be assigned to products in your inventory
+						Strains can be assigned to products in your inventory
 					</p>
 				</div>
 
-				{/* Error partial */}
-				{/* <%- include('../partials/errors.ejs') %> */}
-
-				{/* form section    */}
+				{/* <!-- Form card --> */}
 				<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-					<form id="edit-category-form" onSubmit={handleSubmit}>
-						{/* Section: Category Info */}
+					<form id="create-strain-form" onSubmit={handleSubmit}>
+						{/* <!-- Section: Strain Info --> */}
 						<div className="px-6 py-5 border-b border-gray-100">
 							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
-								Category Info
+								Strain Info
 							</div>
 							<div className="space-y-4">
 								<div>
@@ -79,20 +62,16 @@ const EditCategory = () => {
 										htmlFor="name"
 										className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5"
 									>
-										Category Name <span className="text-red-400">*</span>
+										Strain Name <span className="text-red-400">*</span>
 									</label>
 									<input
 										type="text"
 										id="name"
 										name="name"
-										defaultValue={category?.name || ''}
-										placeholder="e.g. Jeeter, Raw Garden"
+										placeholder="e.g. Flower, Vapes, Edibles"
 										required
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
 									/>
-									<p className="text-[0.75rem] text-gray-400 mt-1">
-										Must be unique within your company
-									</p>
 								</div>
 
 								<div>
@@ -107,20 +86,32 @@ const EditCategory = () => {
 									</label>
 									<textarea
 										id="description"
-										name="descriptiosn"
+										name="description"
 										rows={3}
-										placeholder="Brief description of the category..."
+										placeholder="Brief description of this strain..."
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all resize-none bg-white placeholder-gray-300"
-										defaultValue={category?.description || ''}
 									></textarea>
 								</div>
+
+								<select
+									name="type"
+									id="type"
+									className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white text-gray-700"
+								>
+									<option value="indica">Indica</option>
+									<option value="sativa">Sativa</option>
+									<option value="hybrid">Hybrid</option>
+									<option value="indica-dominant">Indica-Dominant</option>
+									<option value="sativa-dominant">Sativa-Dominant</option>
+									<option value="cbd">CBD</option>
+								</select>
 							</div>
 						</div>
 
-						{/* Form actions  */}
+						{/* <!-- Form actions --> */}
 						<div className="px-6 py-4 bg-gray-50 flex items-center justify-between gap-3">
 							<a
-								href="/categories"
+								href="/strains"
 								className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-white hover:border-gray-400 transition-colors no-underline"
 							>
 								Cancel
@@ -129,7 +120,7 @@ const EditCategory = () => {
 								type="submit"
 								className="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer"
 							>
-								Save Changes
+								Create Strain
 							</button>
 						</div>
 					</form>
@@ -139,4 +130,4 @@ const EditCategory = () => {
 	);
 };
 
-export default EditCategory;
+export default CreateStrain;

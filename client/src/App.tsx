@@ -6,6 +6,9 @@ import Categories from './pages/categories/Categories';
 import CreateCategory from './pages/categories/CreateCategory';
 import EditCategory from './pages/categories/EditCategory';
 import CategoryProducts from './pages/categories/CategoryProducts';
+import Strains from './pages/strains/Strains';
+import CreateStrain from './pages/strains/CreateStrain';
+import EditStrain from './pages/strains/EditStrain';
 
 function App() {
 	return (
@@ -19,6 +22,9 @@ function App() {
 				<Route path="/categories/create" element={<CreateCategory />} />
 				<Route path="/categories/:id/edit" element={<EditCategory />} />
 				<Route path="/categories/:id" element={<CategoryProducts />} />
+				<Route path="/strains" element={<Strains />} />
+				<Route path="/strains/create" element={<CreateStrain />} />
+				<Route path="/strains/:id/edit" element={<EditStrain />} />
 			</Routes>
 		</BrowserRouter>
 	);
