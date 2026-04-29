@@ -6,7 +6,7 @@ const router = express.Router();
 router.get(
 	'/',
 	authorizeRole('admin', 'manager', 'staff'),
-	productsController.getAllProducts,
+	productsController.getAllPackages,
 );
 router.get(
 	'/products',
