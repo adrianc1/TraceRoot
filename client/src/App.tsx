@@ -19,34 +19,44 @@ import EditProduct from './pages/products/EditProduct';
 import ReceiveInventory from './pages/products/ReceiveInventory';
 import AdjustInventory from './pages/products/AdjustInventory';
 import SplitPackage from './pages/products/SplitPackage';
+import Header from './components/Header';
 
 function App() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<div>App root </div>} />
-				<Route path="/brands" element={<Brands />} />
-				<Route path="/brands/create" element={<CreateBrand />} />
-				<Route path="/brands/:id/edit" element={<EditBrand />} />
-				<Route path="/categories" element={<Categories />} />
-				<Route path="/categories/create" element={<CreateCategory />} />
-				<Route path="/categories/:id/edit" element={<EditCategory />} />
-				<Route path="/categories/:id" element={<CategoryProducts />} />
-				<Route path="/strains" element={<Strains />} />
-				<Route path="/strains/create" element={<CreateStrain />} />
-				<Route path="/strains/:id/edit" element={<EditStrain />} />
-				<Route path="/locations" element={<Locations />} />
-				<Route path="/locations/create" element={<CreateLocation />} />
-				<Route path="/locations/:id" element={<EditLocation />} />
-				<Route path="/packages" element={<Packages />} />
-				<Route path="/packages/create-product" element={<CreateProduct />} />
-				<Route path="/packages/:packageTag/adjust" element={<AdjustInventory />} />
-				<Route path="/packages/:packageTag/split" element={<SplitPackage />} />
-				<Route path="/packages/:id/edit" element={<EditProduct />} />
-				<Route path="/packages/:id/receive" element={<ReceiveInventory />} />
-				<Route path="/packages/:id" element={<Product />} />
-			</Routes>
-		</BrowserRouter>
+		<div className="">
+			<Header />
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<div>App root </div>} />
+					<Route path="/brands" element={<Brands />} />
+					<Route path="/brands/create" element={<CreateBrand />} />
+					<Route path="/brands/:id/edit" element={<EditBrand />} />
+					<Route path="/categories" element={<Categories />} />
+					<Route path="/categories/create" element={<CreateCategory />} />
+					<Route path="/categories/:id/edit" element={<EditCategory />} />
+					<Route path="/categories/:id" element={<CategoryProducts />} />
+					<Route path="/strains" element={<Strains />} />
+					<Route path="/strains/create" element={<CreateStrain />} />
+					<Route path="/strains/:id/edit" element={<EditStrain />} />
+					<Route path="/locations" element={<Locations />} />
+					<Route path="/locations/create" element={<CreateLocation />} />
+					<Route path="/locations/:id" element={<EditLocation />} />
+					<Route path="/packages" element={<Packages />} />
+					<Route path="/packages/create-product" element={<CreateProduct />} />
+					<Route
+						path="/packages/:packageTag/adjust"
+						element={<AdjustInventory />}
+					/>
+					<Route
+						path="/packages/:packageTag/split"
+						element={<SplitPackage />}
+					/>
+					<Route path="/packages/:id/edit" element={<EditProduct />} />
+					<Route path="/packages/:id/receive" element={<ReceiveInventory />} />
+					<Route path="/packages/:id" element={<Product />} />
+				</Routes>
+			</BrowserRouter>
+		</div>
 	);
 }
 
