@@ -1,6 +1,4 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type CreateCategory from '../categories/CreateCategory';
 
 const CreateStrain = () => {
 	const navigate = useNavigate();
