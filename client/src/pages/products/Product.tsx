@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import type { Package, ProductDetail, AuditPackage, PackageStatus } from '../../types/package';
 
@@ -28,7 +28,7 @@ const Product = () => {
 	const [inventory, setInventory] = useState<Package[]>([]);
 	const [auditTrail, setAuditTrail] = useState<AuditPackage[]>([]);
 	const [activeTab, setActiveTab] = useState<'inventory' | 'audit'>('inventory');
-	const [expandedAudit, setExpandedAudit] = useState<Set<number>>(new Set());
+	const [expandedAudit, setExpandedAudit] = useState<Set<string>>(new Set());
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -61,10 +61,14 @@ const Product = () => {
 		if (data.success) setProduct(p => p ? { ...p, status: 'active' } : p);
 	};
 
-	const toggleAudit = (pkgId: number) => {
+	const toggleAudit = (tag: string) => {
 		setExpandedAudit(prev => {
 			const next = new Set(prev);
-			next.has(pkgId) ? next.delete(pkgId) : next.add(pkgId);
+			if (next.has(tag)) {
+				next.delete(tag);
+			} else {
+				next.add(tag);
+			}
 			return next;
 		});
 	};
@@ -292,10 +296,10 @@ const Product = () => {
 									<tbody className="divide-y divide-gray-100">
 										{auditTrail.map(pkg => {
 											const statusStyle = STATUS_STYLES[pkg.status] || STATUS_STYLES.inactive;
-											const expanded = expandedAudit.has(pkg.id);
+											const expanded = expandedAudit.has(pkg.package_tag);
 											return (
-												<>
-													<tr key={`pkg-${pkg.id}`} className="hover:bg-gray-50 transition-colors">
+												<React.Fragment key={pkg.package_tag}>
+													<tr className="hover:bg-gray-50 transition-colors">
 														<td className="px-4 py-3">
 															<span className="font-mono text-[0.75rem] text-gray-500">{pkg.package_tag}</span>
 														</td>
@@ -317,7 +321,7 @@ const Product = () => {
 														</td>
 														<td className="px-4 py-3 text-right">
 															<button
-																onClick={() => toggleAudit(pkg.id)}
+																onClick={() => toggleAudit(pkg.package_tag)}
 																className="inline-flex items-center gap-1 text-[0.75rem] font-medium text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
 															>
 																<span>{expanded ? 'Hide' : 'View History'}</span>
@@ -328,7 +332,7 @@ const Product = () => {
 														</td>
 													</tr>
 													{expanded && (
-														<tr key={`audit-${pkg.id}`}>
+														<tr>
 															<td colSpan={6} className="px-6 py-4 bg-gray-50/60">
 																<div className="border border-gray-200 rounded-lg overflow-hidden">
 																	<table className="w-full text-left">
@@ -365,7 +369,7 @@ const Product = () => {
 															</td>
 														</tr>
 													)}
-												</>
+												</React.Fragment>
 											);
 										})}
 									</tbody>

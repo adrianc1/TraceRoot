@@ -107,7 +107,7 @@ const EditCategory = () => {
 									</label>
 									<textarea
 										id="description"
-										name="descriptiosn"
+										name="description"
 										rows={3}
 										placeholder="Brief description of the category..."
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all resize-none bg-white placeholder-gray-300"
