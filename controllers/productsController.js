@@ -43,17 +43,15 @@ const getAllProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
-		const product = await db.getProductWithInventoryDB(req.params.id);
-		const productInventory = await db.getPackagesByProductId(
-			req.params.id,
-			req.user.company_id,
-		);
-		const packages = await db.getAuditTrail(req.params.id);
+		const product = await db.getProductWithInventoryDB(req.params.id, req.user.company_id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
+
+		const productInventory = await db.getPackagesByProductId(req.params.id, req.user.company_id);
+		const packages = await db.getAuditTrail(req.params.id, req.user.company_id);
 
 		res.render('products/product', {
 			product,

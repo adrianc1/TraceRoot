@@ -1,6 +1,6 @@
 const pool = require('../pool');
 
-const getAuditTrail = async (productId) => {
+const getAuditTrail = async (productId, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT 
@@ -42,11 +42,11 @@ const getAuditTrail = async (productId) => {
     LEFT JOIN categories c ON c.id = pr.category_id
     LEFT JOIN inventory_movements im ON im.packages_id = pk.id
     LEFT JOIN users u ON u.id = im.user_id
-    WHERE pk.product_id = $1
+    WHERE pk.product_id = $1 AND pk.company_id = $2
     GROUP BY pk.id, pr.name, pr.unit, b.name, s.name, c.name, l.name
     ORDER BY pk.id;
 `,
-			[productId],
+			[productId, companyId],
 		);
 
 		return rows;
