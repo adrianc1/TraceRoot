@@ -154,6 +154,7 @@ const GeneralReceiving = () => {
 												...prev,
 												unit: selected?.unit || '',
 												product_id: String(selected?.id),
+												package_size: selected?.unit !== 'each' ? '' : prev.package_size,
 											}));
 										}}
 										required
@@ -297,6 +298,7 @@ const GeneralReceiving = () => {
 										/>
 									</div>
 								</div>
+								{form.unit === 'each' && (
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 										Package Size{' '}
@@ -314,6 +316,7 @@ const GeneralReceiving = () => {
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white placeholder-gray-300"
 									/>
 								</div>
+							)}
 							</div>
 						</div>
 

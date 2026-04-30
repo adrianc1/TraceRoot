@@ -196,7 +196,10 @@ const ReceiveInventory = () => {
 										<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">Unit</label>
 										<select
 											value={form.unit}
-											onChange={set('unit')}
+											onChange={e => {
+												const next = e.target.value;
+												setForm(prev => ({ ...prev, unit: next, package_size: next !== 'each' ? '' : prev.package_size }));
+											}}
 											className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 										>
 											{units.map(u => <option key={u} value={u}>{u}</option>)}
@@ -220,6 +223,7 @@ const ReceiveInventory = () => {
 										/>
 									</div>
 								</div>
+								{form.unit === 'each' && (
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 										Package Size <span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
@@ -234,6 +238,7 @@ const ReceiveInventory = () => {
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white placeholder-gray-300"
 									/>
 								</div>
+							)}
 							</div>
 						</div>
 

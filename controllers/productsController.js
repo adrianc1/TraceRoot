@@ -233,9 +233,9 @@ const insertProduct = async (req, res) => {
 		newCategory = null;
 	}
 
-	const strain_id = strainId || newStrain?.id || null;
-	const brand_id = brandId || newBrand?.id || null;
-	const category_id = categoryId || newCategory?.id || null;
+	const strain_id = (strainId !== '__new__' && strainId) || newStrain?.id || null;
+	const brand_id = (brandId !== '__new__' && brandId) || newBrand?.id || null;
+	const category_id = (categoryId !== '__new__' && categoryId) || newCategory?.id || null;
 
 	const product = await db.insertProduct(
 		name,
@@ -449,7 +449,16 @@ const adjustInventoryGet = async (req, res) => {
 			'Seizure/Legal Compliance',
 		];
 
-		res.json({ product, brand, strain, category, units, adjustmentReasons, statusOptions, package: pkg });
+		res.json({
+			product,
+			brand,
+			strain,
+			category,
+			units,
+			adjustmentReasons,
+			statusOptions,
+			package: pkg,
+		});
 	} catch (error) {
 		console.error(error);
 	}
