@@ -46,11 +46,11 @@ const getAllProductsDB = async (user_id, status = 'active') => {
 	}
 };
 
-const getProductWithInventoryDB = async (id) => {
+const getProductWithInventoryDB = async (id, companyId) => {
 	try {
 		const { rows } = await pool.query(
 			`
-      SELECT 
+      SELECT
         p.id,
         p.name,
         p.description,
@@ -65,7 +65,7 @@ const getProductWithInventoryDB = async (id) => {
         strains.name AS strain_name,
         COALESCE(SUM(i.quantity),0) AS total_quantity,
         COALESCE(SUM(i.quantity * i.cost_price),0) AS total_valuation,
-        CASE 
+        CASE
           WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * i.cost_price) / SUM(i.quantity), 2)
           ELSE 0
         END AS average_cost
@@ -74,10 +74,10 @@ const getProductWithInventoryDB = async (id) => {
       LEFT JOIN categories ON p.category_id = categories.id
       LEFT JOIN strains ON p.strain_id = strains.id
       LEFT JOIN packages i ON p.id = i.product_id
-      WHERE p.id = $1
+      WHERE p.id = $1 AND p.company_id = $2
       GROUP BY p.id, p.name, p.sku, p.unit, p.brand_id, p.category_id, p.strain_id, brand_name, category_name, strain_name
       `,
-			[id],
+			[id, companyId],
 		);
 		return rows[0];
 	} catch (error) {

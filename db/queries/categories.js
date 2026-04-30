@@ -10,7 +10,7 @@ const getAllCategories = async (companyId) => {
 
 const getCategoryById = async (id, companyId) => {
 	const { rows } = await pool.query(
-		`SELECT id, name FROM categories WHERE id=$1 AND company_id=$2`,
+		`SELECT id, name, description FROM categories WHERE id=$1 AND company_id=$2`,
 		[id, companyId],
 	);
 	return rows[0];
@@ -65,9 +65,9 @@ const getSingleCategory = async (id, companyId) => {
 const insertCategory = async (name, companyId, description) => {
 	try {
 		const result = await pool.query(
-			`INSERT INTO categories (name, company_id)
-            VALUES ($1, $2) RETURNING *`,
-			[name, companyId],
+			`INSERT INTO categories (name, company_id, description)
+            VALUES ($1, $2, $3) RETURNING *`,
+			[name, companyId, description],
 		);
 		return result.rows[0];
 	} catch (error) {
