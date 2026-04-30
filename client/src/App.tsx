@@ -20,6 +20,7 @@ import ReceiveInventory from './pages/products/ReceiveInventory';
 import AdjustInventory from './pages/products/AdjustInventory';
 import SplitPackage from './pages/products/SplitPackage';
 import Header from './components/Header';
+import GeneralReceiving from './pages/products/GeneralReceiving';
 
 function App() {
 	return (
@@ -27,6 +28,7 @@ function App() {
 			<Header />
 			<BrowserRouter>
 				<Routes>
+					<Route path="/packages/receive" element={<GeneralReceiving />} />
 					<Route path="/" element={<div>App root </div>} />
 					<Route path="/brands" element={<Brands />} />
 					<Route path="/brands/create" element={<CreateBrand />} />
