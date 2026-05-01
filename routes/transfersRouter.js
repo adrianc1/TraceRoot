@@ -15,11 +15,11 @@ router.get(
 	transfersController.exportTransfersCsv,
 );
 
-router.get(
-	'/create',
-	authorizeRole('admin', 'manager'),
-	transfersController.createTransferForm,
-);
+// router.get(
+// 	'/create',
+// 	authorizeRole('admin', 'manager'),
+// 	transfersController.createTransferForm,
+// );
 
 router.post(
 	'/',

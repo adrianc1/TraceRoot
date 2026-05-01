@@ -22,6 +22,7 @@ import SplitPackage from './pages/products/SplitPackage';
 import Header from './components/Header';
 import GeneralReceiving from './pages/products/GeneralReceiving';
 import ProductList from './pages/products/ProductList';
+import Transfers from './pages/transfers/Transfers';
 
 function App() {
 	return (
@@ -58,6 +59,8 @@ function App() {
 					<Route path="/packages/:id/receive" element={<ReceiveInventory />} />
 					<Route path="/packages/:id" element={<Product />} />
 					<Route path="/packages/products" element={<ProductList />} />
+
+					<Route path="/transfers" element={<Transfers />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
