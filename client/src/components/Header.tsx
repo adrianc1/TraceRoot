@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
+import type { CurrentUser } from '../types/user';
+
 const Header = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -9,6 +12,21 @@ const Header = () => {
 		if (!catalogBtn) return;
 		setIsOpen(!isOpen);
 	};
+
+	useEffect(() => {
+		const fetchCurrentUser = async () => {
+			try {
+				const response = await fetch('/api/users/me', {
+					credentials: 'include',
+				});
+				const user = await response.json();
+				setCurrentUser(user);
+			} catch (error) {
+				console.error('Error fetching current user:', error);
+			}
+		};
+		fetchCurrentUser();
+	}, []);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -140,11 +158,11 @@ const Header = () => {
 								{/* <!-- Avatar initials --> */}
 								<div className="w-7 h-7 rounded-full bg-green-light flex items-center justify-center shrink-0">
 									<span className="text-[0.7rem] font-semibold text-green-deep font-mono">
-										FIRST NAME
+										{currentUser?.first_name?.[0]}
 									</span>
 								</div>
 								<span className="text-[0.8125rem] text-gray-700 font-medium">
-									First Name
+									{currentUser?.first_name} {currentUser?.last_name}
 								</span>
 								{/* <!-- Chevron --> */}
 								<svg
@@ -170,14 +188,14 @@ const Header = () => {
 								{/* <!-- User info header --> */}
 								<div className="px-4 py-3 border-b border-gray-100">
 									<div className="text-[0.8125rem] font-medium text-gray-900">
-										First Name
+										{currentUser?.first_name} {currentUser?.last_name}
 									</div>
 									<div className="text-[0.75rem] text-gray-400 font-mono mt-0.5">
-										Email
+										{currentUser?.email}
 									</div>
 									{/* <!-- Company name --> */}
 									<div className="text-[0.7rem] text-gray-400 mt-1 truncate">
-										Company Name
+										{currentUser?.company_name}
 									</div>
 								</div>
 								{/* <!-- Menu items --> */}
@@ -427,12 +445,13 @@ const Header = () => {
 					<div className="flex items-center gap-3 px-3 py-2.5">
 						<div className="w-7 h-7 rounded-full bg-green-light flex items-center justify-center shrink-0">
 							<span className="text-[0.7rem] font-semibold text-green-deep font-mono">
-								FIRST NAME
+								{currentUser?.first_name?.[0]}
+								{currentUser?.last_name?.[0]}
 							</span>
 						</div>
 						<div>
 							<div className="text-[0.8125rem] font-medium text-gray-900">
-								First Name
+								{currentUser?.first_name} {currentUser?.last_name}
 							</div>
 							<div className="text-[0.7rem] text-gray-400 font-mono">Email</div>
 						</div>

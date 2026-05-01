@@ -178,7 +178,21 @@
 						</div>
 					</div>
 
-					<div class="px-6 py-4 bg-gray-50">
+					<div class="px-6 py-4 bg-gray-50 space-y-3">
+						<label class="flex items-start gap-2.5 cursor-pointer">
+							<input
+								type="checkbox"
+								name="agree_terms"
+								required
+								class="mt-0.5 shrink-0 accent-green-mid"
+							/>
+							<span class="text-[0.8125rem] text-gray-500">
+								I agree to the
+								<a href="/terms" class="text-green-mid hover:text-green-deep no-underline font-medium">Terms of Service</a>
+								and
+								<a href="/privacy" class="text-green-mid hover:text-green-deep no-underline font-medium">Privacy Policy</a>
+							</span>
+						</label>
 						<button
 							type="submit"
 							class="w-full py-2 text-[0.875rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer"

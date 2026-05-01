@@ -1,6 +1,17 @@
 const db = require('../db/queries');
 const crypto = require('crypto');
 
+const getCurrentUser = async (req, res) => {
+	try {
+		const user = await db.getUserById(req.user.id, req.user.company_id);
+		if (!user) return res.status(404).json({ error: 'User not found' });
+		res.json(user);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
 const getUsers = async (req, res) => {
 	try {
 		const users = await db.getUsersByCompany(req.user.company_id);
@@ -117,7 +128,11 @@ const getEditUser = async (req, res) => {
 const updateUser = async (req, res) => {
 	try {
 		const { role } = req.body;
-		const updated = await db.updateUserRole(req.params.id, req.user.company_id, role);
+		const updated = await db.updateUserRole(
+			req.params.id,
+			req.user.company_id,
+			role,
+		);
 		if (!updated) return res.status(404).send('User not found');
 		res.redirect('/users');
 	} catch (error) {
@@ -128,7 +143,10 @@ const updateUser = async (req, res) => {
 
 const getAccount = async (req, res) => {
 	const company = await db.getCompanyById(req.user.company_id);
-	res.render('users/account', { user: req.user, companyName: company ? company.name : '' });
+	res.render('users/account', {
+		user: req.user,
+		companyName: company ? company.name : '',
+	});
 };
 
 const getSettings = async (req, res) => {
@@ -137,6 +155,7 @@ const getSettings = async (req, res) => {
 };
 
 module.exports = {
+	getCurrentUser,
 	getUsers,
 	getInviteForm,
 	createInvite,

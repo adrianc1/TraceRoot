@@ -82,9 +82,9 @@ app.get('/pricing', (req, res) => res.render('pricing', { query: req.query }));
 app.get('/contact', (_req, res) => res.render('contact'));
 app.use('/billing', billingRouter);
 
-app.use('/api/login', redirectIfAuthenticated, loginRouter);
-app.use('/api/signup', redirectIfAuthenticated, signupRouter);
-app.use('/api/users', usersRouter);
+app.use('/login', redirectIfAuthenticated, loginRouter);
+app.use('/', signupRouter);
+app.use('/api/users', ensureAuthenticated, usersRouter);
 
 app.use('/api/packages', ensureAuthenticated, productsRouter);
 app.use('/api/categories', ensureAuthenticated, categoryRouter);
