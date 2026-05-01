@@ -84,7 +84,7 @@ app.use('/billing', billingRouter);
 
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/', signupRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', ensureAuthenticated, usersRouter);
 
 app.use('/api/packages', ensureAuthenticated, productsRouter);
 app.use('/api/categories', ensureAuthenticated, categoryRouter);
