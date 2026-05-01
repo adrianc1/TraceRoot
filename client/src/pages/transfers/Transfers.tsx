@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
-import type { TransferSummary } from '../../types/transfers';
+import type { TransferStatus, TransferSummary } from '../../types/transfers';
 
 const Transfers = () => {
 	const [transfers, setTransfers] = useState<TransferSummary[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const STATUSES = ['pending', 'confirmed', 'cancelled'] as const;
+	const STATUS_STYLES: Record<TransferStatus, string> = {
+		pending: 'bg-amber-50 text-amber-700',
+		confirmed: 'bg-green-light text-green-deep',
+		cancelled: 'bg-gray-100 text-gray-500',
+	};
 
-	const STATUS_STYLES: Record<PackageStatus | 'all', string> = {
-		all: 'bg-gray-100 text-gray-500',
-		active: 'bg-green-50 text-green-700',
-		inactive: 'bg-gray-100 text-gray-500',
-		quarantine: 'bg-yellow-50 text-yellow-800',
-		damaged: 'bg-red-50 text-red-700',
-		expired: 'bg-slate-100 text-slate-700',
-		reserved: 'bg-blue-50 text-blue-700',
+	const TRANSFER_TYPE_STYLES: Record<string, string> = {
+		internal: 'bg-blue-50 text-blue-700',
+		external: 'bg-purple-50 text-purple-700',
 	};
 
 	useEffect(() => {
@@ -99,6 +98,12 @@ const Transfers = () => {
 					</thead>
 					<tbody className="divide-y divide-gray-100">
 						{transfers?.map((t) => {
+							const typeStyle =
+								STATUS_STYLES[t.status] || STATUS_STYLES.pending;
+
+							const transferTypeStyle =
+								TRANSFER_TYPE_STYLES[t.transfer_type] ||
+								TRANSFER_TYPE_STYLES.internal;
 							return (
 								<tr className="hover:bg-gray-50 transition-colors">
 									{/* <!-- transfer id --> */}
@@ -110,7 +115,9 @@ const Transfers = () => {
 
 									{/* <!-- type --> */}
 									<td className="px-4 py-3">
-										<span className="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= typeStyle %>">
+										<span
+											className={`inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize ${transferTypeStyle}`}
+										>
 											{t.transfer_type}
 										</span>
 									</td>
@@ -138,7 +145,9 @@ const Transfers = () => {
 
 									{/* <!-- Status --> */}
 									<td className="px-4 py-3">
-										<span className="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize <%= statusStyle %>">
+										<span
+											className={`inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize ${typeStyle}`}
+										>
 											{t.status}
 										</span>
 									</td>
@@ -146,7 +155,11 @@ const Transfers = () => {
 									{/* <!-- Date --> */}
 									<td className="px-4 py-3">
 										<span className="text-[0.8125rem] text-gray-400">
-											{t.created_at}
+											{new Date(t.created_at).toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric',
+											})}
 										</span>
 									</td>
 
