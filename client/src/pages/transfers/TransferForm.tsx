@@ -1,7 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import type { TransferType } from '../../types/transfers';
 
 const TransferForm = () => {
-	const [transferType, setTransferType] = useState<'internal' | 'external' | ''>('');
+	const [transferType, setTransferType] = useState<TransferType | ''>('');
+	const [locations, setLocations] = useState<{ id: number; name: string }[]>(
+		[],
+	);
+
+	useEffect(() => {
+		fetch('/api/locations')
+			.then((res) => res.json())
+			.then(setLocations);
+	}, []);
 
 	return (
 		<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
@@ -13,7 +24,9 @@ const TransferForm = () => {
 			</a>
 
 			<div className="mb-6">
-				<h1 className="text-xl font-semibold tracking-tight text-gray-900">New Transfer</h1>
+				<h1 className="text-xl font-semibold tracking-tight text-gray-900">
+					New Transfer
+				</h1>
 				<p className="text-sm text-gray-400 font-light mt-0.5">
 					Move inventory between locations or to an external company
 				</p>
@@ -27,7 +40,6 @@ const TransferForm = () => {
 							Transfer Info
 						</div>
 						<div className="space-y-4">
-
 							{/* Transfer Type */}
 							<div>
 								<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
@@ -37,7 +49,9 @@ const TransferForm = () => {
 									name="transfer_type"
 									required
 									value={transferType}
-									onChange={(e) => setTransferType(e.target.value as 'internal' | 'external' | '')}
+									onChange={(e) =>
+										setTransferType(e.target.value as TransferType)
+									}
 									className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 								>
 									<option value="">— Select type —</option>
@@ -57,7 +71,11 @@ const TransferForm = () => {
 									className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 								>
 									<option value="">— Select location —</option>
-									{/* locations.map goes here */}
+									{locations.map((loc) => (
+										<option key={loc.id} value={loc.id}>
+											{loc.name}
+										</option>
+									))}
 								</select>
 							</div>
 
@@ -73,7 +91,11 @@ const TransferForm = () => {
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 									>
 										<option value="">— Select location —</option>
-										{/* locations.map goes here */}
+										{locations.map((loc) => (
+											<option key={loc.id} value={loc.id}>
+												{loc.name}
+											</option>
+										))}
 									</select>
 								</div>
 							)}
@@ -98,7 +120,9 @@ const TransferForm = () => {
 							<div>
 								<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 									Notes{' '}
-									<span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+									<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+										optional
+									</span>
 								</label>
 								<textarea
 									name="notes"
@@ -124,11 +148,11 @@ const TransferForm = () => {
 							</button>
 						</div>
 
-						<div className="space-y-3">
-							{/* items.map goes here */}
-						</div>
+						<div className="space-y-3">{/* items.map goes here */}</div>
 
-						<p className="text-[0.8125rem] text-gray-400 italic">No packages added yet</p>
+						<p className="text-[0.8125rem] text-gray-400 italic">
+							No packages added yet
+						</p>
 					</div>
 
 					{/* Form Actions */}

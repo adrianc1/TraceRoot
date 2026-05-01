@@ -1,8 +1,10 @@
 export type TransferStatus = 'pending' | 'confirmed' | 'cancelled';
 
+export type TransferType = 'internal' | 'external' | '';
+
 export interface TransferSummary {
 	id: number;
-	transfer_type: 'internal' | 'external';
+	transfer_type: TransferType;
 	status: TransferStatus;
 	from_location: string;
 	to_location: string | null;
@@ -26,7 +28,7 @@ export interface TransferItem {
 
 export interface TransferDetail {
 	id: number;
-	transfer_type: 'internal' | 'external';
+	transfer_type: TransferType;
 	status: TransferStatus;
 	notes: string | null;
 	created_at: string;
