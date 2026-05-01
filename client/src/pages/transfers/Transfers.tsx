@@ -59,7 +59,7 @@ const Transfers = () => {
 						Export CSV
 					</a>
 					<a
-						href="api/transfers/create"
+						href="/transfers/create"
 						className="inline-flex items-center justify-center whitespace-nowrap px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors no-underline"
 					>
 						+ New Transfer
