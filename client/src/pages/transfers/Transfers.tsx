@@ -166,7 +166,7 @@ const Transfers = () => {
 									{/* <!-- Actions --> */}
 									<td className="px-4 py-3">
 										<a
-											href="/transfers/<%= t.id %>"
+											href={`/transfers/${t.id}`}
 											className="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline"
 										>
 											View

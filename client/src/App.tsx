@@ -23,6 +23,7 @@ import Header from './components/Header';
 import GeneralReceiving from './pages/products/GeneralReceiving';
 import ProductList from './pages/products/ProductList';
 import Transfers from './pages/transfers/Transfers';
+import Transfer from './pages/transfers/Transfer';
 
 function App() {
 	return (
@@ -61,6 +62,7 @@ function App() {
 					<Route path="/packages/products" element={<ProductList />} />
 
 					<Route path="/transfers" element={<Transfers />} />
+					<Route path="/transfers/:id" element={<Transfer />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
