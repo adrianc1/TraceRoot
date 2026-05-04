@@ -9,6 +9,9 @@ interface Locations {
 	name: string;
 }
 
+type SelectedItem = Pick<TransferItem, 'package_tag' | 'quantity'> & {
+	package_id: number;
+};
 const TransferForm = () => {
 	const navigate = useNavigate();
 
@@ -17,6 +20,7 @@ const TransferForm = () => {
 	const [fromLocationId, setFromLocationId] = useState<number | null>(null);
 	const [toLocationId, setToLocationId] = useState<number | null>(null);
 	const [items, setItems] = useState<TransferItem[]>([]);
+	const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
 
 	useEffect(() => {
 		fetch('/api/locations')
@@ -31,10 +35,6 @@ const TransferForm = () => {
 			.then((res) => res.json())
 			.then((data) => setItems(data.packages));
 	}, [fromLocationId]);
-
-	const addItem = async (e: React.SyntheticEvent<HTMLFormElement>) => {
-		return ``;
-	};
 
 	const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -52,7 +52,7 @@ const TransferForm = () => {
 				to_company_name:
 					transferType === 'external' ? formData.get('to_company_name') : null,
 				notes: formData.get('notes'),
-				items: [], // TODO: add package items
+				items: selectedItems,
 			}),
 		});
 
@@ -201,20 +201,76 @@ const TransferForm = () => {
 							</div>
 							<button
 								type="button"
-								className="text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer"
-								onClick={addItem}
+								className={`text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed`}
+								disabled={
+									!fromLocationId || items.length === selectedItems.length
+								}
+								onClick={() => {
+									setSelectedItems((prev) => [
+										...prev,
+										{ package_tag: '', quantity: 0, package_id: 0 },
+									]);
+								}}
 							>
 								+ Add Package
 							</button>
 						</div>
 
 						<div className="space-y-3">
-							<select name="items" id="items"></select>
+							{selectedItems.map((item, index) => {
+								const availablePackages = items.filter(
+									(pkg) =>
+										!selectedItems.some(
+											(s) => s.package_tag === pkg.package_tag,
+										) || pkg.package_tag === item.package_tag,
+								);
+								return (
+									<li key={index} className="flex items-center gap-3">
+										<select
+											key={item.package_tag}
+											value={item.package_tag}
+											name="items"
+											id="items"
+											onChange={(e) => {
+												const selected = items.find(
+													(pkg) => pkg.package_tag === e.target.value,
+												);
+												if (!selected) return;
+												setSelectedItems((prev) =>
+													prev.map((row, i) =>
+														i === index
+															? {
+																	package_id: selected.id,
+																	package_tag: selected.package_tag,
+																	quantity: selected.quantity,
+																}
+															: row,
+													),
+												);
+
+												console.log(selectedItems);
+											}}
+											className="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white text-gray-700"
+										>
+											<option value={''}>— Select package —</option>
+											{availablePackages.map((item) => (
+												<option key={item.package_tag} value={item.package_tag}>
+													{item.package_tag} ({item.quantity})
+												</option>
+											))}
+										</select>
+									</li>
+								);
+							})}
 						</div>
 
-						<p className="text-[0.8125rem] text-gray-400 italic">
-							No packages added yet
-						</p>
+						<div className="text-[0.8125rem] text-gray-400 italic">
+							{selectedItems.length === 0 && (
+								<p className="text-[0.8125rem] text-gray-400 italic">
+									No packages added yet
+								</p>
+							)}
+						</div>
 					</div>
 
 					{/* Form Actions */}

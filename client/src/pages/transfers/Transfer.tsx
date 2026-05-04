@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import type { TransferDetail } from '../../types/transfers';
 
 const Transfer = () => {
 	const [transfer, setTransfer] = useState<TransferDetail | null>(null);
 	const [loading, setLoading] = useState(true);
+	const navigate = useNavigate();
 	const [error, setError] = useState<string | null>(null);
-
+	const [openModal, setOpenModal] = useState<{
+		id: number | null;
+		action: 'confirm' | 'cancel';
+	} | null>(null);
 	const { id } = useParams();
 
 	useEffect(() => {
@@ -59,10 +63,20 @@ const Transfer = () => {
 					{/* <!-- Actions --> */}
 					{transfer.status === 'pending' && (
 						<div className="flex items-center gap-2">
-							<button className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors cursor-pointer">
+							<button
+								onClick={() =>
+									setOpenModal({ id: transfer.id, action: 'cancel' })
+								}
+								className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors cursor-pointer"
+							>
 								Cancel
 							</button>
-							<button className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer">
+							<button
+								onClick={() =>
+									setOpenModal({ id: transfer.id, action: 'confirm' })
+								}
+								className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer"
+							>
 								Confirm Transfer
 							</button>
 						</div>
@@ -223,6 +237,57 @@ const Transfer = () => {
 					</div>
 				</div>
 			</div>
+
+			{openModal && (
+				<div
+					id="confirmModal"
+					className="flex fixed inset-0 z-50 items-center justify-center"
+				>
+					<div className="absolute inset-0 bg-black/40"></div>
+					<div className="relative bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-sm mx-4 p-6">
+						<h2
+							className="text-[0.9375rem] font-semibold text-gray-900 mb-1"
+							id="modalTitle"
+						>
+							Are you sure you want to{' '}
+							{openModal.action === 'confirm' ? 'confirm' : 'cancel'} transfer#
+							{transfer.id}?
+						</h2>
+						<p className="text-[0.8125rem] text-gray-500 mb-6">
+							This action cannot be reversed.
+						</p>
+						<div className="flex justify-center gap-2">
+							<button
+								onClick={() => {
+									setOpenModal(null);
+								}}
+								className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+							>
+								Go Back
+							</button>
+							<button
+								onClick={async () => {
+									if (openModal.action === 'confirm') {
+										await fetch(`/api/transfers/${openModal.id}/confirm`, {
+											method: 'PUT',
+										});
+										navigate('/transfers');
+									} else {
+										await fetch(`/api/transfers/${openModal.id}/cancel`, {
+											method: 'PUT',
+										});
+										navigate('/transfers');
+									}
+								}}
+								id="modalConfirmBtn"
+								className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-100 transition-colors cursor-pointer"
+							>
+								Confirm
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
