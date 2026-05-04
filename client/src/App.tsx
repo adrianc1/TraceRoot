@@ -25,6 +25,8 @@ import ProductList from './pages/products/ProductList';
 import Transfers from './pages/transfers/Transfers';
 import Transfer from './pages/transfers/Transfer';
 import TransferForm from './pages/transfers/TransferForm';
+import UsersList from './pages/users/UsersList';
+import Settings from './pages/settings/Settings';
 
 function App() {
 	return (
@@ -66,6 +68,8 @@ function App() {
 					<Route path="/transfers/create" element={<TransferForm />} />
 
 					<Route path="/transfers/:id" element={<Transfer />} />
+
+					<Route path="/users/settings" element={<Settings />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
