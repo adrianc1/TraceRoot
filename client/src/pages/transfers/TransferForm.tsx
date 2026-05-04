@@ -213,30 +213,50 @@ const TransferForm = () => {
 						</div>
 
 						<div className="space-y-3">
-							{selectedItems
-								? selectedItems.map((item, index) => {
-										return (
-											<li key={index} className="flex items-center gap-3">
-												<select
-													key={item.package_tag}
-													name="items"
-													id="items"
-													className="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white text-gray-700"
-												>
-													<option value={''}>— Select package —</option>
-													{items.map((item) => (
-														<option
-															key={item.package_tag}
-															value={item.package_tag}
-														>
-															{item.package_tag} ({item.quantity})
-														</option>
-													))}
-												</select>
-											</li>
-										);
-									})
-								: ''}
+							{selectedItems.map((item, index) => {
+								const availablePackages = items.filter(
+									(pkg) =>
+										!selectedItems.some(
+											(s) => s.package_tag === pkg.package_tag,
+										) || pkg.package_tag === item.package_tag,
+								);
+								return (
+									<li key={index} className="flex items-center gap-3">
+										<select
+											key={item.package_tag}
+											value={item.package_tag}
+											name="items"
+											id="items"
+											onChange={(e) => {
+												const selected = items.find(
+													(pkg) => pkg.package_tag === e.target.value,
+												);
+												if (!selected) return;
+												setSelectedItems((prev) =>
+													prev.map((row, i) =>
+														i === index
+															? {
+																	package_tag: selected?.package_tag,
+																	quantity: selected?.quantity,
+																}
+															: row,
+													),
+												);
+
+												console.log(selectedItems);
+											}}
+											className="w-full px-3 py-2 text-[0.875rem] font-mono border border-gray-300 rounded-md bg-white text-gray-700"
+										>
+											<option value={''}>— Select package —</option>
+											{availablePackages.map((item) => (
+												<option key={item.package_tag} value={item.package_tag}>
+													{item.package_tag} ({item.quantity})
+												</option>
+											))}
+										</select>
+									</li>
+								);
+							})}
 						</div>
 
 						<p className="text-[0.8125rem] text-gray-400 italic">
