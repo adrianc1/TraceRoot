@@ -9,8 +9,9 @@ interface Locations {
 	name: string;
 }
 
-type SelectedItem = Pick<TransferItem, 'package_tag' | 'quantity'>;
-
+type SelectedItem = Pick<TransferItem, 'package_tag' | 'quantity'> & {
+	package_id: number;
+};
 const TransferForm = () => {
 	const navigate = useNavigate();
 
@@ -201,11 +202,13 @@ const TransferForm = () => {
 							<button
 								type="button"
 								className={`text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed`}
-								disabled={items.length === selectedItems.length}
+								disabled={
+									!fromLocationId || items.length === selectedItems.length
+								}
 								onClick={() => {
 									setSelectedItems((prev) => [
 										...prev,
-										{ package_tag: '', quantity: 0 },
+										{ package_tag: '', quantity: 0, package_id: 0 },
 									]);
 								}}
 							>
@@ -237,8 +240,9 @@ const TransferForm = () => {
 													prev.map((row, i) =>
 														i === index
 															? {
-																	package_tag: selected?.package_tag,
-																	quantity: selected?.quantity,
+																	package_id: selected.id,
+																	package_tag: selected.package_tag,
+																	quantity: selected.quantity,
 																}
 															: row,
 													),
@@ -260,9 +264,13 @@ const TransferForm = () => {
 							})}
 						</div>
 
-						<p className="text-[0.8125rem] text-gray-400 italic">
-							No packages added yet
-						</p>
+						<div className="text-[0.8125rem] text-gray-400 italic">
+							{selectedItems.length === 0 && (
+								<p className="text-[0.8125rem] text-gray-400 italic">
+									No packages added yet
+								</p>
+							)}
+						</div>
 					</div>
 
 					{/* Form Actions */}
