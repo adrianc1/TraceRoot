@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { TransferItem } from '../../types/transfers';
 
 import type { TransferType } from '../../types/transfers';
 
@@ -15,12 +16,25 @@ const TransferForm = () => {
 	const [locations, setLocations] = useState<Locations[]>([]);
 	const [fromLocationId, setFromLocationId] = useState<number | null>(null);
 	const [toLocationId, setToLocationId] = useState<number | null>(null);
+	const [items, setItems] = useState<TransferItem[]>([]);
 
 	useEffect(() => {
 		fetch('/api/locations')
 			.then((res) => res.json())
 			.then(setLocations);
 	}, []);
+
+	useEffect(() => {
+		if (!fromLocationId) return;
+
+		fetch(`/api/packages?location_id=${fromLocationId}`)
+			.then((res) => res.json())
+			.then((data) => setItems(data.packages));
+	}, [fromLocationId]);
+
+	const addItem = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+		return ``;
+	};
 
 	const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -188,12 +202,15 @@ const TransferForm = () => {
 							<button
 								type="button"
 								className="text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer"
+								onClick={addItem}
 							>
 								+ Add Package
 							</button>
 						</div>
 
-						<div className="space-y-3">{/* items.map goes here */}</div>
+						<div className="space-y-3">
+							<select name="items" id="items"></select>
+						</div>
 
 						<p className="text-[0.8125rem] text-gray-400 italic">
 							No packages added yet

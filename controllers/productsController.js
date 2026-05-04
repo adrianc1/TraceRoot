@@ -3,6 +3,21 @@ const { convertQuantity } = require('../utils/conversion');
 const { toCsv, sendCsv } = require('../utils/csvExport');
 
 const getAllPackages = async (req, res) => {
+	const { location_id } = req.query;
+
+	if (location_id) {
+		try {
+			const packages = await db.getPackagesByLocation(
+				req.user.company_id,
+				location_id,
+			);
+			res.json({ packages });
+		} catch (error) {
+			res.status(500).json({ error: 'Database error' });
+		}
+		return;
+	}
+
 	try {
 		const userCompanyId = req.user.company_id;
 		const status = req.query.status || 'active';
@@ -38,7 +53,10 @@ const getAllPackages = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
-		const product = await db.getProductWithInventoryDB(req.params.id, req.user.company_id);
+		const product = await db.getProductWithInventoryDB(
+			req.params.id,
+			req.user.company_id,
+		);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
@@ -233,9 +251,11 @@ const insertProduct = async (req, res) => {
 		newCategory = null;
 	}
 
-	const strain_id = (strainId !== '__new__' && strainId) || newStrain?.id || null;
+	const strain_id =
+		(strainId !== '__new__' && strainId) || newStrain?.id || null;
 	const brand_id = (brandId !== '__new__' && brandId) || newBrand?.id || null;
-	const category_id = (categoryId !== '__new__' && categoryId) || newCategory?.id || null;
+	const category_id =
+		(categoryId !== '__new__' && categoryId) || newCategory?.id || null;
 
 	const product = await db.insertProduct(
 		name,
