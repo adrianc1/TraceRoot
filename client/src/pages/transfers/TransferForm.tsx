@@ -200,7 +200,8 @@ const TransferForm = () => {
 							</div>
 							<button
 								type="button"
-								className="text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer"
+								className={`text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed`}
+								disabled={items.length === selectedItems.length}
 								onClick={() => {
 									setSelectedItems((prev) => [
 										...prev,
