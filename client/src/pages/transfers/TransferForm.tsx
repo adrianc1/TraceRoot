@@ -1,18 +1,67 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { TransferItem } from '../../types/transfers';
 
 import type { TransferType } from '../../types/transfers';
 
+interface Locations {
+	id: number;
+	name: string;
+}
+
 const TransferForm = () => {
+	const navigate = useNavigate();
+
 	const [transferType, setTransferType] = useState<TransferType | ''>('');
-	const [locations, setLocations] = useState<{ id: number; name: string }[]>(
-		[],
-	);
+	const [locations, setLocations] = useState<Locations[]>([]);
+	const [fromLocationId, setFromLocationId] = useState<number | null>(null);
+	const [toLocationId, setToLocationId] = useState<number | null>(null);
+	const [items, setItems] = useState<TransferItem[]>([]);
 
 	useEffect(() => {
 		fetch('/api/locations')
 			.then((res) => res.json())
 			.then(setLocations);
 	}, []);
+
+	useEffect(() => {
+		if (!fromLocationId) return;
+
+		fetch(`/api/packages?location_id=${fromLocationId}`)
+			.then((res) => res.json())
+			.then((data) => setItems(data.packages));
+	}, [fromLocationId]);
+
+	const addItem = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+		return ``;
+	};
+
+	const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const formData = new FormData(e.currentTarget);
+
+		const response = await fetch('/api/transfers', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				transfer_type: transferType,
+				from_location_id: fromLocationId,
+				to_location_id: transferType === 'internal' ? toLocationId : null,
+				to_company_name:
+					transferType === 'external' ? formData.get('to_company_name') : null,
+				notes: formData.get('notes'),
+				items: [], // TODO: add package items
+			}),
+		});
+
+		if (response.ok) {
+			navigate('/transfers');
+		} else {
+			console.error('Failed to create transfer');
+		}
+	};
 
 	return (
 		<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
@@ -33,7 +82,7 @@ const TransferForm = () => {
 			</div>
 
 			<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-				<form>
+				<form onSubmit={handleSubmit}>
 					{/* Transfer Info */}
 					<div className="px-6 py-5 border-b border-gray-100">
 						<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
@@ -68,6 +117,11 @@ const TransferForm = () => {
 								<select
 									name="from_location_id"
 									required
+									onChange={(e) =>
+										setFromLocationId(
+											e.target.value ? Number(e.target.value) : null,
+										)
+									}
 									className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 								>
 									<option value="">— Select location —</option>
@@ -88,6 +142,11 @@ const TransferForm = () => {
 									<select
 										name="to_location_id"
 										required
+										onChange={(e) =>
+											setToLocationId(
+												e.target.value ? Number(e.target.value) : null,
+											)
+										}
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 									>
 										<option value="">— Select location —</option>
@@ -143,12 +202,15 @@ const TransferForm = () => {
 							<button
 								type="button"
 								className="text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer"
+								onClick={addItem}
 							>
 								+ Add Package
 							</button>
 						</div>
 
-						<div className="space-y-3">{/* items.map goes here */}</div>
+						<div className="space-y-3">
+							<select name="items" id="items"></select>
+						</div>
 
 						<p className="text-[0.8125rem] text-gray-400 italic">
 							No packages added yet
