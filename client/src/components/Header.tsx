@@ -3,6 +3,7 @@ import type { CurrentUser } from '../types/user';
 
 const Header = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
 	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
 	const ref = useRef<HTMLDivElement>(null);
@@ -11,6 +12,12 @@ const Header = () => {
 		const catalogBtn = document.getElementById('catalog-menu-btn');
 		if (!catalogBtn) return;
 		setIsOpen(!isOpen);
+	};
+
+	const toggleUserDropdown = () => {
+		const userBtn = document.getElementById('user-menu-btn');
+		if (!userBtn) return;
+		setIsUserDropdownOpen(!isUserDropdownOpen);
 	};
 
 	useEffect(() => {
@@ -68,7 +75,7 @@ const Header = () => {
 								Catalog
 								<svg
 									id="catalog-chevron"
-									className="w-3.5 h-3.5 text-gray-400 transition-transform duration-150"
+									className="w-3.5 h-3.5 text-gray-500 transition-transform duration-150"
 									fill="none"
 									stroke="currentColor"
 									strokeWidth="2"
@@ -152,6 +159,7 @@ const Header = () => {
 						{/* <!-- User dropdown (desktop) --> */}
 						<div className="relative hidden md:block" id="user-menu">
 							<button
+								onClick={() => toggleUserDropdown()}
 								id="user-menu-btn"
 								className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-gray-100 transition-colors cursor-pointer border-none bg-transparent"
 							>
@@ -167,7 +175,7 @@ const Header = () => {
 								{/* <!-- Chevron --> */}
 								<svg
 									id="chevron"
-									className="w-3.5 h-3.5 text-gray-400 transition-transform duration-150"
+									className="w-3.5 h-3.5 text-gray-500 transition-transform duration-150"
 									fill="none"
 									stroke="currentColor"
 									strokeWidth="2"
@@ -181,92 +189,94 @@ const Header = () => {
 								</svg>
 							</button>
 							{/* <!-- Dropdown --> */}
-							<div
-								id="user-dropdown"
-								className="hidden absolute right-0 top-[calc(100%+6px)] w-52 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
-							>
-								{/* <!-- User info header --> */}
-								<div className="px-4 py-3 border-b border-gray-100">
-									<div className="text-[0.8125rem] font-medium text-gray-900">
-										{currentUser?.first_name} {currentUser?.last_name}
+							{isUserDropdownOpen && (
+								<div
+									id="user-dropdown"
+									className="absolute right-0 top-[calc(100%+6px)] w-52 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
+								>
+									{/* <!-- User info header --> */}
+									<div className="px-4 py-3 border-b border-gray-100">
+										<div className="text-[0.8125rem] font-medium text-gray-900">
+											{currentUser?.first_name} {currentUser?.last_name}
+										</div>
+										<div className="text-[0.75rem] text-gray-500 font-mono mt-0.5">
+											{currentUser?.email}
+										</div>
+										{/* <!-- Company name --> */}
+										<div className="text-[0.7rem] text-gray-500 mt-1 truncate">
+											{currentUser?.company_name}
+										</div>
 									</div>
-									<div className="text-[0.75rem] text-gray-400 font-mono mt-0.5">
-										{currentUser?.email}
+									{/* <!-- Menu items --> */}
+									<div className="py-1">
+										<a
+											href="/users/account"
+											className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors no-underline"
+										>
+											<svg
+												className="w-4 h-4 text-gray-500 shrink-0"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="1.75"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+												/>
+											</svg>
+											Account
+										</a>
+										<a
+											href="/users/settings"
+											className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors no-underline"
+										>
+											<svg
+												className="w-4 h-4 text-gray-500 shrink-0"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="1.75"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+												/>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+												/>
+											</svg>
+											Settings
+										</a>
 									</div>
-									{/* <!-- Company name --> */}
-									<div className="text-[0.7rem] text-gray-400 mt-1 truncate">
-										{currentUser?.company_name}
+									{/* <!-- Logout --> */}
+									<div className="py-1 border-t border-gray-100">
+										<a
+											href="/logout"
+											className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-red-600 hover:bg-red-50 transition-colors no-underline"
+										>
+											<svg
+												className="w-4 h-4 text-red-400 shrink-0"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="1.75"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+												/>
+											</svg>
+											Log out
+										</a>
 									</div>
 								</div>
-								{/* <!-- Menu items --> */}
-								<div className="py-1">
-									<a
-										href="/users/account"
-										className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors no-underline"
-									>
-										<svg
-											className="w-4 h-4 text-gray-400 shrink-0"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="1.75"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-											/>
-										</svg>
-										Account
-									</a>
-									<a
-										href="/users/settings"
-										className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors no-underline"
-									>
-										<svg
-											className="w-4 h-4 text-gray-400 shrink-0"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="1.75"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-											/>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-											/>
-										</svg>
-										Settings
-									</a>
-								</div>
-								{/* <!-- Logout --> */}
-								<div className="py-1 border-t border-gray-100">
-									<a
-										href="/logout"
-										className="flex items-center gap-3 px-4 py-2.5 text-[0.8125rem] text-red-600 hover:bg-red-50 transition-colors no-underline"
-									>
-										<svg
-											className="w-4 h-4 text-red-400 shrink-0"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="1.75"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-											/>
-										</svg>
-										Log out
-									</a>
-								</div>
-							</div>
+							)}
 						</div>
 					</div>
 				</div>
@@ -314,7 +324,7 @@ const Header = () => {
 						className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors no-underline font-medium"
 					>
 						<svg
-							className="w-4 h-4 text-gray-400 shrink-0"
+							className="w-4 h-4 text-gray-500 shrink-0"
 							fill="none"
 							stroke="currentColor"
 							strokeWidth="1.75"
@@ -336,7 +346,7 @@ const Header = () => {
 						>
 							<span className="flex items-center gap-3">
 								<svg
-									className="w-4 h-4 text-gray-400 shrink-0"
+									className="w-4 h-4 text-gray-500 shrink-0"
 									fill="none"
 									stroke="currentColor"
 									strokeWidth="1.75"
@@ -352,7 +362,7 @@ const Header = () => {
 							</span>
 							<svg
 								id="drawer-catalog-chevron"
-								className="w-3.5 h-3.5 text-gray-400 transition-transform duration-150"
+								className="w-3.5 h-3.5 text-gray-500 transition-transform duration-150"
 								fill="none"
 								stroke="currentColor"
 								strokeWidth="2"
@@ -400,7 +410,7 @@ const Header = () => {
 						className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors no-underline font-medium"
 					>
 						<svg
-							className="w-4 h-4 text-gray-400 shrink-0"
+							className="w-4 h-4 text-gray-500 shrink-0"
 							fill="none"
 							stroke="currentColor"
 							strokeWidth="1.75"
@@ -419,7 +429,7 @@ const Header = () => {
 						className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors no-underline font-medium"
 					>
 						<svg
-							className="w-4 h-4 text-gray-400 shrink-0"
+							className="w-4 h-4 text-gray-500 shrink-0"
 							fill="none"
 							stroke="currentColor"
 							strokeWidth="1.75"
@@ -453,7 +463,7 @@ const Header = () => {
 							<div className="text-[0.8125rem] font-medium text-gray-900">
 								{currentUser?.first_name} {currentUser?.last_name}
 							</div>
-							<div className="text-[0.7rem] text-gray-400 font-mono">Email</div>
+							<div className="text-[0.7rem] text-gray-500 font-mono">Email</div>
 						</div>
 					</div>
 					<a

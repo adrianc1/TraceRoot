@@ -81,18 +81,18 @@ const SplitPackage = () => {
 		}
 	};
 
-	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-400">Loading...</p></div>;
+	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-500">Loading...</p></div>;
 	if (!selectedPackage || !product) return null;
 
 	return (
 		<div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 			<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
-				<Link to={`/packages/${product.id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+				<Link to={`/packages/${product.id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6">
 					← Back to product
 				</Link>
 				<div className="mb-6">
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">Split Package</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">Create child lots from existing inventory</p>
+					<p className="text-sm text-gray-500 font-light mt-0.5">Create child lots from existing inventory</p>
 				</div>
 
 				{error && (
@@ -103,28 +103,28 @@ const SplitPackage = () => {
 					{/* Parent Package Info */}
 					<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
 						<div className="px-6 py-5">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Parent Package</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Parent Package</div>
 							<div className="grid grid-cols-3 gap-4">
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">SKU</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">SKU</div>
 									<div className="text-[0.875rem] font-mono font-medium text-gray-800">{product.sku}</div>
 								</div>
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Product</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Product</div>
 									<div className="text-[0.875rem] font-medium text-gray-800">{product.name}</div>
 								</div>
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Available</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Available</div>
 									<div className="text-[0.875rem] font-medium text-gray-800">
 										<span className={remaining < 0 ? 'text-red-500' : ''}>{Number(selectedPackage.quantity).toFixed(3)}</span>
-										<span className="text-gray-400 ml-1">{product.unit}</span>
+										<span className="text-gray-500 ml-1">{product.unit}</span>
 									</div>
 								</div>
 							</div>
 							{remaining !== parseFloat(String(selectedPackage.quantity)) && (
 								<div className="mt-3 flex items-center gap-4 text-[0.8125rem]">
-									<span className="text-gray-400">Used: <span className="font-mono text-gray-700">{totalUsed.toFixed(3)}</span></span>
-									<span className={remaining < 0 ? 'text-red-500 font-medium' : 'text-gray-400'}>
+									<span className="text-gray-500">Used: <span className="font-mono text-gray-700">{totalUsed.toFixed(3)}</span></span>
+									<span className={remaining < 0 ? 'text-red-500 font-medium' : 'text-gray-500'}>
 										Remaining: <span className="font-mono">{remaining.toFixed(3)}</span>
 									</span>
 								</div>
@@ -137,7 +137,7 @@ const SplitPackage = () => {
 						<form onSubmit={handleSubmit}>
 							<div className="px-6 py-5 border-b border-gray-100">
 								<div className="flex items-center justify-between mb-4">
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Split Rows</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Split Rows</div>
 									<button
 										type="button"
 										onClick={addRow}
@@ -150,7 +150,7 @@ const SplitPackage = () => {
 									{rows.map((row, i) => (
 										<div key={i} className="grid grid-cols-3 gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
 											<div>
-												<label className="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Package Tag</label>
+												<label className="block text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Package Tag</label>
 												<input
 													type="text"
 													value={row.packageTag}
@@ -160,7 +160,7 @@ const SplitPackage = () => {
 												/>
 											</div>
 											<div>
-												<label className="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Size ({product.unit})</label>
+												<label className="block text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Size ({product.unit})</label>
 												<input
 													type="number"
 													value={row.packageSize}
@@ -172,7 +172,7 @@ const SplitPackage = () => {
 												/>
 											</div>
 											<div className="flex flex-col">
-												<label className="block text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total ({product.unit})</label>
+												<label className="block text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Total ({product.unit})</label>
 												<div className="flex items-center gap-2">
 													<input
 														type="text"
@@ -184,7 +184,7 @@ const SplitPackage = () => {
 														<button
 															type="button"
 															onClick={() => removeRow(i)}
-															className="text-gray-400 hover:text-red-500 transition-colors text-lg leading-none"
+															className="text-gray-500 hover:text-red-500 transition-colors text-lg leading-none"
 														>
 															×
 														</button>

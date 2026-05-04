@@ -78,17 +78,17 @@ const EditProduct = () => {
 		}
 	};
 
-	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-400">Loading...</p></div>;
+	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-500">Loading...</p></div>;
 
 	return (
 		<div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 			<div className="max-w-2xl mx-auto px-4 py-8 flex-1 w-full">
-				<Link to={`/packages/${id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+				<Link to={`/packages/${id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6">
 					← Back to product
 				</Link>
 				<div className="mb-6">
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">Edit Product</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">Update product details</p>
+					<p className="text-sm text-gray-500 font-light mt-0.5">Update product details</p>
 				</div>
 
 				{error && (
@@ -100,7 +100,7 @@ const EditProduct = () => {
 
 						{/* Basic Info */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Basic Info</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Basic Info</div>
 							<div className="space-y-4">
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
@@ -144,13 +144,13 @@ const EditProduct = () => {
 										onChange={set('unit')}
 										required
 										disabled={hasPackages}
-										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700 disabled:bg-gray-50 disabled:text-gray-400"
+										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700 disabled:bg-gray-50 disabled:text-gray-500"
 									>
 										<option value="">— Select unit —</option>
 										{units.map(u => <option key={u} value={u}>{u}</option>)}
 									</select>
 									{hasPackages && (
-										<p className="text-[0.75rem] text-gray-400 mt-1">Unit cannot be changed after inventory is received</p>
+										<p className="text-[0.75rem] text-gray-500 mt-1">Unit cannot be changed after inventory is received</p>
 									)}
 								</div>
 							</div>
@@ -158,7 +158,7 @@ const EditProduct = () => {
 
 						{/* Classification */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Classification</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Classification</div>
 							<div className="space-y-4">
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">Brand</label>
@@ -184,7 +184,7 @@ const EditProduct = () => {
 								</div>
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
-										Strain <span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+										Strain <span className="text-[0.75rem] text-gray-500 font-light ml-1">optional</span>
 									</label>
 									<select
 										value={form.strainId}

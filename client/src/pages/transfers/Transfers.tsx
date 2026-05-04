@@ -47,7 +47,7 @@ const Transfers = () => {
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 						Transfers
 					</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">
+					<p className="text-sm text-gray-500 font-light mt-0.5">
 						All inventory transfers for your company
 					</p>
 				</div>
@@ -154,7 +154,7 @@ const Transfers = () => {
 
 									{/* <!-- Date --> */}
 									<td className="px-4 py-3">
-										<span className="text-[0.8125rem] text-gray-400">
+										<span className="text-[0.8125rem] text-gray-500">
 											{new Date(t.created_at).toLocaleDateString('en-US', {
 												year: 'numeric',
 												month: 'short',
@@ -167,7 +167,7 @@ const Transfers = () => {
 									<td className="px-4 py-3">
 										<a
 											href={`/transfers/${t.id}`}
-											className="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline"
+											className="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline"
 										>
 											View
 										</a>
@@ -185,7 +185,7 @@ const Transfers = () => {
 						<p className="text-sm font-medium text-gray-500">
 							No transfers yet
 						</p>
-						<p className="text-xs text-gray-400 mt-1 mb-4">
+						<p className="text-xs text-gray-500 mt-1 mb-4">
 							Create your first transfer to move inventory
 						</p>
 						<a
@@ -200,7 +200,7 @@ const Transfers = () => {
 				{/* <!-- Table footer --> */}
 				{transfers && transfers.length > 0 && (
 					<div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-						<span className="font-mono text-[0.72rem] text-gray-400">
+						<span className="font-mono text-[0.72rem] text-gray-500">
 							<span className="text-gray-600 font-medium">
 								{transfers.length}
 							</span>{' '}

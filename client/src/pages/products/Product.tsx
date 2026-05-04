@@ -75,7 +75,7 @@ const Product = () => {
 
 	if (loading) return (
 		<div className="max-w-4xl mx-auto px-4 py-8">
-			<p className="text-sm text-gray-400">Loading...</p>
+			<p className="text-sm text-gray-500">Loading...</p>
 		</div>
 	);
 
@@ -86,7 +86,7 @@ const Product = () => {
 			<div className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full">
 				<Link
 					to="/packages"
-					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
+					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6"
 				>
 					← Back to packages
 				</Link>
@@ -97,7 +97,7 @@ const Product = () => {
 					{/* Top bar */}
 					<div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
 						<div>
-							<div className="font-mono text-[0.7rem] text-gray-400 uppercase tracking-[0.08em] mb-1">{product.sku}</div>
+							<div className="font-mono text-[0.7rem] text-gray-500 uppercase tracking-[0.08em] mb-1">{product.sku}</div>
 							<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 								{product.name}
 								{product.status === 'archived' && (
@@ -141,21 +141,21 @@ const Product = () => {
 					{/* Valuation strip */}
 					<div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Avg Cost</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Avg Cost</div>
 							<div className="text-[1.25rem] font-semibold tracking-tight text-green-mid">
 								${formatCurrency(product.average_cost)}
-								<span className="text-[0.8rem] font-normal text-gray-400 ml-1">/ {product.unit}</span>
+								<span className="text-[0.8rem] font-normal text-gray-500 ml-1">/ {product.unit}</span>
 							</div>
 						</div>
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total Quantity</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Total Quantity</div>
 							<div className="text-[1.25rem] font-semibold tracking-tight text-gray-900">
 								{formatQuantity(product.total_quantity, product.unit)}
-								<span className="ml-1 text-[0.8rem] font-normal text-gray-400">{product.unit}</span>
+								<span className="ml-1 text-[0.8rem] font-normal text-gray-500">{product.unit}</span>
 							</div>
 						</div>
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Total Valuation</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Total Valuation</div>
 							<div className="text-[1.25rem] font-semibold tracking-tight text-green-mid">
 								${Number(product.total_valuation || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 							</div>
@@ -165,19 +165,19 @@ const Product = () => {
 					{/* Metadata grid */}
 					<div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Brand</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Brand</div>
 							<div className="text-[0.875rem] font-medium text-gray-800">{product.brand_name || '—'}</div>
 						</div>
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Strain</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Strain</div>
 							<div className="text-[0.875rem] font-medium text-gray-800">{product.strain_name || '—'}</div>
 						</div>
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Category</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Category</div>
 							<div className="text-[0.875rem] font-medium text-gray-800">{product.category_name || '—'}</div>
 						</div>
 						<div className="px-6 py-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Unit</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Unit</div>
 							<div className="text-[0.875rem] font-medium text-gray-800">{product.unit}</div>
 						</div>
 					</div>
@@ -187,13 +187,13 @@ const Product = () => {
 				<div className="flex gap-1 border-b border-gray-200 mb-4">
 					<button
 						onClick={() => setActiveTab('inventory')}
-						className={`px-4 py-2.5 text-[0.8125rem] font-medium border-b-2 -mb-px transition-colors ${activeTab === 'inventory' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
+						className={`px-4 py-2.5 text-[0.8125rem] font-medium border-b-2 -mb-px transition-colors ${activeTab === 'inventory' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
 					>
 						Packages
 					</button>
 					<button
 						onClick={() => setActiveTab('audit')}
-						className={`px-4 py-2.5 text-[0.8125rem] font-medium border-b-2 -mb-px transition-colors ${activeTab === 'audit' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
+						className={`px-4 py-2.5 text-[0.8125rem] font-medium border-b-2 -mb-px transition-colors ${activeTab === 'audit' ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
 					>
 						Transaction History
 					</button>
@@ -222,7 +222,7 @@ const Product = () => {
 												<td className="px-4 py-3 text-[0.8125rem] text-gray-600">{pkg.location || '—'}</td>
 												<td className="px-4 py-3">
 													<span className="text-[0.8125rem] font-semibold text-gray-900">{formatQuantity(pkg.quantity, product.unit)}</span>
-													<span className="text-[0.75rem] text-gray-400 ml-1">{product.unit}</span>
+													<span className="text-[0.75rem] text-gray-500 ml-1">{product.unit}</span>
 												</td>
 												<td className="px-4 py-3 text-[0.8125rem] text-gray-500">${formatCurrency(pkg.cost_price)}</td>
 												<td className="px-4 py-3">
@@ -257,7 +257,7 @@ const Product = () => {
 						)}
 						{inventory.length > 0 && (
 							<div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-								<span className="font-mono text-[0.72rem] text-gray-400">
+								<span className="font-mono text-[0.72rem] text-gray-500">
 									<span className="text-gray-600 font-medium">{inventory.length}</span> packages
 								</span>
 							</div>
@@ -271,7 +271,7 @@ const Product = () => {
 						<div className="flex items-center justify-between mb-3">
 							<div>
 								<h2 className="text-[0.875rem] font-semibold text-gray-900">Transaction History</h2>
-								<p className="text-[0.8125rem] text-gray-400 font-light mt-0.5">Audit trail of all inventory movements</p>
+								<p className="text-[0.8125rem] text-gray-500 font-light mt-0.5">Audit trail of all inventory movements</p>
 							</div>
 							<a
 								href={`/api/packages/${id}/audit/export`}
@@ -308,7 +308,7 @@ const Product = () => {
 															<span className="text-[0.8125rem] font-semibold text-gray-900">
 																{pkg.movements.length > 0 ? pkg.movements[0].ending_quantity : '—'}
 															</span>
-															<span className="text-[0.75rem] text-gray-400 ml-1">{product.unit}</span>
+															<span className="text-[0.75rem] text-gray-500 ml-1">{product.unit}</span>
 														</td>
 														<td className="px-4 py-3">
 															<span className="text-[0.8125rem] font-semibold text-green-mid">—</span>
@@ -346,7 +346,7 @@ const Product = () => {
 																		<tbody className="divide-y divide-gray-100">
 																			{pkg.movements.length > 0 ? pkg.movements.map(mv => (
 																				<tr key={mv.id} className="hover:bg-white transition-colors">
-																					<td className="px-4 py-2.5 font-mono text-[0.72rem] text-gray-400 whitespace-nowrap">
+																					<td className="px-4 py-2.5 font-mono text-[0.72rem] text-gray-500 whitespace-nowrap">
 																						{new Date(mv.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
 																					</td>
 																					<td className="px-4 py-2.5 text-[0.8125rem] font-medium text-gray-700">{mv.user_name}</td>
@@ -356,11 +356,11 @@ const Product = () => {
 																						{mv.quantity > 0 ? '+' : ''}{mv.quantity}
 																					</td>
 																					<td className="px-4 py-2.5 text-right font-mono text-[0.8125rem] font-semibold text-gray-800">{mv.ending_quantity}</td>
-																					<td className="px-4 py-2.5 text-[0.8125rem] text-gray-400">{mv.notes || '—'}</td>
+																					<td className="px-4 py-2.5 text-[0.8125rem] text-gray-500">{mv.notes || '—'}</td>
 																				</tr>
 																			)) : (
 																				<tr>
-																					<td colSpan={7} className="px-4 py-4 text-center text-[0.8125rem] text-gray-400">No transaction history for this package.</td>
+																					<td colSpan={7} className="px-4 py-4 text-center text-[0.8125rem] text-gray-500">No transaction history for this package.</td>
 																				</tr>
 																			)}
 																		</tbody>
