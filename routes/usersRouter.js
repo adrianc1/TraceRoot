@@ -10,6 +10,7 @@ router.get('/settings', usersController.getSettings);
 router.get('/invite', authorizeRole('admin'), usersController.getInviteForm);
 router.post('/invite', authorizeRole('admin'), usersController.createInvite);
 router.get('/:id/edit', authorizeRole('admin'), usersController.getEditUser);
-router.post('/:id/edit', authorizeRole('admin'), usersController.updateUser);
+// router.post('/:id/edit', authorizeRole('admin'), usersController.updateUser);
+router.put('/:id/edit', authorizeRole('admin'), usersController.updateUser);
 
 module.exports = router;

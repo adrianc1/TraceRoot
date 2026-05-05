@@ -133,8 +133,8 @@ const updateUser = async (req, res) => {
 			req.user.company_id,
 			role,
 		);
-		if (!updated) return res.status(404).send('User not found');
-		res.redirect('/users');
+		if (!updated) return res.status(404).json({ error: 'User not found' });
+		res.json({ success: true });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });

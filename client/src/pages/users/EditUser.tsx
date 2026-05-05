@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { User } from '../../types/user';
+import type { User, Role } from '../../types/user';
 import { useNavigate, useParams } from 'react-router-dom';
 const EditUserForm = () => {
 	const [user, setUser] = useState<User | null>(null);
+	const [role, setRole] = useState<Role>('staff');
+
 	const { id } = useParams();
 	const navigate = useNavigate();
 
@@ -11,6 +13,7 @@ const EditUserForm = () => {
 			const res = await fetch(`/api/users/${id}/edit`);
 			const data = await res.json();
 			setUser(data);
+			setRole(data.role);
 		};
 		fetchUser();
 	}, [id]);
@@ -26,8 +29,7 @@ const EditUserForm = () => {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				name: formData.get('name'),
-				description: formData.get('description'),
+				role: formData.get('role'),
 			}),
 		});
 
@@ -87,6 +89,8 @@ const EditUserForm = () => {
 							<select
 								name="role"
 								id="role"
+								value={role}
+								onChange={(e) => setRole(e.target.value as Role)}
 								required
 								className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white text-gray-700"
 							>
@@ -96,16 +100,16 @@ const EditUserForm = () => {
 							</select>
 							<div className="mt-2 space-y-1">
 								<p className="text-[0.75rem] text-gray-400">
-									<span className="font-medium text-gray-500">Admin</span> — full
-									access including user management
+									<span className="font-medium text-gray-500">Admin</span> —
+									full access including user management
 								</p>
 								<p className="text-[0.75rem] text-gray-400">
 									<span className="font-medium text-gray-500">Manager</span> —
 									full inventory access, no user management
 								</p>
 								<p className="text-[0.75rem] text-gray-400">
-									<span className="font-medium text-gray-500">Staff</span> — view
-									and quantity updates only
+									<span className="font-medium text-gray-500">Staff</span> —
+									view and quantity updates only
 								</p>
 							</div>
 						</div>
