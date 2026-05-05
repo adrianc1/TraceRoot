@@ -63,6 +63,8 @@ const TransferForm = () => {
 		}
 	};
 
+	const hasUnsetItems = selectedItems.some((item) => item.package_tag === '');
+
 	return (
 		<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
 			<a
@@ -203,7 +205,9 @@ const TransferForm = () => {
 								type="button"
 								className={`text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed`}
 								disabled={
-									!fromLocationId || items.length === selectedItems.length
+									!fromLocationId ||
+									items.length === selectedItems.length ||
+									hasUnsetItems
 								}
 								onClick={() => {
 									setSelectedItems((prev) => [
@@ -226,6 +230,17 @@ const TransferForm = () => {
 								);
 								return (
 									<li key={index} className="flex items-center gap-3">
+										<button
+											type="button"
+											onClick={() => {
+												setSelectedItems((prev) =>
+													prev.filter((_, i) => i !== index),
+												);
+											}}
+											className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-400 rounded transition-colors cursor-pointer"
+										>
+											✕
+										</button>
 										<select
 											key={item.package_tag}
 											value={item.package_tag}
@@ -283,7 +298,8 @@ const TransferForm = () => {
 						</a>
 						<button
 							type="submit"
-							className="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer"
+							disabled={hasUnsetItems}
+							className="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
 						>
 							Create Transfer
 						</button>
