@@ -17,7 +17,7 @@ const getUsers = async (req, res) => {
 		const users = await db.getUsersByCompany(req.user.company_id);
 		const pendingInvites = await db.getPendingInvites(req.user.company_id);
 
-		res.render('users/users', {
+		res.json({
 			users,
 			pendingInvites,
 			currentUser: req.user,
@@ -151,7 +151,7 @@ const getAccount = async (req, res) => {
 
 const getSettings = async (req, res) => {
 	const billing = await db.getCompanyBilling(req.user.company_id);
-	res.render('users/settings', { user: req.user, billing });
+	res.json({ user: req.user, billing });
 };
 
 module.exports = {

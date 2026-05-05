@@ -98,7 +98,7 @@ const GeneralReceiving = () => {
 	if (loading)
 		return (
 			<div className="max-w-2xl mx-auto px-4 py-8">
-				<p className="text-sm text-gray-400">Loading...</p>
+				<p className="text-sm text-gray-500">Loading...</p>
 			</div>
 		);
 
@@ -107,7 +107,7 @@ const GeneralReceiving = () => {
 			<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
 				<Link
 					to={`/packages/`}
-					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
+					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6"
 				>
 					← Back to product
 				</Link>
@@ -115,7 +115,7 @@ const GeneralReceiving = () => {
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 						Receive Inventory
 					</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">
+					<p className="text-sm text-gray-500 font-light mt-0.5">
 						{product?.name}
 					</p>
 				</div>
@@ -130,7 +130,7 @@ const GeneralReceiving = () => {
 					<form onSubmit={handleSubmit}>
 						{/* Product Info */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 								Select Product
 							</div>
 
@@ -171,7 +171,7 @@ const GeneralReceiving = () => {
 
 								<div className="grid grid-cols-4 gap-4">
 									<div>
-										<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">
+										<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">
 											Brand
 										</div>
 										<div className="text-[0.875rem] font-medium text-gray-800">
@@ -179,7 +179,7 @@ const GeneralReceiving = () => {
 										</div>
 									</div>
 									<div>
-										<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">
+										<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">
 											Strain
 										</div>
 										<div className="text-[0.875rem] font-medium text-gray-800">
@@ -187,7 +187,7 @@ const GeneralReceiving = () => {
 										</div>
 									</div>
 									<div>
-										<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">
+										<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">
 											Category
 										</div>
 										<div className="text-[0.875rem] font-medium text-gray-800">
@@ -195,7 +195,7 @@ const GeneralReceiving = () => {
 										</div>
 									</div>
 									<div>
-										<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">
+										<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">
 											Unit
 										</div>
 										<div className="text-[0.875rem] font-medium text-gray-800">
@@ -208,7 +208,7 @@ const GeneralReceiving = () => {
 
 						{/* Package Details */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 								Package Details
 							</div>
 							<div className="space-y-4">
@@ -261,7 +261,7 @@ const GeneralReceiving = () => {
 
 						{/* Quantity */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 								Quantity
 							</div>
 							<div className="space-y-4">
@@ -284,7 +284,7 @@ const GeneralReceiving = () => {
 										Cost per Unit <span className="text-red-400">*</span>
 									</label>
 									<div className="relative">
-										<span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[0.875rem]">
+										<span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-[0.875rem]">
 											$
 										</span>
 										<input
@@ -302,7 +302,7 @@ const GeneralReceiving = () => {
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 										Package Size{' '}
-										<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+										<span className="text-[0.75rem] text-gray-500 font-light ml-1">
 											optional
 										</span>
 									</label>
@@ -322,14 +322,14 @@ const GeneralReceiving = () => {
 
 						{/* Additional */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 								Additional
 							</div>
 							<div className="space-y-4">
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 										Vendor{' '}
-										<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+										<span className="text-[0.75rem] text-gray-500 font-light ml-1">
 											optional
 										</span>
 									</label>
@@ -343,7 +343,7 @@ const GeneralReceiving = () => {
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 										Notes{' '}
-										<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+										<span className="text-[0.75rem] text-gray-500 font-light ml-1">
 											optional
 										</span>
 									</label>

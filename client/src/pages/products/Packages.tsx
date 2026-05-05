@@ -180,7 +180,7 @@ const Packages = () => {
 				<div className="flex flex-wrap items-center gap-2 mb-4">
 					<div className="relative flex-1 min-w-[200px]">
 						<svg
-							className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"
+							className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -299,7 +299,7 @@ const Packages = () => {
 													>
 														{pkg.product_name}
 													</Link>
-													<div className="font-mono text-[0.7rem] text-gray-400 mt-0.5">
+													<div className="font-mono text-[0.7rem] text-gray-500 mt-0.5">
 														{pkg.strain_name || '—'}
 													</div>
 												</td>
@@ -307,7 +307,7 @@ const Packages = () => {
 													<span className="text-[0.8125rem] font-semibold text-gray-900">
 														{formatQuantity(pkg.quantity, pkg.unit)}
 													</span>
-													<span className="text-[0.75rem] text-gray-400 ml-1">
+													<span className="text-[0.75rem] text-gray-500 ml-1">
 														{pkg.unit || 'each'}
 													</span>
 												</td>
@@ -392,7 +392,7 @@ const Packages = () => {
 									<p className="text-sm font-medium text-gray-500">
 										No packages yet
 									</p>
-									<p className="text-xs text-gray-400 mt-1 mb-4">
+									<p className="text-xs text-gray-500 mt-1 mb-4">
 										Add a product before receiving inventory
 									</p>
 									<Link
@@ -407,7 +407,7 @@ const Packages = () => {
 									<p className="text-sm font-medium text-gray-500">
 										No {status} packages
 									</p>
-									<p className="text-xs text-gray-400">
+									<p className="text-xs text-gray-500">
 										Packages with {status} status will appear here
 									</p>
 								</>
@@ -418,14 +418,14 @@ const Packages = () => {
 					{/* Loading state */}
 					{loading && (
 						<div className="py-12 text-center">
-							<p className="text-sm text-gray-400">Loading...</p>
+							<p className="text-sm text-gray-500">Loading...</p>
 						</div>
 					)}
 
 					{/* Table footer + pagination */}
 					{!loading && packages.length > 0 && (
 						<div className="px-4 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-							<span className="font-mono text-[0.72rem] text-gray-400">
+							<span className="font-mono text-[0.72rem] text-gray-500">
 								<span className="text-gray-600 font-medium">{total}</span>{' '}
 								packages
 							</span>

@@ -111,7 +111,7 @@ const Locations = () => {
 							<p className="text-sm font-medium text-gray-500">
 								No locations yet
 							</p>
-							<p className="text-xs text-gray-400 mt-1 mb-4">
+							<p className="text-xs text-gray-500 mt-1 mb-4">
 								Create your first location to get started
 							</p>
 							<Link
@@ -126,7 +126,7 @@ const Locations = () => {
 					{/* table footer */}
 					{locations.length > 0 && (
 						<div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-							<span className="font-mono text-[0.72rem] text-gray-400">
+							<span className="font-mono text-[0.72rem] text-gray-500">
 								<span className="text-gray-600 font-medium">
 									{locations.length}
 								</span>{' '}

@@ -32,6 +32,12 @@ const Transfer = () => {
 		fetchTransfer();
 	}, [id]);
 
+	const STATUS_STYLES: Record<string, string> = {
+		pending: 'bg-amber-50 text-amber-700',
+		confirmed: 'bg-green-light text-green-deep',
+		cancelled: 'bg-gray-100 text-gray-500',
+	};
+
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>{error}</div>;
 	if (!transfer) return <div>Transfer not found</div>;
@@ -86,40 +92,40 @@ const Transfer = () => {
 				{/* <!-- Meta card --> */}
 				<div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
 					<div className="px-6 py-4 border-b border-gray-100">
-						<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+						<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 							Transfer Details
 						</div>
 					</div>
 					<div className="px-6 py-5 grid grid-cols-2 gap-6">
 						<div>
-							<div className="text-[0.75rem] text-gray-400 mb-1">Type</div>
+							<div className="text-[0.75rem] text-gray-500 mb-1">Type</div>
 
 							<span className="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize">
 								{transfer.transfer_type}
 							</span>
 						</div>
 						<div>
-							<div className="text-[0.75rem] text-gray-400 mb-1">Status</div>
+							<div className="text-[0.75rem] text-gray-500 mb-1">Status</div>
 
-							<span className="inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize">
+							<span className={`inline-flex items-center font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize ${STATUS_STYLES[transfer.status] || STATUS_STYLES.pending}`}>
 								{transfer.status}
 							</span>
 						</div>
 						<div>
-							<div className="text-[0.75rem] text-gray-400 mb-1">From</div>
+							<div className="text-[0.75rem] text-gray-500 mb-1">From</div>
 							<div className="text-[0.8125rem] font-medium text-gray-900">
 								{transfer.from_location}
 							</div>
 						</div>
 						<div>
-							<div className="text-[0.75rem] text-gray-400 mb-1">To</div>
+							<div className="text-[0.75rem] text-gray-500 mb-1">To</div>
 							<div className="text-[0.8125rem] font-medium text-gray-900">
 								{transfer.to_location || transfer.to_company_name || '—'}
 							</div>
 						</div>
 						{transfer.confirmed_at && (
 							<div>
-								<div className="text-[0.75rem] text-gray-400 mb-1">
+								<div className="text-[0.75rem] text-gray-500 mb-1">
 									Confirmed At
 								</div>
 								<div className="text-[0.8125rem] text-gray-700">
@@ -133,7 +139,7 @@ const Transfer = () => {
 						)}
 						{transfer.notes && (
 							<div className="col-span-2">
-								<div className="text-[0.75rem] text-gray-400 mb-1">Notes</div>
+								<div className="text-[0.75rem] text-gray-500 mb-1">Notes</div>
 								<div className="text-[0.8125rem] text-gray-700">
 									{transfer.notes}
 								</div>
@@ -145,26 +151,26 @@ const Transfer = () => {
 				{/* <!-- Line items --> */}
 				<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
 					<div className="px-6 py-4 border-b border-gray-100">
-						<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+						<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 							Packages
 						</div>
 					</div>
 					<table className="w-full border-collapse">
 						<thead>
 							<tr className="border-b border-gray-200 bg-gray-50">
-								<th className="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">
+								<th className="text-left text-[0.7rem] font-medium text-gray-500 uppercase tracking-[0.06em] px-4 py-3">
 									Package Tag
 								</th>
-								<th className="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">
+								<th className="text-left text-[0.7rem] font-medium text-gray-500 uppercase tracking-[0.06em] px-4 py-3">
 									Product
 								</th>
-								<th className="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">
+								<th className="text-left text-[0.7rem] font-medium text-gray-500 uppercase tracking-[0.06em] px-4 py-3">
 									Category
 								</th>
-								<th className="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">
+								<th className="text-left text-[0.7rem] font-medium text-gray-500 uppercase tracking-[0.06em] px-4 py-3">
 									Transfer Qty
 								</th>
-								<th className="text-left text-[0.7rem] font-medium text-gray-400 uppercase tracking-[0.06em] px-4 py-3">
+								<th className="text-left text-[0.7rem] font-medium text-gray-500 uppercase tracking-[0.06em] px-4 py-3">
 									Cost Per Unit
 								</th>
 							</tr>
@@ -215,13 +221,13 @@ const Transfer = () => {
 						</tbody>
 					</table>
 					<div className="flex justify-between px-4 py-3 border-t border-gray-100 bg-gray-50">
-						<span className="font-mono text-[0.72rem] text-gray-400">
+						<span className="font-mono text-[0.72rem] text-gray-500">
 							<span className="text-gray-600 font-medium">
 								{transfer.items.length}
 							</span>{' '}
 							packages
 						</span>
-						<span className="font-mono text-[0.72rem] text-gray-400">
+						<span className="font-mono text-[0.72rem] text-gray-500">
 							Total:{' '}
 							<span className="text-gray-600 font-medium">
 								$

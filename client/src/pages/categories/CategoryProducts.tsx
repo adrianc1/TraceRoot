@@ -40,7 +40,7 @@ const CategoryProducts = () => {
 			<div className="max-w-4xl mx-auto px-6 py-8 flex-1 w-full">
 				<Link
 					to="/categories"
-					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
+					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6"
 				>
 					← Back to categories
 				</Link>
@@ -50,7 +50,7 @@ const CategoryProducts = () => {
 						<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 							{category.name}
 						</h1>
-						<p className="text-sm text-gray-400 font-light mt-0.5">
+						<p className="text-sm text-gray-500 font-light mt-0.5">
 							{products.length} product{products.length !== 1 ? 's' : ''} in this category
 						</p>
 					</div>
@@ -73,7 +73,7 @@ const CategoryProducts = () => {
 				<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
 					{products.length === 0 ? (
 						<div className="px-6 py-12 text-center">
-							<p className="text-[0.875rem] text-gray-400">
+							<p className="text-[0.875rem] text-gray-500">
 								No products in this category yet.
 							</p>
 							<a
@@ -87,19 +87,19 @@ const CategoryProducts = () => {
 						<table className="w-full">
 							<thead>
 								<tr className="border-b border-gray-100">
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 										Name
 									</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 										Brand
 									</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 										Strain
 									</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 										Status
 									</th>
-									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 										Quantity
 									</th>
 								</tr>
@@ -137,7 +137,7 @@ const CategoryProducts = () => {
 										</td>
 										<td className="px-6 py-4 text-right text-[0.875rem] font-medium text-gray-900">
 											{product.total_quantity ?? 0}{' '}
-											<span className="text-gray-400 font-normal">
+											<span className="text-gray-500 font-normal">
 												{product.unit}
 											</span>
 										</td>

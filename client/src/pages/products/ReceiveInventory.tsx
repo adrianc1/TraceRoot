@@ -86,18 +86,18 @@ const ReceiveInventory = () => {
 		}
 	};
 
-	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-400">Loading...</p></div>;
+	if (loading) return <div className="max-w-2xl mx-auto px-4 py-8"><p className="text-sm text-gray-500">Loading...</p></div>;
 	if (!product) return null;
 
 	return (
 		<div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
 			<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
-				<Link to={`/packages/${id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6">
+				<Link to={`/packages/${id}`} className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6">
 					← Back to product
 				</Link>
 				<div className="mb-6">
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">Receive Inventory</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">{product.name}</p>
+					<p className="text-sm text-gray-500 font-light mt-0.5">{product.name}</p>
 				</div>
 
 				{error && (
@@ -109,18 +109,18 @@ const ReceiveInventory = () => {
 
 						{/* Product Info */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Product Info</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Product Info</div>
 							<div className="grid grid-cols-3 gap-4">
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Brand</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Brand</div>
 									<div className="text-[0.875rem] font-medium text-gray-800">{brand?.name || '—'}</div>
 								</div>
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Strain</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Strain</div>
 									<div className="text-[0.875rem] font-medium text-gray-800">{strain?.name || '—'}</div>
 								</div>
 								<div>
-									<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.06em] mb-1">Category</div>
+									<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.06em] mb-1">Category</div>
 									<div className="text-[0.875rem] font-medium text-gray-800">{category?.name || '—'}</div>
 								</div>
 							</div>
@@ -128,7 +128,7 @@ const ReceiveInventory = () => {
 
 						{/* Package Details */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Package Details</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Package Details</div>
 							<div className="space-y-4">
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
@@ -175,7 +175,7 @@ const ReceiveInventory = () => {
 
 						{/* Quantity */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Quantity</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Quantity</div>
 							<div className="space-y-4">
 								<div className="grid grid-cols-2 gap-4">
 									<div>
@@ -211,7 +211,7 @@ const ReceiveInventory = () => {
 										Cost per Unit <span className="text-red-400">*</span>
 									</label>
 									<div className="relative">
-										<span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[0.875rem]">$</span>
+										<span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-[0.875rem]">$</span>
 										<input
 											type="number"
 											value={form.unit_price}
@@ -226,7 +226,7 @@ const ReceiveInventory = () => {
 								{form.unit === 'each' && (
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
-										Package Size <span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+										Package Size <span className="text-[0.75rem] text-gray-500 font-light ml-1">optional</span>
 									</label>
 									<input
 										type="number"
@@ -244,11 +244,11 @@ const ReceiveInventory = () => {
 
 						{/* Additional */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">Additional</div>
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">Additional</div>
 							<div className="space-y-4">
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
-										Vendor <span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+										Vendor <span className="text-[0.75rem] text-gray-500 font-light ml-1">optional</span>
 									</label>
 									<input
 										type="text"
@@ -259,7 +259,7 @@ const ReceiveInventory = () => {
 								</div>
 								<div>
 									<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
-										Notes <span className="text-[0.75rem] text-gray-400 font-light ml-1">optional</span>
+										Notes <span className="text-[0.75rem] text-gray-500 font-light ml-1">optional</span>
 									</label>
 									<textarea
 										value={form.notes}

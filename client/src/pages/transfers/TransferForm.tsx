@@ -19,6 +19,7 @@ const TransferForm = () => {
 	const [locations, setLocations] = useState<Locations[]>([]);
 	const [fromLocationId, setFromLocationId] = useState<number | null>(null);
 	const [toLocationId, setToLocationId] = useState<number | null>(null);
+	const [toCompanyName, setToCompanyName] = useState('');
 	const [items, setItems] = useState<TransferItem[]>([]);
 	const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
 
@@ -63,11 +64,20 @@ const TransferForm = () => {
 		}
 	};
 
+	const hasUnsetItems = selectedItems.some((item) => item.package_tag === '');
+
+	const isFormValid =
+		transferType !== '' &&
+		fromLocationId !== null &&
+		(transferType !== 'internal' || toLocationId !== null) &&
+		(transferType !== 'external' || toCompanyName.trim() !== '') &&
+		!hasUnsetItems;
+
 	return (
 		<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
 			<a
 				href="/transfers"
-				className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
+				className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6"
 			>
 				← Back to transfers
 			</a>
@@ -76,7 +86,7 @@ const TransferForm = () => {
 				<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 					New Transfer
 				</h1>
-				<p className="text-sm text-gray-400 font-light mt-0.5">
+				<p className="text-sm text-gray-500 font-light mt-0.5">
 					Move inventory between locations or to an external company
 				</p>
 			</div>
@@ -85,7 +95,7 @@ const TransferForm = () => {
 				<form onSubmit={handleSubmit}>
 					{/* Transfer Info */}
 					<div className="px-6 py-5 border-b border-gray-100">
-						<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+						<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 							Transfer Info
 						</div>
 						<div className="space-y-4">
@@ -170,6 +180,8 @@ const TransferForm = () => {
 										name="to_company_name"
 										placeholder="Acme Dispensary"
 										required
+										value={toCompanyName}
+										onChange={(e) => setToCompanyName(e.target.value)}
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md bg-white placeholder-gray-300"
 									/>
 								</div>
@@ -179,7 +191,7 @@ const TransferForm = () => {
 							<div>
 								<label className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5">
 									Notes{' '}
-									<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+									<span className="text-[0.75rem] text-gray-500 font-light ml-1">
 										optional
 									</span>
 								</label>
@@ -196,14 +208,16 @@ const TransferForm = () => {
 					{/* Packages */}
 					<div className="px-6 py-5 border-b border-gray-100">
 						<div className="flex items-center justify-between mb-4">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">
 								Packages
 							</div>
 							<button
 								type="button"
 								className={`text-[0.75rem] text-green-mid hover:text-green-deep font-medium transition-colors cursor-pointer disabled:text-gray-300 disabled:cursor-not-allowed`}
 								disabled={
-									!fromLocationId || items.length === selectedItems.length
+									!fromLocationId ||
+									items.length === selectedItems.length ||
+									hasUnsetItems
 								}
 								onClick={() => {
 									setSelectedItems((prev) => [
@@ -226,6 +240,17 @@ const TransferForm = () => {
 								);
 								return (
 									<li key={index} className="flex items-center gap-3">
+										<button
+											type="button"
+											onClick={() => {
+												setSelectedItems((prev) =>
+													prev.filter((_, i) => i !== index),
+												);
+											}}
+											className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-400 rounded transition-colors cursor-pointer"
+										>
+											✕
+										</button>
 										<select
 											key={item.package_tag}
 											value={item.package_tag}
@@ -264,9 +289,9 @@ const TransferForm = () => {
 							})}
 						</div>
 
-						<div className="text-[0.8125rem] text-gray-400 italic">
+						<div className="text-[0.8125rem] text-gray-500 italic">
 							{selectedItems.length === 0 && (
-								<p className="text-[0.8125rem] text-gray-400 italic">
+								<p className="text-[0.8125rem] text-gray-500 italic">
 									No packages added yet
 								</p>
 							)}
@@ -283,7 +308,8 @@ const TransferForm = () => {
 						</a>
 						<button
 							type="submit"
-							className="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer"
+							disabled={!isFormValid}
+							className="inline-flex items-center justify-center px-5 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep hover:border-green-deep transition-colors cursor-pointer disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed"
 						>
 							Create Transfer
 						</button>

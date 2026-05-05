@@ -26,7 +26,7 @@ const ProductList = () => {
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
 					<div>
 						<h1 className="text-xl font-semibold tracking-tight text-gray-900">Products</h1>
-						<p className="text-sm text-gray-400 font-light mt-0.5">
+						<p className="text-sm text-gray-500 font-light mt-0.5">
 							{!loading && `${products.length} product${products.length !== 1 ? 's' : ''} in your catalog`}
 						</p>
 					</div>
@@ -74,16 +74,16 @@ const ProductList = () => {
 				<div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
 					{loading ? (
 						<div className="py-8 text-center">
-							<p className="text-sm text-gray-400">Loading...</p>
+							<p className="text-sm text-gray-500">Loading...</p>
 						</div>
 					) : products.length === 0 ? (
 						<div className="px-6 py-16 text-center flex flex-col items-center gap-4">
 							<img src="/tracerootlogo.png" alt="Traceroot" className="w-48 opacity-80" />
 							{status === 'archived' ? (
-								<p className="text-[0.875rem] text-gray-400">No archived products.</p>
+								<p className="text-[0.875rem] text-gray-500">No archived products.</p>
 							) : (
 								<>
-									<p className="text-[0.875rem] text-gray-400">No products yet.</p>
+									<p className="text-[0.875rem] text-gray-500">No products yet.</p>
 									<Link
 										to="/packages/create-product"
 										className="inline-flex items-center justify-center px-4 py-[0.4rem] text-[0.8125rem] font-medium text-white bg-green-mid border border-green-mid rounded-md hover:bg-green-deep transition-colors no-underline"
@@ -97,14 +97,14 @@ const ProductList = () => {
 						<table className="w-full">
 							<thead>
 								<tr className="border-b border-gray-100">
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Name</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Brand</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Category</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Strain</th>
-									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">On Hand</th>
-									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Avg Cost</th>
-									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Status</th>
-									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">Actions</th>
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Name</th>
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Brand</th>
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Category</th>
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Strain</th>
+									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">On Hand</th>
+									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Avg Cost</th>
+									<th className="px-6 py-3 text-left text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Status</th>
+									<th className="px-6 py-3 text-right text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em]">Actions</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">

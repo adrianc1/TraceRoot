@@ -31,7 +31,7 @@ const CreateBrand = () => {
 				{/* backlink */}
 				<a
 					href="/brands"
-					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-400 hover:text-gray-700 transition-colors no-underline mb-6"
+					className="inline-flex items-center gap-1.5 text-[0.8125rem] text-gray-500 hover:text-gray-700 transition-colors no-underline mb-6"
 				>
 					← Back to brands
 				</a>
@@ -41,7 +41,7 @@ const CreateBrand = () => {
 					<h1 className="text-xl font-semibold tracking-tight text-gray-900">
 						Add New Brand
 					</h1>
-					<p className="text-sm text-gray-400 font-light mt-0.5">
+					<p className="text-sm text-gray-500 font-light mt-0.5">
 						Brands can be assigned to products in your inventory
 					</p>
 				</div>
@@ -54,7 +54,7 @@ const CreateBrand = () => {
 					<form id="create-brand-form" onSubmit={handleSubmit}>
 						{/* Section: Brand Info */}
 						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em] mb-4">
+							<div className="text-[0.7rem] font-mono text-gray-500 uppercase tracking-[0.08em] mb-4">
 								Brand Info
 							</div>
 							<div className="space-y-4">
@@ -73,7 +73,7 @@ const CreateBrand = () => {
 										required
 										className="w-full px-3 py-2 text-[0.875rem] border border-gray-300 rounded-md transition-all bg-white placeholder-gray-300"
 									/>
-									<p className="text-[0.75rem] text-gray-400 mt-1">
+									<p className="text-[0.75rem] text-gray-500 mt-1">
 										Must be unique within your company
 									</p>
 								</div>
@@ -84,7 +84,7 @@ const CreateBrand = () => {
 										className="block text-[0.8125rem] font-medium text-gray-700 mb-1.5"
 									>
 										Description
-										<span className="text-[0.75rem] text-gray-400 font-light ml-1">
+										<span className="text-[0.75rem] text-gray-500 font-light ml-1">
 											optional
 										</span>
 									</label>

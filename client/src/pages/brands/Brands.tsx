@@ -82,7 +82,7 @@ const Brands = () => {
 				{brands.length === 0 && (
 					<div className="py-16 text-center">
 						<p className="text-sm font-medium text-gray-500">No brands yet</p>
-						<p className="text-xs text-gray-400 mt-1 mb-4">
+						<p className="text-xs text-gray-500 mt-1 mb-4">
 							Create your first brand to get started
 						</p>
 						<Link
@@ -97,7 +97,7 @@ const Brands = () => {
 				{/* Table footer */}
 				{brands.length > 0 && (
 					<div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
-						<span className="font-mono text-[0.72rem] text-gray-400">
+						<span className="font-mono text-[0.72rem] text-gray-500">
 							<span className="text-gray-600 font-medium">{brands.length}</span>{' '}
 							brand{brands.length !== 1 ? 's' : ''}
 						</span>
