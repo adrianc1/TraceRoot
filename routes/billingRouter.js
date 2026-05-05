@@ -4,6 +4,17 @@ const db = require('../db/queries');
 const { ensureAuthenticated } = require('../middleware/authMiddleware');
 const router = express.Router();
 
+// Get company billing info
+router.get('/', async (req, res) => {
+	try {
+		const billing = await db.getCompanyBilling(req.user.company_id);
+		res.json(billing);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to fetch billing info' });
+	}
+});
+
 // Stripe checkout session
 router.get('/checkout', ensureAuthenticated, async (req, res) => {
 	try {
