@@ -118,7 +118,7 @@ const getEditUser = async (req, res) => {
 	try {
 		const user = await db.getUserById(req.params.id, req.user.company_id);
 		if (!user) return res.status(404).send('User not found');
-		res.render('users/edit-user', { editUser: user, currentUser: req.user });
+		res.json(user);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });

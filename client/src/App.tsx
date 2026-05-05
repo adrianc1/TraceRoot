@@ -27,6 +27,7 @@ import Transfer from './pages/transfers/Transfer';
 import TransferForm from './pages/transfers/TransferForm';
 import Settings from './pages/settings/Settings';
 import GetUsers from './pages/users/GetUsers';
+import EditUserForm from './pages/users/EditUser';
 
 function App() {
 	return (
@@ -72,6 +73,7 @@ function App() {
 					<Route path="/users/settings" element={<Settings />} />
 
 					<Route path="/users" element={<GetUsers />} />
+					<Route path="/users/:id/edit" element={<EditUserForm />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
