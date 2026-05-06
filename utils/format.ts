@@ -1,4 +1,5 @@
-function formatQuantity(quantity, unit) {
+import type { Unit } from '../types';
+function formatQuantity(quantity: number, unit: Unit) {
 	const num = Number(quantity || 0);
 
 	if (unit === 'each') {
@@ -8,11 +9,11 @@ function formatQuantity(quantity, unit) {
 	return num.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
-function formatCurrency(value) {
+function formatCurrency(value: number) {
 	return Number(value || 0).toLocaleString('en-US', {
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2,
 	});
 }
 
-module.exports = { formatQuantity, formatCurrency };
+export { formatQuantity, formatCurrency };

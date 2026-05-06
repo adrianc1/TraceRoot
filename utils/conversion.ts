@@ -1,3 +1,4 @@
+import type { Unit } from '../types';
 type Weight = {
 	mg: number;
 	g: number;
@@ -10,8 +11,6 @@ type Volume = {
 	ml: number;
 	l: number;
 };
-type WeightUnit = keyof Weight;
-type VolumeUnit = keyof Volume;
 
 const weightToGrams: Weight = {
 	mg: 0.001,
@@ -26,11 +25,7 @@ const volumeToMl: Volume = {
 	l: 1000,
 };
 
-function convertQuantity(
-	amount: number,
-	fromUnit: WeightUnit | VolumeUnit,
-	toUnit: WeightUnit | VolumeUnit,
-) {
+function convertQuantity(amount: number, fromUnit: Unit, toUnit: Unit) {
 	if (fromUnit === toUnit) return amount;
 
 	if (weightToGrams[fromUnit] && weightToGrams[toUnit]) {
