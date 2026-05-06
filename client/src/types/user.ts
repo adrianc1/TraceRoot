@@ -17,4 +17,5 @@ export interface User {
 	role: Role;
 	created_at: string;
 	active: boolean;
+	company_name: string;
 }

@@ -28,7 +28,7 @@ import TransferForm from './pages/transfers/TransferForm';
 import Settings from './pages/settings/Settings';
 import GetUsers from './pages/users/GetUsers';
 import EditUserForm from './pages/users/EditUser';
-
+import Account from './pages/settings/Account';
 function App() {
 	return (
 		<div className="">
@@ -74,6 +74,7 @@ function App() {
 
 					<Route path="/users" element={<GetUsers />} />
 					<Route path="/users/:id/edit" element={<EditUserForm />} />
+					<Route path="/users/account" element={<Account />} />
 				</Routes>
 			</BrowserRouter>
 		</div>
