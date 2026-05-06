@@ -1,6 +1,12 @@
-// builds a CSV string from an array of data objects and column defin
-function toCsv(rows, columns) {
-	const escape = (val) => {
+import { Response } from 'express';
+
+interface CsvColumn {
+	header: string;
+	value: string | ((row: any) => any);
+}
+
+function toCsv(rows: Record<string, any>[], columns: CsvColumn[]) {
+	const escape = (val: any) => {
 		const str = val == null ? '' : String(val);
 		if (
 			str.includes(',') ||
@@ -13,7 +19,7 @@ function toCsv(rows, columns) {
 		return str;
 	};
 
-	const header = columns.map((c) => escape(c.header)).join(',');
+	const header: any = columns.map((c) => escape(c.header)).join(',');
 
 	const lines = rows.map((row) =>
 		columns
@@ -28,10 +34,10 @@ function toCsv(rows, columns) {
 }
 
 // sets headers and sends csv string as a file downlaod res
-function sendCsv(res, filename, csvString) {
+function sendCsv(res: Response, filename: string, csvString: string) {
 	res.setHeader('Content-Type', 'text/csv; charset=utf-8');
 	res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 	res.send(csvString);
 }
 
-module.exports = { toCsv, sendCsv };
+export { toCsv, sendCsv };
