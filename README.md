@@ -19,9 +19,11 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 | Layer    | Technology                                   |
 | -------- | -------------------------------------------- |
 | Backend  | Node.js, Express.js                          |
-| Database | PostgreSQL                                   |
+| Database | PostgreSQL (AWS RDS)                         |
 | Auth     | Passport.js (local strategy, session-based)  |
-| Frontend | EJS (server-side rendering), Tailwind CSS v4 |
+| Frontend | React + TypeScript, Vite (migrating from EJS SSR), Tailwind CSS v4 |
+| Billing  | Stripe (Checkout, webhooks, subscriptions)   |
+| Hosting  | AWS EC2 + RDS, PM2                           |
 | Testing  | Jest                                         |
 
 ---
@@ -40,6 +42,10 @@ When a transfer is created, the source package is immediately flagged `locked = 
 
 Every table carries a `company_id` foreign key. All queries are scoped to the authenticated user's company at the middleware level, providing hard data isolation between tenants with no risk of cross-company data leakage.
 
+### Stripe billing with trial middleware
+
+Subscriptions are managed via Stripe Checkout. On signup, companies receive a 14-day free trial tracked by a `trial_ends_at` timestamp in the `companies` table. A middleware layer (`trialMiddleware.js`) runs on every authenticated request and gates access to app routes if the trial has expired and no active Stripe subscription exists. Subscription state is updated in real-time via Stripe webhooks (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`), which write back to `stripe_subscription_status` on the company record. The webhook endpoint receives a raw body before Express JSON parsing to allow Stripe signature verification.
+
 ### Composite foreign key on packages → locations
 
 `packages` enforces `FOREIGN KEY (location_id, company_id) REFERENCES locations(id, company_id)` — a composite key that prevents a package from being assigned to a location belonging to a different company, even if the location ID is otherwise valid.
@@ -49,11 +55,13 @@ Every table carries a `company_id` foreign key. All queries are scoped to the au
 ## Features
 
 - **Multi-tenant auth** — company-scoped accounts, session-based login via Passport.js
+- **Role-based access control** — admin, manager, and staff roles with route-level enforcement
 - **Product catalog** — products linked to brands, strains, and categories
 - **Package lifecycle** — receive, split, adjust, and archive packages with full movement history per package
 - **Transfers** — internal (location-to-location) and external (company-to-company) with a pending → confirmed/cancelled state machine
 - **Audit trail** — per-package transaction history with start qty, delta, end qty, and user attribution
 - **Locations** — configurable storage locations per company
+- **Billing & subscriptions** — Stripe Checkout with 14-day free trial, webhook-driven subscription state, trial expiry gating, and subscription status visible in account settings
 
 ---
 
@@ -97,8 +105,14 @@ Create a `.env` file:
 
 ```env
 DATABASE_URL=postgresql://localhost/traceroot
-SESSION_SECRET=your_secret_here
+COOKIE_SECRET=your_secret_here
 PORT=3000
+
+# Stripe (optional for local dev — required for billing features)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_MONTHLY=price_...
+STRIPE_PRICE_ANNUAL=price_...
 ```
 
 Initialize the database:
@@ -118,7 +132,8 @@ npm run dev
 
 ## Roadmap
 
+- [ ] **Frontend migration** — rewrite app views in React + TypeScript (Vite), keeping EJS for public marketing pages
+- [ ] **Dashboard** — inventory summary, recent transfers, low-stock alerts at a glance
 - [ ] **Variance checker** — upload a physical count CSV, compare against system quantities, AI-generated reconciliation summary via Claude API
-- [ ] **Role-based permissions** — granular admin / manager / staff access controls
 - [ ] **METRC integration** — sync package data directly to state track-and-trace via API
 - [ ] **Reporting** — inventory valuation trends, movement exports, low-stock alerts

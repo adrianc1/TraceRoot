@@ -1,8 +1,11 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const db = require('../db/queries');
 const { ensureAuthenticated } = require('../middleware/authMiddleware');
+const { getBilling, handleWebhookEvent } = require('../controllers/billingController');
 const router = express.Router();
+
+// Get company billing info
+router.get('/', getBilling);
 
 // Stripe checkout session
 router.get('/checkout', ensureAuthenticated, async (req, res) => {
@@ -48,41 +51,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 	}
 
 	try {
-		switch (event.type) {
-			case 'checkout.session.completed': {
-				const session = event.data.object;
-				const company_id = session.metadata?.company_id;
-				if (company_id) {
-					await db.updateCompanyBilling(company_id, {
-						stripe_customer_id: session.customer,
-						stripe_subscription_status: 'active',
-					});
-				}
-				break;
-			}
-			case 'customer.subscription.updated': {
-				const sub = event.data.object;
-				const company = await db.getCompanyByStripeCustomer(sub.customer);
-				if (company) {
-					await db.updateCompanyBilling(company.id, {
-						stripe_subscription_status: sub.status,
-					});
-				}
-				break;
-			}
-			case 'customer.subscription.deleted': {
-				const sub = event.data.object;
-				const company = await db.getCompanyByStripeCustomer(sub.customer);
-				if (company) {
-					await db.updateCompanyBilling(company.id, {
-						stripe_subscription_status: 'canceled',
-					});
-				}
-				break;
-			}
-		}
-
-		res.json({ received: true });
+		await handleWebhookEvent(event, res);
 	} catch (error) {
 		console.error('Webhook handler error:', error);
 		res.status(500).json({ error: 'Webhook handler failed' });

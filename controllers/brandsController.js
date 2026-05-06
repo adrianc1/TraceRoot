@@ -2,11 +2,7 @@ const db = require('../db/queries');
 
 const getAllBrands = async (req, res) => {
 	const brands = await db.getAllBrands(req.user.company_id);
-	res.render('brands/brands', { message: 'brands!', brands });
-};
-
-const createBrandForm = async (req, res) => {
-	res.render('brands/create-brand.ejs');
+	res.json(brands);
 };
 
 const createBrand = async (req, res) => {
@@ -24,10 +20,9 @@ const createBrand = async (req, res) => {
 	}
 };
 
-const editBrandForm = async (req, res) => {
+const getBrandById = async (req, res) => {
 	const brand = await db.getBrandById(req.params.id, req.user.company_id);
-
-	res.render('brands/edit-brand', { brand });
+	res.json(brand);
 };
 
 const updateBrand = async (req, res) => {
@@ -47,8 +42,7 @@ const updateBrand = async (req, res) => {
 
 module.exports = {
 	getAllBrands,
-	createBrandForm,
+	getBrandById,
 	createBrand,
-	editBrandForm,
 	updateBrand,
 };

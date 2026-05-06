@@ -2,7 +2,22 @@ const db = require('../db/queries');
 const { convertQuantity } = require('../utils/conversion');
 const { toCsv, sendCsv } = require('../utils/csvExport');
 
-const getAllProducts = async (req, res) => {
+const getAllPackages = async (req, res) => {
+	const { location_id } = req.query;
+
+	if (location_id) {
+		try {
+			const packages = await db.getPackagesByLocation(
+				req.user.company_id,
+				location_id,
+			);
+			res.json({ packages });
+		} catch (error) {
+			res.status(500).json({ error: 'Database error' });
+		}
+		return;
+	}
+
 	try {
 		const userCompanyId = req.user.company_id;
 		const status = req.query.status || 'active';
@@ -22,19 +37,14 @@ const getAllProducts = async (req, res) => {
 			db.getAllStrains(userCompanyId),
 			db.getAllCategories(userCompanyId),
 		]);
-		res.render('products/products', {
-			message: 'All Packages',
+		res.json({
 			packages,
-			currentStatus: status,
-			currentPage: page,
-			totalPages: Math.ceil(total / limit),
+			total,
 			brands,
 			strains,
 			categories,
-			search: filters.search,
-			brand: filters.brand,
-			category: filters.category,
-			sort: filters.sort,
+			currentPage: page,
+			totalPages: Math.ceil(total / limit),
 		});
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
@@ -43,21 +53,22 @@ const getAllProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
 	try {
-		const product = await db.getProductWithInventoryDB(req.params.id, req.user.company_id);
+		const product = await db.getProductWithInventoryDB(
+			req.params.id,
+			req.user.company_id,
+		);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
 
-		const productInventory = await db.getPackagesByProductId(req.params.id, req.user.company_id);
-		const packages = await db.getAuditTrail(req.params.id, req.user.company_id);
+		const [productInventory, auditTrail] = await Promise.all([
+			db.getPackagesByProductId(req.params.id, req.user.company_id),
+			db.getAuditTrail(req.params.id, req.user.company_id),
+		]);
 
-		res.render('products/product', {
-			product,
-			productInventory,
-			packages,
-		});
+		res.json({ product, productInventory, auditTrail });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error retrieving single product' });
@@ -69,7 +80,7 @@ const receiveNewPackageForm = async (req, res) => {
 	const products = await db.getAllProductsDB(req.user.company_id);
 	const locations = await db.getLocations(req.user.company_id);
 
-	res.render('products/receiveAll.ejs', { products, product, locations });
+	res.json({ products, locations });
 };
 
 const receiveNewPackagesPOST = async (req, res) => {
@@ -134,7 +145,7 @@ const receiveNewPackagesPOST = async (req, res) => {
 		package_size: package_size || null,
 		unit,
 	});
-	res.redirect(`/packages/${product_id}`);
+	res.json({ success: true, id: product_id });
 };
 
 const createProductForm = async (req, res) => {
@@ -148,12 +159,7 @@ const createProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('products/createProductForm', {
-			brands,
-			strains,
-			categories,
-			units,
-		});
+		res.json({ brands, strains, categories, units });
 	} catch (error) {
 		console.error(error);
 	}
@@ -170,11 +176,7 @@ const splitPackageProductForm = async (req, res) => {
 	);
 	const products = await db.getAllProductsDB(req.user.company_id);
 
-	res.render('products/splitPackageProductForm', {
-		product,
-		products,
-		selectedPackage,
-	});
+	res.json({ product, products, selectedPackage });
 };
 
 const splitPackagePost = async (req, res) => {
@@ -212,7 +214,7 @@ const splitPackagePost = async (req, res) => {
 	}
 
 	await db.splitPackageTransaction(selectedBatch, splits, userId);
-	res.redirect('/');
+	res.json({ success: true, productId: selectedBatch.product_id });
 };
 
 const insertProduct = async (req, res) => {
@@ -249,9 +251,11 @@ const insertProduct = async (req, res) => {
 		newCategory = null;
 	}
 
-	const strain_id = strainId || newStrain?.id || null;
-	const brand_id = brandId || newBrand?.id || null;
-	const category_id = categoryId || newCategory?.id || null;
+	const strain_id =
+		(strainId !== '__new__' && strainId) || newStrain?.id || null;
+	const brand_id = (brandId !== '__new__' && brandId) || newBrand?.id || null;
+	const category_id =
+		(categoryId !== '__new__' && categoryId) || newCategory?.id || null;
 
 	const product = await db.insertProduct(
 		name,
@@ -263,14 +267,14 @@ const insertProduct = async (req, res) => {
 		userCompanyId,
 		sku,
 	);
-	res.redirect(`/packages/${product.id}`);
+	res.status(201).json({ success: true, id: product.id });
 };
 
 const getProductsList = async (req, res) => {
 	try {
 		const status = req.query.status === 'archived' ? 'archived' : 'active';
 		const products = await db.getAllProductsDB(req.user.company_id, status);
-		res.render('products/product-list', { products, currentStatus: status });
+		res.json({ products });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
@@ -289,7 +293,9 @@ const deleteProduct = async (req, res) => {
 		res.status(200).json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ success: false, error: 'Failed to archive product' });
+		res
+			.status(500)
+			.json({ success: false, error: 'Failed to archive product' });
 	}
 };
 
@@ -327,14 +333,7 @@ const editProductForm = async (req, res) => {
 			res.status(404).json({ error: 'No Brands Found' });
 		}
 
-		res.render('products/editProductForm', {
-			product,
-			brands,
-			strains,
-			categories,
-			units,
-			hasPackages,
-		});
+		res.json({ product, brands, strains, categories, units, hasPackages });
 	} catch (error) {
 		console.error(error);
 	}
@@ -418,7 +417,7 @@ const receiveInventoryPut = async (req, res) => {
 		package_size: package_size || null,
 		unit,
 	});
-	res.redirect(`/packages/${product_id}`);
+	res.json({ success: true, id: product_id });
 };
 
 const adjustInventoryGet = async (req, res) => {
@@ -470,7 +469,7 @@ const adjustInventoryGet = async (req, res) => {
 			'Seizure/Legal Compliance',
 		];
 
-		res.render('products/adjustInventory', {
+		res.json({
 			product,
 			brand,
 			strain,
@@ -528,7 +527,6 @@ const receiveInventoryGet = async (req, res) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
-		const id = req.params.id;
 		const product = await db.getProductDB(req.params.id, req.user.company_id);
 		const brand = product.brand_id
 			? await db.getBrand(product.brand_id, req.user.company_id)
@@ -542,16 +540,7 @@ const receiveInventoryGet = async (req, res) => {
 
 		const locations = await db.getLocations(req.user.company_id);
 
-		const adjustmentReason = 'Receive';
-		res.render('products/receiveInventory', {
-			product,
-			brand,
-			strain,
-			category,
-			units,
-			adjustmentReason,
-			locations,
-		});
+		res.json({ product, brand, strain, category, units, locations });
 	} catch (error) {
 		console.error(error);
 	}
@@ -679,7 +668,7 @@ const exportAuditCsv = async (req, res) => {
 };
 
 module.exports = {
-	getAllProducts,
+	getAllPackages,
 	getProductsList,
 	getProduct,
 	createProductForm,

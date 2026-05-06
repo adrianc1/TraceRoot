@@ -4,9 +4,7 @@ const { toCsv, sendCsv } = require('../utils/csvExport');
 const getAllTransfers = async (req, res) => {
 	try {
 		const transfers = await db.getAllTransfersDB(req.user.company_id);
-		res.render('transfers/transfers', {
-			transfers,
-		});
+		res.json(transfers);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });
@@ -24,27 +22,27 @@ const getTransfer = async (req, res) => {
 			return res.status(404).json({ error: 'Transfer not found' });
 		}
 
-		res.render('transfers/transfer', { transfer });
+		res.json(transfer);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });
 	}
 };
 
-const createTransferForm = async (req, res) => {
-	try {
-		const locations = await db.getLocations(req.user.company_id);
-		const packages = await db.getPackagesByStatus(
-			req.user.company_id,
-			'active',
-		);
+// const createTransferForm = async (req, res) => {
+// 	try {
+// 		const locations = await db.getLocations(req.user.company_id);
+// 		const packages = await db.getPackagesByStatus(
+// 			req.user.company_id,
+// 			'active',
+// 		);
 
-		res.render('transfers/createTransferForm', { locations, packages });
-	} catch (error) {
-		console.error(error);
-		res.status(500).json({ error: 'Database error' });
-	}
-};
+// 		res.render('transfers/createTransferForm', { locations, packages });
+// 	} catch (error) {
+// 		console.error(error);
+// 		res.status(500).json({ error: 'Database error' });
+// 	}
+// };
 
 const createTransfer = async (req, res) => {
 	try {
@@ -76,7 +74,7 @@ const createTransfer = async (req, res) => {
 			items,
 		);
 
-		res.redirect(`/transfers/${transfer.id}`);
+		res.status(201).json({ success: true });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: error.message });
@@ -156,7 +154,6 @@ const exportTransfersCsv = async (req, res) => {
 module.exports = {
 	getAllTransfers,
 	getTransfer,
-	createTransferForm,
 	createTransfer,
 	confirmTransfer,
 	cancelTransfer,

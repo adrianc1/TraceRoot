@@ -8,21 +8,17 @@ router.get(
 	authorizeRole('admin', 'manager', 'staff'),
 	strainsController.getAllStrains,
 );
-router.get(
-	'/create-strain',
-	authorizeRole('admin', 'manager', 'staff'),
-	strainsController.createStrainForm,
-);
+
 router.post(
-	'/create-strain',
+	'/',
 	authorizeRole('admin', 'manager', 'staff'),
 	strainsController.insertStrain,
 );
-router.get(
-	'/:id/edit',
-	authorizeRole('admin', 'manager', 'staff'),
-	strainsController.editStrainForm,
-);
+// router.get(
+// 	'/:id/edit',
+// 	authorizeRole('admin', 'manager', 'staff'),
+// 	strainsController.editStrainForm,
+// );
 router.put(
 	'/:id',
 	authorizeRole('admin', 'manager', 'staff'),

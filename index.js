@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const pg = require('pg');
 const pool = require('./db/pool.js');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -19,8 +18,8 @@ const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
 const locationsRouter = require('./routes/locationsRouter');
 const usersRouter = require('./routes/usersRouter');
+const usersEjsRouter = require('./routes/usersEjsRouter');
 const billingRouter = require('./routes/billingRouter');
-const { formatQuantity, formatCurrency } = require('./utils/format');
 const { setLocals } = require('./middleware/appMiddleware');
 const {
 	ensureAuthenticated,
@@ -38,7 +37,11 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 // Webhook must receive raw body — register before express.json()
-app.post('/billing/webhook', express.raw({ type: 'application/json' }), billingRouter);
+app.post(
+	'/billing/webhook',
+	express.raw({ type: 'application/json' }),
+	billingRouter,
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -72,24 +75,32 @@ app.use(flash());
 app.use(setLocals);
 app.use(checkTrial);
 
+// marketing pages - static
 app.get('/privacy', (_req, res) => res.render('privacy'));
 app.get('/terms', (_req, res) => res.render('terms'));
 app.get('/features', (_req, res) => res.render('features'));
 app.get('/pricing', (req, res) => res.render('pricing', { query: req.query }));
 app.get('/contact', (_req, res) => res.render('contact'));
+app.use('/api/billing', ensureAuthenticated, billingRouter);
 
-app.use('/', signupRouter);
 app.use('/login', redirectIfAuthenticated, loginRouter);
-app.use('/signup', redirectIfAuthenticated, signupRouter);
-app.use('/users', usersRouter);
-app.use('/billing', billingRouter);
+app.use('/', signupRouter);
+app.use('/api/users', ensureAuthenticated, usersRouter);
+app.use('/users', ensureAuthenticated, usersEjsRouter);
 
-app.use('/packages', ensureAuthenticated, productsRouter);
-app.use('/categories', ensureAuthenticated, categoryRouter);
-app.use('/strains', ensureAuthenticated, strainsRouter);
-app.use('/brands', ensureAuthenticated, brandsRouter);
-app.use('/transfers', ensureAuthenticated, transfersRouter);
-app.use('/locations', ensureAuthenticated, locationsRouter);
+app.use('/api/packages', ensureAuthenticated, productsRouter);
+app.use('/api/categories', ensureAuthenticated, categoryRouter);
+app.use('/api/strains', ensureAuthenticated, strainsRouter);
+app.use('/api/brands', ensureAuthenticated, brandsRouter);
+app.use('/api/transfers', ensureAuthenticated, transfersRouter);
+app.use('/api/locations', ensureAuthenticated, locationsRouter);
+
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(path.join(__dirname, 'client/dist')));
+	app.get('/{*path}', (req, res) => {
+		res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+	});
+}
 
 app.listen(PORT, () => {
 	// console.log(`server running on PORT ${PORT}`);

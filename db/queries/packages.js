@@ -49,6 +49,14 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 	}
 };
 
+const getPackagesByLocation = async (companyId, locationId) => {
+	const result = await pool.query(
+		`SELECT * FROM      packages                                                                    WHERE company_id = $1 AND location_id = $2 AND status = 'active'`,
+		[companyId, locationId],
+	);
+	return result.rows;
+};
+
 const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 	const { search = '', brand = '', category = '' } = filters;
 	const params = status === 'all' ? [company_id] : [company_id, status];
@@ -675,6 +683,7 @@ const getInventoryId = async (productId) => {
 
 module.exports = {
 	getAllPackages,
+	getPackagesByLocation,
 	getPackagesByStatus,
 	splitPackageTransaction,
 	activePackages,
