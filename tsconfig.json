@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"lib": ["ES2022"],
+		"outDir": "./dist",
+		"rootDir": "./",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"allowJs": true,
+		"checkJs": false,
+		"strict": false,
+		"noImplicitAny": false,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"include": [
+		"index.js",
+		"auth/**/*",
+		"controllers/**/*",
+		"db/**/*",
+		"middleware/**/*",
+		"routes/**/*",
+		"utils/**/*",
+		"types/**/*"
+	],
+	"exclude": ["node_modules", "client", "public", "dist", "tests"]
+}
