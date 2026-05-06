@@ -16,15 +16,16 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 
 ## Tech Stack
 
-| Layer    | Technology                                   |
-| -------- | -------------------------------------------- |
-| Backend  | Node.js, Express.js                          |
-| Database | PostgreSQL (AWS RDS)                         |
-| Auth     | Passport.js (local strategy, session-based)  |
-| Frontend | React + TypeScript, Vite (migrating from EJS SSR), Tailwind CSS v4 |
-| Billing  | Stripe (Checkout, webhooks, subscriptions)   |
-| Hosting  | AWS EC2 + RDS, PM2                           |
-| Testing  | Jest                                         |
+| Layer    | Technology                                    |
+| -------- | --------------------------------------------- |
+| Backend  | Node.js, Express.js                           |
+| Database | PostgreSQL (AWS RDS)                          |
+| Auth     | Passport.js (local strategy, session-based)   |
+| Frontend | React + TypeScript, Vite, Tailwind CSS        |
+| Backend  | Node.js, Express.js (migrating to TypeScript) |
+| Billing  | Stripe (Checkout, webhooks, subscriptions)    |
+| Hosting  | AWS EC2 + RDS, PM2                            |
+| Testing  | Jest                                          |
 
 ---
 
@@ -132,7 +133,8 @@ npm run dev
 
 ## Roadmap
 
-- [ ] **Frontend migration** — rewrite app views in React + TypeScript (Vite), keeping EJS for public marketing pages
+- [x] **Frontend migration** — app views rewritten in React + TypeScript (Vite), EJS kept for auth and invite flows
+- [ ] **Backend TypeScript migration** — incrementally migrating Express backend from JavaScript to TypeScript
 - [ ] **Dashboard** — inventory summary, recent transfers, low-stock alerts at a glance
 - [ ] **Variance checker** — upload a physical count CSV, compare against system quantities, AI-generated reconciliation summary via Claude API
 - [ ] **METRC integration** — sync package data directly to state track-and-trace via API
