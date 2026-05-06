@@ -42,8 +42,8 @@ const Settings = () => {
 			<div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
 				{currentUser?.role === 'admin' && (
 					<>
-						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-700 uppercase tracking-[0.08em]">
+						<div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
+							<div className="text-[0.7rem] font-mono font-bold text-gray-700 uppercase tracking-[0.08em]">
 								Team
 							</div>
 						</div>
@@ -64,8 +64,8 @@ const Settings = () => {
 							</a>
 						</div>
 
-						<div className="px-6 py-5 border-b border-gray-100">
-							<div className="text-[0.7rem] font-mono text-gray-700 uppercase tracking-[0.08em]">
+						<div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
+							<div className="text-[0.7rem] font-mono font-bold text-gray-700 uppercase tracking-[0.08em]">
 								Subscription
 							</div>
 						</div>
@@ -109,8 +109,8 @@ const Settings = () => {
 					</>
 				)}
 
-				<div className="px-6 py-5 border-b border-gray-100">
-					<div className="text-[0.7rem] font-mono text-gray-700 uppercase tracking-[0.08em]">
+				<div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
+					<div className="text-[0.7rem] font-mono font-bold text-gray-700 uppercase tracking-[0.08em]">
 						Session
 					</div>
 				</div>

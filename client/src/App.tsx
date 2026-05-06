@@ -25,9 +25,10 @@ import ProductList from './pages/products/ProductList';
 import Transfers from './pages/transfers/Transfers';
 import Transfer from './pages/transfers/Transfer';
 import TransferForm from './pages/transfers/TransferForm';
-import UsersList from './pages/users/UsersList';
 import Settings from './pages/settings/Settings';
-
+import GetUsers from './pages/users/GetUsers';
+import EditUserForm from './pages/users/EditUser';
+import Account from './pages/settings/Account';
 function App() {
 	return (
 		<div className="">
@@ -70,6 +71,10 @@ function App() {
 					<Route path="/transfers/:id" element={<Transfer />} />
 
 					<Route path="/users/settings" element={<Settings />} />
+
+					<Route path="/users" element={<GetUsers />} />
+					<Route path="/users/:id/edit" element={<EditUserForm />} />
+					<Route path="/users/account" element={<Account />} />
 				</Routes>
 			</BrowserRouter>
 		</div>

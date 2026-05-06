@@ -118,7 +118,7 @@ const getEditUser = async (req, res) => {
 	try {
 		const user = await db.getUserById(req.params.id, req.user.company_id);
 		if (!user) return res.status(404).send('User not found');
-		res.render('users/edit-user', { editUser: user, currentUser: req.user });
+		res.json(user);
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });
@@ -133,8 +133,41 @@ const updateUser = async (req, res) => {
 			req.user.company_id,
 			role,
 		);
-		if (!updated) return res.status(404).send('User not found');
-		res.redirect('/users');
+		if (!updated) return res.status(404).json({ error: 'User not found' });
+		res.json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+const reactivateUser = async (req, res) => {
+	try {
+		const reactivated = await db.reactivateUser(
+			req.params.id,
+			req.user.company_id,
+		);
+		if (!reactivated) return res.status(404).json({ error: 'User not found' });
+		res.json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+const deactivateUser = async (req, res) => {
+	try {
+		if (req.params.id === String(req.user.id)) {
+			return res
+				.status(400)
+				.json({ error: 'Cannot deactivate your own account' });
+		}
+		const deactivated = await db.deactivateUser(
+			req.params.id,
+			req.user.company_id,
+		);
+		if (!deactivated) return res.status(404).json({ error: 'User not found' });
+		res.json({ success: true });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Database error' });
@@ -143,7 +176,7 @@ const updateUser = async (req, res) => {
 
 const getAccount = async (req, res) => {
 	const company = await db.getCompanyById(req.user.company_id);
-	res.render('users/account', {
+	res.json('users/account', {
 		user: req.user,
 		companyName: company ? company.name : '',
 	});
@@ -163,6 +196,8 @@ module.exports = {
 	acceptInvite,
 	getEditUser,
 	updateUser,
+	reactivateUser,
+	deactivateUser,
 	getAccount,
 	getSettings,
 };

@@ -3,11 +3,11 @@ const bcrypt = require('bcryptjs');
 
 const getUsersByCompany = async (company_id) => {
 	const { rows } = await pool.query(
-		`SELECT u.id, u.first_name, u.last_name, u.email, u.role, u.created_at, c.name AS company_name
+		`SELECT u.id, u.first_name, u.last_name, u.email, u.role, u.active, u.created_at, c.name AS company_name
          FROM users u
          JOIN companies c ON u.company_id = c.id
          WHERE u.company_id = $1
-         ORDER BY u.created_at ASC`,
+         ORDER BY u.active DESC, u.created_at ASC`,
 		[company_id],
 	);
 	return rows;
@@ -34,4 +34,24 @@ const updateUserRole = async (id, company_id, role) => {
 	return rows[0];
 };
 
-module.exports = { getUsersByCompany, getUserById, updateUserRole };
+const reactivateUser = async (id, company_id) => {
+	const { rows } = await pool.query(
+		`UPDATE users SET active = true
+         WHERE id = $1 AND company_id = $2
+         RETURNING id`,
+		[id, company_id],
+	);
+	return rows[0];
+};
+
+const deactivateUser = async (id, company_id) => {
+	const { rows } = await pool.query(
+		`UPDATE users SET active = false
+         WHERE id = $1 AND company_id = $2
+         RETURNING id`,
+		[id, company_id],
+	);
+	return rows[0];
+};
+
+module.exports = { getUsersByCompany, getUserById, updateUserRole, reactivateUser, deactivateUser };
