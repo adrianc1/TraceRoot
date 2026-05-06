@@ -4,8 +4,9 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "node --env-file=.env --watch index.js",
+		"dev": "tsx --env-file=.env --watch index.js",
 		"start": "node --env-file=.env index.js",
+		"typecheck": "tsc --noEmit",
 		"test": "jest",
 		"watch:css": "npx @tailwindcss/cli -i ./public/input.css -o ./public/tailwind.css --watch"
 	},
@@ -30,6 +31,11 @@
 		"stripe": "^22.1.0"
 	},
 	"devDependencies": {
-		"tailwindcss": "^4.1.18"
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.6.0",
+		"@types/passport": "^1.0.17",
+		"tailwindcss": "^4.1.18",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.3"
 	}
 }
