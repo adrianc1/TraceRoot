@@ -77,7 +77,7 @@ const Account = () => {
 						<span className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
 							Role
 						</span>
-						<span className="inline-flex items-center px-2 py-0.5 rounded text-[0.75rem] font-medium bg-green-50 text-green-700 capitalize">
+						<span className={`inline-flex items-center px-2 py-0.5 rounded text-[0.75rem] font-medium capitalize ${{ admin: 'bg-green-light text-green-deep', manager: 'bg-blue-50 text-blue-700', staff: 'bg-orange-100 text-orange-500' }[user.role]}`}>
 							{user.role}
 						</span>
 					</div>

@@ -169,7 +169,7 @@ const Packages = () => {
 						<button
 							key={s}
 							onClick={() => navigate({ status: s })}
-							className={`px-4 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors ${status === s ? 'border-green-mid text-green-mid' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+							className={`px-4 py-2 text-[0.8125rem] font-medium border-b-2 transition-colors cursor-pointer ${status === s ? 'border-green-mid text-green-mid' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
 						>
 							{s.charAt(0).toUpperCase() + s.slice(1)}
 						</button>

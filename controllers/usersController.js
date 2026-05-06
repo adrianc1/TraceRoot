@@ -47,7 +47,8 @@ const createInvite = async (req, res) => {
 			created_by: req.user.id,
 		});
 
-		const link = `${req.protocol}://${req.get('host')}/signup/accept-invite?token=${token}`;
+		const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+		const link = `${baseUrl}/accept-invite?token=${token}`;
 
 		res.render('users/invite', { link });
 	} catch (error) {
