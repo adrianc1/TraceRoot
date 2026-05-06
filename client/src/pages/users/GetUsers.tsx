@@ -147,20 +147,24 @@ const GetUsers = () => {
 														>
 															Edit
 														</a>
-														<button
-															onClick={() => handleDeactivate(user.id)}
-															className="text-[0.75rem] text-red-400 hover:text-red-600 transition-colors font-medium cursor-pointer"
-														>
-															Deactivate
-														</button>
+														{currentUser?.role === 'admin' && (
+															<button
+																onClick={() => handleDeactivate(user.id)}
+																className="text-[0.75rem] text-red-400 hover:text-red-600 transition-colors font-medium cursor-pointer"
+															>
+																Deactivate
+															</button>
+														)}
 													</>
 												) : (
-													<button
-														onClick={() => handleReactivate(user.id)}
-														className="text-[0.75rem] text-green-600 hover:text-green-800 transition-colors font-medium cursor-pointer"
-													>
-														Reactivate
-													</button>
+													currentUser?.role === 'admin' && (
+														<button
+															onClick={() => handleReactivate(user.id)}
+															className="text-[0.75rem] text-green-600 hover:text-green-800 transition-colors font-medium cursor-pointer"
+														>
+															Reactivate
+														</button>
+													)
 												)}
 											</div>
 										)}
