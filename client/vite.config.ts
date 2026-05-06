@@ -15,6 +15,7 @@ export default defineConfig({
 			'/signup': 'http://localhost:3000',
 			'/accept-invite': 'http://localhost:3000',
 			'/billing': 'http://localhost:3000',
+			'/users/invite': 'http://localhost:3000',
 			'/privacy': 'http://localhost:3000',
 			'/terms': 'http://localhost:3000',
 			'/features': 'http://localhost:3000',

@@ -18,6 +18,7 @@ const loginRouter = require('./routes/auth/loginRouter');
 const transfersRouter = require('./routes/transfersRouter');
 const locationsRouter = require('./routes/locationsRouter');
 const usersRouter = require('./routes/usersRouter');
+const usersEjsRouter = require('./routes/usersEjsRouter');
 const billingRouter = require('./routes/billingRouter');
 const { setLocals } = require('./middleware/appMiddleware');
 const {
@@ -85,6 +86,7 @@ app.use('/api/billing', ensureAuthenticated, billingRouter);
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/', signupRouter);
 app.use('/api/users', ensureAuthenticated, usersRouter);
+app.use('/users', ensureAuthenticated, usersEjsRouter);
 
 app.use('/api/packages', ensureAuthenticated, productsRouter);
 app.use('/api/categories', ensureAuthenticated, categoryRouter);
