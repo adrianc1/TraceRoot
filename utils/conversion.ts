@@ -1,4 +1,19 @@
-const weightToGrams = {
+type Weight = {
+	mg: number;
+	g: number;
+	kg: number;
+	oz: number;
+	lb: number;
+};
+
+type Volume = {
+	ml: number;
+	l: number;
+};
+type WeightUnit = keyof Weight;
+type VolumeUnit = keyof Volume;
+
+const weightToGrams: Weight = {
 	mg: 0.001,
 	g: 1,
 	kg: 1000,
@@ -6,12 +21,16 @@ const weightToGrams = {
 	lb: 453.592,
 };
 
-const volumeToMl = {
+const volumeToMl: Volume = {
 	ml: 1,
 	l: 1000,
 };
 
-function convertQuantity(amount, fromUnit, toUnit) {
+function convertQuantity(
+	amount: number,
+	fromUnit: WeightUnit | VolumeUnit,
+	toUnit: WeightUnit | VolumeUnit,
+) {
 	if (fromUnit === toUnit) return amount;
 
 	if (weightToGrams[fromUnit] && weightToGrams[toUnit]) {
@@ -27,4 +46,4 @@ function convertQuantity(amount, fromUnit, toUnit) {
 	throw new Error(`Cannot convert ${fromUnit} to ${toUnit}`);
 }
 
-module.exports = { convertQuantity };
+export { convertQuantity };
