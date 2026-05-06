@@ -5,6 +5,21 @@ const GetUsers = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
+	const handleDeactivate = async (id: number) => {
+		if (!confirm('Deactivate this user? They will no longer be able to log in.')) return;
+		const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+		if (res.ok) {
+			setUsers((prev) => prev.map((u) => u.id === id ? { ...u, active: false } : u));
+		}
+	};
+
+	const handleReactivate = async (id: number) => {
+		const res = await fetch(`/api/users/${id}/reactivate`, { method: 'PUT' });
+		if (res.ok) {
+			setUsers((prev) => prev.map((u) => u.id === id ? { ...u, active: true } : u));
+		}
+	};
+
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const res = await fetch('/api/users');
@@ -30,7 +45,7 @@ const GetUsers = () => {
 	};
 
 	return (
-		<div className="max-w-2xl mx-auto px-6 py-8 flex-1 w-full">
+		<div className="max-w-4xl mx-auto px-6 py-8 flex-1 w-full">
 			<div className="mb-6">
 				<div className="flex items-center justify-between gap-4 mb-6">
 					<div>
@@ -71,7 +86,7 @@ const GetUsers = () => {
 							{users?.map((user) => (
 								<tr
 									key={user.id}
-									className="hover:bg-gray-50 transition-colors"
+									className={`transition-colors ${user.active ? "hover:bg-gray-50" : "bg-gray-50 opacity-60"}`}
 								>
 									{/* <!-- Name --> */}
 									<td className="px-4 py-3">
@@ -124,12 +139,29 @@ const GetUsers = () => {
 									<td className="px-4 py-3">
 										{user.id !== currentUser?.id && (
 											<div className="flex items-center gap-3">
-												<a
-													href={`/users/${user.id}/edit`}
-													className="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline"
-												>
-													Edit
-												</a>
+												{user.active ? (
+													<>
+														<a
+															href={`/users/${user.id}/edit`}
+															className="text-[0.75rem] text-gray-400 hover:text-gray-700 transition-colors font-medium no-underline"
+														>
+															Edit
+														</a>
+														<button
+															onClick={() => handleDeactivate(user.id)}
+															className="text-[0.75rem] text-red-400 hover:text-red-600 transition-colors font-medium cursor-pointer"
+														>
+															Deactivate
+														</button>
+													</>
+												) : (
+													<button
+														onClick={() => handleReactivate(user.id)}
+														className="text-[0.75rem] text-green-600 hover:text-green-800 transition-colors font-medium cursor-pointer"
+													>
+														Reactivate
+													</button>
+												)}
 											</div>
 										)}
 									</td>
