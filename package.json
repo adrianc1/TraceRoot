@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "tsx --env-file=.env --watch index.js",
-		"start": "node --env-file=.env index.js",
+		"start": "tsx --env-file=.env index.js",
 		"typecheck": "tsc --noEmit",
 		"test": "jest",
 		"watch:css": "npx @tailwindcss/cli -i ./public/input.css -o ./public/tailwind.css --watch"
@@ -28,14 +28,14 @@
 		"passport": "^0.7.0",
 		"passport-local": "^1.0.0",
 		"pg": "^8.17.2",
-		"stripe": "^22.1.0"
+		"stripe": "^22.1.0",
+		"tsx": "^4.21.0"
 	},
 	"devDependencies": {
 		"@types/express": "^5.0.6",
 		"@types/node": "^25.6.0",
 		"@types/passport": "^1.0.17",
 		"tailwindcss": "^4.1.18",
-		"tsx": "^4.21.0",
 		"typescript": "^6.0.3"
 	}
 }
