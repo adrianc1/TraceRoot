@@ -82,6 +82,7 @@ app.get('/features', (_req, res) => res.render('features'));
 app.get('/pricing', (req, res) => res.render('pricing', { query: req.query }));
 app.get('/contact', (_req, res) => res.render('contact'));
 app.use('/api/billing', ensureAuthenticated, billingRouter);
+app.use('/billing', ensureAuthenticated, billingRouter);
 
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/', signupRouter);
