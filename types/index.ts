@@ -6,3 +6,11 @@ export interface Brand {
 	description: string | null;
 	company_id: number;
 }
+
+export interface Strain {
+	id: number;
+	name: string;
+	company_id: number;
+	type: string | null;
+	description: string | null;
+}
