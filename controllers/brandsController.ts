@@ -58,3 +58,8 @@ export const updateBrand = async (req: Request, res: Response) => {
 		res.status(500).json({ error: 'Server error' });
 	}
 };
+
+export const deleteBrand = async (req: Request, res: Response) => {
+	await db.deleteBrand(Number(req.params.id));
+	res.status(200).json({ success: true });
+};

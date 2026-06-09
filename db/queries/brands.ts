@@ -55,3 +55,7 @@ export const updateBrand = async (
 		[name, description, id, companyId],
 	);
 };
+
+export const deleteBrand = async (id: number): Promise<void> => {
+	await pool.query(`DELETE FROM brands WHERE id = $1`, [id]);
+};
