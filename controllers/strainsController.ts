@@ -1,18 +1,21 @@
-const db = require('../db/queries');
+import type { Request, Response } from 'express';
+import db from '../db/queries';
 
-const getAllStrains = async (req, res) => {
+export const getAllStrains = async (req: Request, res: Response) => {
 	try {
-		const strains = await db.getAllStrains(req.user.company_id);
+		const strains = await db.getAllStrains(req.user!.company_id);
 		res.json(strains);
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
 };
 
-const getStrain = async (req, res) => {
+export const getStrain = async (req: Request, res: Response) => {
 	try {
-		const strain = await db.getStrain(req.params.id, req.user.company_id);
-
+		const strain = await db.getStrain(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 		if (!strain) {
 			res.status(404).json({ error: 'Strain not found' });
 			return;
@@ -23,12 +26,12 @@ const getStrain = async (req, res) => {
 	}
 };
 
-const insertStrain = async (req, res) => {
+export const insertStrain = async (req: Request, res: Response) => {
 	try {
 		const { name, description, type } = req.body;
 		const result = await db.insertStrain(
 			name,
-			req.user.company_id,
+			req.user!.company_id,
 			description,
 			type,
 		);
@@ -39,26 +42,18 @@ const insertStrain = async (req, res) => {
 	}
 };
 
-const updateStrain = async (req, res) => {
-	const id = req.params.id;
+export const updateStrain = async (req: Request, res: Response) => {
+	const id = Number(req.params.id);
 	const { name, description } = req.body;
 	await db.updateStrain(name, description, id);
 	res.status(200).json({ success: true });
 };
 
-const deleteStrain = async (req, res) => {
+export const deleteStrain = async (req: Request, res: Response) => {
 	try {
-		await db.deleteStrain(req.params.id);
+		await db.deleteStrain(Number(req.params.id));
 		res.status(200).json({ success: true });
 	} catch (error) {
 		res.json({ error: 'there is an error.' });
 	}
-};
-
-module.exports = {
-	getAllStrains,
-	getStrain,
-	insertStrain,
-	deleteStrain,
-	updateStrain,
 };

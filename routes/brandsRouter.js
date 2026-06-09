@@ -23,5 +23,10 @@ router.put(
 	authorizeRole('admin', 'manager'),
 	brandsController.updateBrand,
 );
+router.delete(
+	'/:id',
+	authorizeRole('admin', 'manager'),
+	brandsController.deleteBrand,
+);
 
 module.exports = router;

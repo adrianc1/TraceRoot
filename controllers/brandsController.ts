@@ -1,9 +1,6 @@
 import type { Request, Response } from 'express';
 import db from '../db/queries';
 
-// Postgres unique-constraint violation. `catch` vars are `unknown` under
-// strict mode, so narrow before reading `.code`. Worth lifting into utils/
-// once other controllers need it.
 const isUniqueViolation = (error: unknown): boolean =>
 	typeof error === 'object' &&
 	error !== null &&
@@ -11,7 +8,6 @@ const isUniqueViolation = (error: unknown): boolean =>
 	(error as { code?: unknown }).code === '23505';
 
 export const getAllBrands = async (req: Request, res: Response) => {
-	// authorizeRole middleware guarantees req.user is set on these routes.
 	const brands = await db.getAllBrands(req.user!.company_id);
 	res.json(brands);
 };

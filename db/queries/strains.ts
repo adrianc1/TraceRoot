@@ -48,19 +48,6 @@ export const updateStrain = async (
 	);
 };
 
-// const deleteStrain = async (id) => {
-// 	const strain = await pool.query('DELETE FROM strains WHERE id = $1', [id]);
-// 	return strain;
-// };
-
 export const deleteStrain = async (id: number): Promise<void> => {
 	await pool.query<Strain>(`DELETE FROM strains WHERE id = $1`, [id]);
-};
-
-module.exports = {
-	getAllStrains,
-	getStrain,
-	insertStrain,
-	updateStrain,
-	deleteStrain,
 };
