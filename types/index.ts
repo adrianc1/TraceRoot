@@ -29,7 +29,7 @@ export interface Product {
 	unit: Unit;
 	category_id: number | null;
 	sku: string | null;
-	status: 'active' | 'inactive';
+	status: 'active' | 'archived';
 	brand_id: number | null;
 	strain_id: number | null;
 	company_id: number;
@@ -40,6 +40,12 @@ export interface ProductWithDetails extends Product {
 	category_name: string | null;
 	strain_name: string | null;
 	total_quantity: number | null;
+}
+
+export interface ProductJoinNames {
+	brand_name: string | null;
+	category_name: string | null;
+	strain_name: string | null;
 }
 
 export interface Location {

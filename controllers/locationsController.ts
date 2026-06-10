@@ -48,7 +48,7 @@ export const updateLocation = async (req: Request, res: Response) => {
 	}
 };
 
-const getLocationById = async (req: Request, res: Response) => {
+export const getLocationById = async (req: Request, res: Response) => {
 	try {
 		const location = await db.getLocationById(
 			Number(req.params.id),
