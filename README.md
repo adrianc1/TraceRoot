@@ -16,16 +16,22 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 
 ## Tech Stack
 
-| Layer    | Technology                                    |
-| -------- | --------------------------------------------- |
-| Backend  | Node.js, Express.js                           |
-| Database | PostgreSQL (AWS RDS)                          |
-| Auth     | Passport.js (local strategy, session-based)   |
-| Frontend | React + TypeScript, Vite, Tailwind CSS        |
-| Backend  | Node.js, Express.js (migrating to TypeScript) |
-| Billing  | Stripe (Checkout, webhooks, subscriptions)    |
-| Hosting  | AWS EC2 + RDS, PM2                            |
-| Testing  | Jest                                          |
+| Layer    | Technology                                              |
+| -------- | ------------------------------------------------------- |
+| Backend  | Node.js, Express.js (migrating JavaScript → TypeScript) |
+| Database | PostgreSQL (AWS RDS)                                    |
+| Auth     | Passport.js (local strategy, session-based)             |
+| Frontend | React + TypeScript, Vite, Tailwind CSS                  |
+| Billing  | Stripe (Checkout, webhooks, subscriptions)              |
+| Hosting  | AWS EC2 + RDS, PM2                                      |
+| Testing  | Jest                                                    |
+
+### Codebase Evolution
+
+TraceRoot has gone through two major migrations as the project matured:
+
+1. **Frontend: EJS → React + TypeScript** *(complete)* — the core app views were rewritten as a Vite-based React + TypeScript single-page app, served alongside the Express backend. Auth, billing, and the static marketing pages are intentionally kept on server-rendered EJS, where SSR and simplicity are a better fit than a SPA.
+2. **Backend: JavaScript → TypeScript** _(in progress)_ — the Express backend is being incrementally migrated to TypeScript, one domain at a time (queries → controllers → routes), starting with reference data (brands, categories, strains, locations) and working outward through products, packages, and transfers.
 
 ---
 
@@ -133,7 +139,7 @@ npm run dev
 
 ## Roadmap
 
-- [x] **Frontend migration** — app views rewritten in React + TypeScript (Vite), EJS kept for auth and invite flows
+- [x] **Frontend migration** — core app views rewritten in React + TypeScript (Vite); auth, billing, and static marketing pages intentionally kept on server-rendered EJS
 - [ ] **Backend TypeScript migration** — incrementally migrating Express backend from JavaScript to TypeScript
 - [ ] **Dashboard** — inventory summary, recent transfers, low-stock alerts at a glance
 - [ ] **Variance checker** — upload a physical count CSV, compare against system quantities, AI-generated reconciliation summary via Claude API
