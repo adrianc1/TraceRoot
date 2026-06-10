@@ -1,6 +1,7 @@
-const pool = require('../pool');
+import pool from '../../db/pool';
+import type { Location } from '../../types';
 
-const getLocations = async (company_id) => {
+export const getLocations = async (company_id: number): Promise<Location[]> => {
 	const { rows } = await pool.query(
 		`SELECT id, name FROM locations
          WHERE company_id = $1 AND is_active = true
@@ -10,7 +11,9 @@ const getLocations = async (company_id) => {
 	return rows;
 };
 
-const getAllLocations = async (companyId) => {
+export const getAllLocations = async (
+	companyId: number,
+): Promise<Location[]> => {
 	const { rows } = await pool.query(
 		`SELECT * FROM locations WHERE company_id = $1 ORDER BY name`,
 		[companyId],
@@ -18,7 +21,10 @@ const getAllLocations = async (companyId) => {
 	return rows;
 };
 
-const getLocationById = async (id, companyId) => {
+export const getLocationById = async (
+	id: number,
+	companyId: number,
+): Promise<Location> => {
 	const { rows } = await pool.query(
 		`SELECT * FROM locations WHERE id = $1 AND company_id = $2`,
 		[id, companyId],
@@ -26,7 +32,11 @@ const getLocationById = async (id, companyId) => {
 	return rows[0];
 };
 
-const insertLocation = async (name, description, companyId) => {
+export const insertLocation = async (
+	name: string,
+	description: string | undefined,
+	companyId: number,
+): Promise<Location> => {
 	try {
 		const result = await pool.query(
 			`INSERT INTO locations (name, description, company_id)
@@ -39,17 +49,20 @@ const insertLocation = async (name, description, companyId) => {
 	}
 };
 
-const updateLocation = async (name, description, isActive, id, companyId) => {
+export const updateLocation = async (
+	name: string,
+	description: string | null,
+	isActive: boolean,
+	id: number,
+	companyId: number,
+): Promise<void> => {
 	try {
-		const { rows } = await pool.query(
+		await pool.query(
 			`UPDATE locations SET name = $1, description = $2, is_active = $3, updated_at = NOW()
 			WHERE id = $4 AND company_id = $5`,
 			[name, description, isActive, id, companyId],
 		);
-		return rows;
 	} catch (error) {
 		throw error;
 	}
 };
-
-module.exports = { getLocations, getAllLocations, getLocationById, insertLocation, updateLocation };

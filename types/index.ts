@@ -41,3 +41,13 @@ export interface ProductWithDetails extends Product {
 	strain_name: string | null;
 	total_quantity: number | null;
 }
+
+export interface Location {
+	id: number;
+	company_id: number;
+	name: string;
+	description: string | null;
+	is_active: boolean;
+	created_at: Date;
+	updated_at: Date;
+}
