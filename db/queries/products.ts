@@ -8,7 +8,7 @@ import {
 
 import pool from '../pool';
 
-const getAllProductsDB = async (
+export const getAllProductsDB = async (
 	user_id: number,
 	status: 'active' | 'archived' = 'active',
 ): Promise<ProductListRow[]> => {
@@ -57,7 +57,7 @@ const getAllProductsDB = async (
 	}
 };
 
-const getProductWithInventoryDB = async (
+export const getProductWithInventoryDB = async (
 	id: number,
 	companyId: number,
 ): Promise<ProductWithInventory> => {
@@ -99,7 +99,7 @@ const getProductWithInventoryDB = async (
 	}
 };
 
-const getProductDB = async (
+export const getProductDB = async (
 	id: number,
 	companyId: number,
 ): Promise<ProductWithNames> => {
@@ -132,7 +132,7 @@ const getProductDB = async (
 	}
 };
 
-const insertProduct = async (
+export const insertProduct = async (
 	name: string,
 	description: string | null,
 	unit: Unit,
@@ -164,10 +164,6 @@ const insertProduct = async (
 		);
 		const product = result.rows[0];
 
-		// await client.query(
-		// 	`INSERT INTO packages (product_id, company_id, quantity, batch_id) VALUES ($1, $2, $3, $4)`,
-		// 	[product.id, userCompanyId, quantity, batchId],
-		// );
 		await client.query('COMMIT');
 		return product;
 	} catch (error) {
@@ -177,7 +173,7 @@ const insertProduct = async (
 	}
 };
 
-const updateProduct = async (
+export const updateProduct = async (
 	name: string,
 	description: string | null,
 	unit: Unit,
@@ -227,7 +223,7 @@ const updateProduct = async (
 	}
 };
 
-const checkIfProductHasPackages = async (id: number) => {
+export const checkIfProductHasPackages = async (id: number) => {
 	const { rows } = await pool.query(
 		`SELECT COUNT(*) FROM packages WHERE product_id = $1`,
 		[id],
@@ -236,7 +232,7 @@ const checkIfProductHasPackages = async (id: number) => {
 };
 
 // Archive Product
-const deleteProduct = async (productId: number, companyId: number) => {
+export const deleteProduct = async (productId: number, companyId: number) => {
 	const product = await pool.query(
 		`UPDATE products
         SET status= 'archived'
@@ -253,7 +249,10 @@ const deleteProduct = async (productId: number, companyId: number) => {
 	return product;
 };
 
-const unarchiveProduct = async (productId: number, companyId: number) => {
+export const unarchiveProduct = async (
+	productId: number,
+	companyId: number,
+) => {
 	const { rows } = await pool.query(
 		`UPDATE products
         SET status = 'active'
@@ -265,22 +264,10 @@ const unarchiveProduct = async (productId: number, companyId: number) => {
 	return rows;
 };
 
-const activePackages = async (id: number) => {
+export const activePackages = async (id: number) => {
 	const { rows } = await pool.query(
 		`SELECT COUNT(*) FROM packages WHERE product_id=$1 AND quantity > 0 AND status = 'active'`,
 		[id],
 	);
 	return rows;
-};
-
-module.exports = {
-	activePackages,
-	unarchiveProduct,
-	deleteProduct,
-	checkIfProductHasPackages,
-	updateProduct,
-	insertProduct,
-	getAllProductsDB,
-	getProductDB,
-	getProductWithInventoryDB,
 };
