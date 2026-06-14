@@ -37,10 +37,12 @@ export interface Product {
 	company_id: number;
 }
 
-export interface ProductWithDetails extends Product {
-	brand_name: string | null;
-	category_name: string | null;
-	strain_name: string | null;
+export interface ProductWithDetails
+	extends Pick<
+			Product,
+			'id' | 'name' | 'description' | 'unit' | 'category_id' | 'sku' | 'status'
+		>,
+		ProductJoinNames {
 	total_quantity: number | null;
 }
 

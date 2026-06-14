@@ -38,7 +38,7 @@ export const getCategory = async (
             b.name AS brand_name,
             c.name AS category_name,
             s.name AS strain_name,
-            SUM(pk.quantity) AS total_quantity
+            SUM(pk.quantity)::FLOAT AS total_quantity
             FROM products AS p
             LEFT JOIN brands b ON p.brand_id = b.id
             LEFT JOIN categories c ON p.category_id = c.id
