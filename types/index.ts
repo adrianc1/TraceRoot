@@ -22,6 +22,8 @@ export interface Category {
 	company_id: number;
 }
 
+// Product interfaces
+
 export interface Product {
 	id: number;
 	name: string;
@@ -48,6 +50,28 @@ export interface ProductJoinNames {
 	strain_name: string | null;
 }
 
+export interface ProductListRow
+	extends
+		Pick<
+			Product,
+			'id' | 'name' | 'description' | 'unit' | 'status' | 'category_id'
+		>,
+		ProductJoinNames {
+	product_qty: number;
+	total_valuation: number;
+	average_cost: number;
+}
+
+export interface ProductWithInventory
+	extends Omit<Product, 'company_id'>, ProductJoinNames {
+	total_quantity: number;
+	total_valuation: number;
+	average_cost: number;
+}
+
+export type ProductWithNames = Omit<Product, 'company_id'> & ProductJoinNames;
+
+// Location interfaces
 export interface Location {
 	id: number;
 	company_id: number;

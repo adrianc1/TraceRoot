@@ -1,8 +1,19 @@
-const pool = require('../pool');
+import {
+	Product,
+	Unit,
+	ProductWithNames,
+	ProductListRow,
+	ProductWithInventory,
+} from '../../types';
 
-const getAllProductsDB = async (user_id, status = 'active') => {
+import pool from '../pool';
+
+const getAllProductsDB = async (
+	user_id: number,
+	status: 'active' | 'archived' = 'active',
+): Promise<ProductListRow[]> => {
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<ProductListRow>(
 			`
       SELECT
         p.id,
@@ -14,7 +25,7 @@ const getAllProductsDB = async (user_id, status = 'active') => {
         brands.name AS brand_name,
         categories.name AS category_name,
         strains.name AS strain_name,
-        COALESCE(SUM(i.quantity),0) AS product_qty,
+        COALESCE(SUM(i.quantity),0)::FLOAT AS product_qty,
         COALESCE(SUM(i.quantity * COALESCE(i.cost_price,0)),0)::FLOAT AS total_valuation,
         CASE
           WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * COALESCE(i.cost_price,0)) / SUM(i.quantity), 2)
@@ -46,9 +57,12 @@ const getAllProductsDB = async (user_id, status = 'active') => {
 	}
 };
 
-const getProductWithInventoryDB = async (id, companyId) => {
+const getProductWithInventoryDB = async (
+	id: number,
+	companyId: number,
+): Promise<ProductWithInventory> => {
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<ProductWithInventory>(
 			`
       SELECT
         p.id,
@@ -63,12 +77,12 @@ const getProductWithInventoryDB = async (id, companyId) => {
         brands.name AS brand_name,
         categories.name AS category_name,
         strains.name AS strain_name,
-        COALESCE(SUM(i.quantity),0) AS total_quantity,
-        COALESCE(SUM(i.quantity * i.cost_price),0) AS total_valuation,
+        COALESCE(SUM(i.quantity),0)::FLOAT AS total_quantity,
+        COALESCE(SUM(i.quantity * i.cost_price),0)::FLOAT AS total_valuation,
         CASE
           WHEN SUM(i.quantity) > 0 THEN ROUND(SUM(i.quantity * i.cost_price) / SUM(i.quantity), 2)
           ELSE 0
-        END AS average_cost
+        END::FLOAT AS average_cost
       FROM products p
       LEFT JOIN brands ON p.brand_id = brands.id
       LEFT JOIN categories ON p.category_id = categories.id
@@ -85,9 +99,12 @@ const getProductWithInventoryDB = async (id, companyId) => {
 	}
 };
 
-const getProductDB = async (id, companyId) => {
+const getProductDB = async (
+	id: number,
+	companyId: number,
+): Promise<ProductWithNames> => {
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<ProductWithNames>(
 			`SELECT 
             p.id,
             p.name,
@@ -116,17 +133,17 @@ const getProductDB = async (id, companyId) => {
 };
 
 const insertProduct = async (
-	name,
-	description,
-	unit,
-	brandId,
-	strainId,
-	categoryId,
-	userCompanyId,
-	sku,
+	name: string,
+	description: string | null,
+	unit: Unit,
+	brandId: number | null,
+	strainId: number | null,
+	categoryId: number | null,
+	userCompanyId: number,
+	sku: string | null,
 	quantity = 0,
 	// batchId,
-) => {
+): Promise<Product> => {
 	const client = await pool.connect();
 
 	try {
@@ -161,15 +178,15 @@ const insertProduct = async (
 };
 
 const updateProduct = async (
-	name,
-	description,
-	unit,
-	company_id,
-	brandId,
-	strainId,
-	categoryId,
-	id,
-	sku,
+	name: string,
+	description: string | null,
+	unit: Unit,
+	company_id: number,
+	brandId: number | null,
+	strainId: number | null,
+	categoryId: number | null,
+	id: number,
+	sku: string | null,
 ) => {
 	const client = await pool.connect();
 
@@ -210,7 +227,7 @@ const updateProduct = async (
 	}
 };
 
-const checkIfProductHasPackages = async (id) => {
+const checkIfProductHasPackages = async (id: number) => {
 	const { rows } = await pool.query(
 		`SELECT COUNT(*) FROM packages WHERE product_id = $1`,
 		[id],
@@ -219,7 +236,7 @@ const checkIfProductHasPackages = async (id) => {
 };
 
 // Archive Product
-const deleteProduct = async (productId, companyId) => {
+const deleteProduct = async (productId: number, companyId: number) => {
 	const product = await pool.query(
 		`UPDATE products
         SET status= 'archived'
@@ -236,7 +253,7 @@ const deleteProduct = async (productId, companyId) => {
 	return product;
 };
 
-const unarchiveProduct = async (productId, companyId) => {
+const unarchiveProduct = async (productId: number, companyId: number) => {
 	const { rows } = await pool.query(
 		`UPDATE products
         SET status = 'active'
@@ -248,7 +265,7 @@ const unarchiveProduct = async (productId, companyId) => {
 	return rows;
 };
 
-const activePackages = async (id) => {
+const activePackages = async (id: number) => {
 	const { rows } = await pool.query(
 		`SELECT COUNT(*) FROM packages WHERE product_id=$1 AND quantity > 0 AND status = 'active'`,
 		[id],
