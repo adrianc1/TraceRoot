@@ -66,7 +66,7 @@ const getProduct = async (req: Request, res: Response) => {
 
 		const [productInventory, auditTrail] = await Promise.all([
 			db.getPackagesByProductId(req.params.id, req.user!.company_id),
-			db.getAuditTrail(req.params.id, req.user!.company_id),
+			db.getAuditTrail(Number(req.params.id), req.user!.company_id),
 		]);
 
 		res.json({ product, productInventory, auditTrail });
@@ -109,7 +109,11 @@ const receiveNewPackagesPOST = async (req: Request, res: Response) => {
 
 	const normalizedQty = convertQuantity(quantity, unit, unit);
 
-	let existingBatch = await db.getBatchByNumber(product_id, batch);
+	let existingBatch = await db.getBatchByNumber(
+		product_id,
+		batch,
+		req.user!.company_id,
+	);
 
 	let batch_id;
 
@@ -640,11 +644,14 @@ const exportProductsCsv = async (req: Request, res: Response) => {
 
 const exportAuditCsv = async (req: Request, res: Response) => {
 	try {
-		const packages = await db.getAuditTrail(req.params.id);
+		const packages = await db.getAuditTrail(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 		const rows: Record<string, unknown>[] = [];
 		packages.forEach((pkg) => {
 			if (pkg.movements && pkg.movements.length > 0) {
-				pkg.movements.forEach((mv: Record<string, unknown>) => {
+				pkg.movements.forEach((mv) => {
 					rows.push({
 						package_tag: pkg.package_tag,
 						location: pkg.location,
@@ -684,27 +691,4 @@ const exportAuditCsv = async (req: Request, res: Response) => {
 		console.error(error);
 		res.status(500).json({ error: 'Export failed' });
 	}
-};
-
-module.exports = {
-	getAllPackages,
-	getProductsList,
-	getProduct,
-	createProductForm,
-	updateProduct,
-	deleteProduct,
-	insertProduct,
-	editProductForm,
-	adjustInventoryGet,
-	updateInventory,
-	receiveInventoryGet,
-	receiveInventoryPut,
-	splitPackageProductForm,
-	splitPackagePost,
-	receiveNewPackageForm,
-	receiveNewPackagesPOST,
-	unarchiveProduct,
-	exportPackagesCsv,
-	exportProductsCsv,
-	exportAuditCsv,
 };

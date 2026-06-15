@@ -23,7 +23,6 @@ export interface Category {
 }
 
 // Product interfaces
-
 export interface Product {
 	id: number;
 	name: string;
@@ -106,4 +105,37 @@ export interface Location {
 	is_active: boolean;
 	created_at: Date;
 	updated_at: Date;
+}
+
+// inside json_build_object in getAuditTrail query
+export interface AuditMovement {
+	id: number;
+	movement_type: string;
+	quantity: number;
+	starting_quantity: number | null;
+	ending_quantity: number | null;
+	cost_per_unit: number | null;
+	notes: string | null;
+	user_id: number | null;
+	user_name: string | null;
+	created_at: string;
+}
+
+// top-level row
+export interface AuditPackageRow {
+	package_id: number;
+	package_tag: string;
+	quantity: string;
+	cost_price: string | null;
+	status: InventoryStatus;
+	location: string;
+	package_unit: Unit;
+	batch_id: number | null;
+	lot_number: string | null;
+	product_name: string;
+	product_unit: Unit;
+	brand_name: string | null;
+	strain_name: string | null;
+	category_name: string | null;
+	movements: AuditMovement[];
 }

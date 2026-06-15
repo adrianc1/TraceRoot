@@ -4,10 +4,11 @@ import { Batch, Unit } from '../../types';
 export const getBatchByNumber = async (
 	product_id: number,
 	batch_number: string | null,
+	company_id: number,
 ): Promise<Batch | null> => {
 	const { rows } = await pool.query<Batch>(
-		`SELECT * FROM batches WHERE product_id=$1 AND batch_number=$2`,
-		[product_id, batch_number],
+		`SELECT * FROM batches WHERE product_id=$1 AND batch_number=$2 AND company_id=$3`,
+		[product_id, batch_number, company_id],
 	);
 	return rows[0] || null;
 };
