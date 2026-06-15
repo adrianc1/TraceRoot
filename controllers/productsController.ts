@@ -3,14 +3,14 @@ import db from '../db/queries';
 import { convertQuantity } from '../utils/conversion';
 import { toCsv, sendCsv } from '../utils/csvExport';
 
-const getAllPackages = async (req: Request, res: Response) => {
+export const getAllPackages = async (req: Request, res: Response) => {
 	const { location_id } = req.query;
 
 	if (location_id) {
 		try {
 			const packages = await db.getPackagesByLocation(
 				req.user!.company_id,
-				location_id,
+				Number(location_id),
 			);
 			res.json({ packages });
 		} catch (error) {
@@ -21,15 +21,15 @@ const getAllPackages = async (req: Request, res: Response) => {
 
 	try {
 		const userCompanyId = req.user!.company_id;
-		const status = req.query.status || 'active';
+		const status = String(req.query.status || 'active');
 		const page = Number(req.query.page) || 1;
 		const limit = 25;
 		const offset = (page - 1) * limit;
 		const filters = {
-			search: req.query.search || '',
-			brand: req.query.brand || '',
-			category: req.query.category || '',
-			sort: req.query.sort || 'newest',
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
 		};
 		const [packages, total, brands, strains, categories] = await Promise.all([
 			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
@@ -52,7 +52,7 @@ const getAllPackages = async (req: Request, res: Response) => {
 	}
 };
 
-const getProduct = async (req: Request, res: Response) => {
+export const getProduct = async (req: Request, res: Response) => {
 	try {
 		const product = await db.getProductWithInventoryDB(
 			Number(req.params.id),
@@ -65,7 +65,7 @@ const getProduct = async (req: Request, res: Response) => {
 		}
 
 		const [productInventory, auditTrail] = await Promise.all([
-			db.getPackagesByProductId(req.params.id, req.user!.company_id),
+			db.getPackagesByProductId(Number(req.params.id), req.user!.company_id),
 			db.getAuditTrail(Number(req.params.id), req.user!.company_id),
 		]);
 
@@ -76,14 +76,14 @@ const getProduct = async (req: Request, res: Response) => {
 	}
 };
 
-const receiveNewPackageForm = async (req: Request, res: Response) => {
+export const receiveNewPackageForm = async (req: Request, res: Response) => {
 	const products = await db.getAllProductsDB(req.user!.company_id);
 	const locations = await db.getLocations(req.user!.company_id);
 
 	res.json({ products, locations });
 };
 
-const receiveNewPackagesPOST = async (req: Request, res: Response) => {
+export const receiveNewPackagesPOST = async (req: Request, res: Response) => {
 	const userId = req.user!.id;
 	const company_id = req.user!.company_id;
 
@@ -152,7 +152,7 @@ const receiveNewPackagesPOST = async (req: Request, res: Response) => {
 	res.json({ success: true, id: product_id });
 };
 
-const createProductForm = async (req: Request, res: Response) => {
+export const createProductForm = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 	try {
 		const brands = await db.getAllBrands(req.user!.company_id);
@@ -169,9 +169,9 @@ const createProductForm = async (req: Request, res: Response) => {
 	}
 };
 
-const splitPackageProductForm = async (req: Request, res: Response) => {
+export const splitPackageProductForm = async (req: Request, res: Response) => {
 	const selectedPackage = await db.getPackageByTag(
-		req.params.packageTag,
+		String(req.params.packageTag),
 		req.user!.company_id,
 	);
 	const product = await db.getProductDB(
@@ -183,10 +183,10 @@ const splitPackageProductForm = async (req: Request, res: Response) => {
 	res.json({ product, products, selectedPackage });
 };
 
-const splitPackagePost = async (req: Request, res: Response) => {
+export const splitPackagePost = async (req: Request, res: Response) => {
 	const userId = req.user!.id;
 	const selectedBatch = await db.getPackageByTag(
-		req.params.packageTag,
+		String(req.params.packageTag),
 		Number(req.user!.company_id),
 	);
 
@@ -221,7 +221,7 @@ const splitPackagePost = async (req: Request, res: Response) => {
 	res.json({ success: true, productId: selectedBatch.product_id });
 };
 
-const insertProduct = async (req: Request, res: Response) => {
+export const insertProduct = async (req: Request, res: Response) => {
 	const userCompanyId = req.user!.company_id;
 	const {
 		name,
@@ -283,7 +283,7 @@ const insertProduct = async (req: Request, res: Response) => {
 	res.status(201).json({ success: true, id: product.id });
 };
 
-const getProductsList = async (req: Request, res: Response) => {
+export const getProductsList = async (req: Request, res: Response) => {
 	try {
 		const status = req.query.status === 'archived' ? 'archived' : 'active';
 		const products = await db.getAllProductsDB(req.user!.company_id, status);
@@ -293,7 +293,7 @@ const getProductsList = async (req: Request, res: Response) => {
 	}
 };
 
-const deleteProduct = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response) => {
 	try {
 		const result = await db.deleteProduct(
 			Number(req.params.id),
@@ -315,7 +315,7 @@ const deleteProduct = async (req: Request, res: Response) => {
 	}
 };
 
-const unarchiveProduct = async (req: Request, res: Response) => {
+export const unarchiveProduct = async (req: Request, res: Response) => {
 	try {
 		await db.unarchiveProduct(Number(req.params.id), req.user!.company_id);
 
@@ -325,7 +325,7 @@ const unarchiveProduct = async (req: Request, res: Response) => {
 	}
 };
 
-const editProductForm = async (req: Request, res: Response) => {
+export const editProductForm = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
@@ -355,7 +355,7 @@ const editProductForm = async (req: Request, res: Response) => {
 	}
 };
 
-const updateProduct = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	const company_id = req.user!.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, sku } =
@@ -380,7 +380,7 @@ const updateProduct = async (req: Request, res: Response) => {
 	}
 };
 
-const receiveInventoryPut = async (req: Request, res: Response) => {
+export const receiveInventoryPut = async (req: Request, res: Response) => {
 	const userId = req.user!.id;
 	const company_id = req.user!.company_id;
 	const product_id = Number(req.params.id);
@@ -436,7 +436,7 @@ const receiveInventoryPut = async (req: Request, res: Response) => {
 	res.json({ success: true, id: product_id });
 };
 
-const adjustInventoryGet = async (req: Request, res: Response) => {
+export const adjustInventoryGet = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	const statusOptions = [
@@ -450,7 +450,7 @@ const adjustInventoryGet = async (req: Request, res: Response) => {
 
 	try {
 		const pkg = await db.getPackageByTag(
-			req.params.packageTag,
+			String(req.params.packageTag),
 			Number(req.user!.company_id),
 		);
 
@@ -500,11 +500,11 @@ const adjustInventoryGet = async (req: Request, res: Response) => {
 	}
 };
 
-const updateInventory = async (req: Request, res: Response) => {
+export const updateInventory = async (req: Request, res: Response) => {
 	const userId = req.user!.id;
 
 	const selectedBatch = await db.getPackageByTag(
-		req.params.packageTag,
+		String(req.params.packageTag),
 		req.user!.company_id,
 	);
 
@@ -543,7 +543,7 @@ const updateInventory = async (req: Request, res: Response) => {
 	}
 };
 
-const receiveInventoryGet = async (req: Request, res: Response) => {
+export const receiveInventoryGet = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
@@ -569,14 +569,14 @@ const receiveInventoryGet = async (req: Request, res: Response) => {
 	}
 };
 
-const exportPackagesCsv = async (req: Request, res: Response) => {
+export const exportPackagesCsv = async (req: Request, res: Response) => {
 	try {
-		const status = req.query.status || 'active';
+		const status = String(req.query.status || 'active');
 		const filters = {
-			search: req.query.search || '',
-			brand: req.query.brand || '',
-			category: req.query.category || '',
-			sort: req.query.sort || 'newest',
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
 		};
 		const packages = await db.getPackagesByStatus(
 			req.user!.company_id,
@@ -620,7 +620,7 @@ const exportPackagesCsv = async (req: Request, res: Response) => {
 	}
 };
 
-const exportProductsCsv = async (req: Request, res: Response) => {
+export const exportProductsCsv = async (req: Request, res: Response) => {
 	try {
 		const products = await db.getAllProductsDB(req.user!.company_id);
 		const csv = toCsv(products, [
@@ -642,7 +642,7 @@ const exportProductsCsv = async (req: Request, res: Response) => {
 	}
 };
 
-const exportAuditCsv = async (req: Request, res: Response) => {
+export const exportAuditCsv = async (req: Request, res: Response) => {
 	try {
 		const packages = await db.getAuditTrail(
 			Number(req.params.id),

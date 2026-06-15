@@ -1,5 +1,13 @@
 export type Unit = 'mg' | 'g' | 'kg' | 'oz' | 'lb' | 'ml' | 'l' | 'each';
 
+export type InventoryStatus =
+	| 'active'
+	| 'inactive'
+	| 'quarantine'
+	| 'damaged'
+	| 'expired'
+	| 'reserved';
+
 export interface Brand {
 	id: number;
 	name: string;
@@ -73,15 +81,6 @@ export interface ProductWithInventory
 
 export type ProductWithNames = Omit<Product, 'company_id'> & ProductJoinNames;
 
-// inventory status interface
-export type InventoryStatus =
-	| 'active'
-	| 'inactive'
-	| 'quarantine'
-	| 'damaged'
-	| 'expired'
-	| 'reserved';
-
 // Batch interfaces
 export interface Batch {
 	id: number;
@@ -138,4 +137,149 @@ export interface AuditPackageRow {
 	strain_name: string | null;
 	category_name: string | null;
 	movements: AuditMovement[];
+}
+
+export interface Package {
+	id: number;
+	package_tag: string;
+	external_id: string | null;
+	product_id: number;
+	company_id: number;
+	parent_package_id: number | null;
+	batch_id: number | null;
+	location_id: number;
+	status: InventoryStatus;
+	quantity: string;
+	package_size: string | null;
+	unit: Unit;
+	cost_price: string | null;
+	supplier_name: string | null;
+	lot_number: string | null;
+	locked: boolean;
+	updated_at: Date;
+	created_at: Date;
+}
+
+export interface PackageWithDetails extends Omit<
+	Package,
+	| 'company_id'
+	| 'external_id'
+	| 'supplier_name'
+	| 'locked'
+	| 'updated_at'
+	| 'batch_id'
+> {
+	location: string;
+	product_name: string;
+	product_sku: string;
+	category_name: string | null;
+	category_id: number | null;
+	brand_name: string | null;
+	strain_name: string | null;
+	batch_number: string | null;
+	parent_package_tag: string | null;
+}
+
+export interface PackageFilters {
+	search?: string;
+	brand?: string;
+	category?: string;
+	sort?: string;
+}
+
+export interface Transfer {
+	id: number;
+	company_id: number;
+	transfer_type: 'internal' | 'external';
+	from_location_id: number;
+	to_location_id: number | null;
+	to_company_name: string | null;
+	notes: string | null;
+	created_by: number;
+	status: 'pending' | 'confirmed' | 'cancelled';
+	confirmed_at: Date | null;
+	created_at: Date;
+}
+
+export interface TransferItem {
+	package_id: number;
+	quantity: number;
+	current_quantity: number;
+}
+
+export interface TransferDetail {
+	id: number;
+	transfer_type: 'internal' | 'external';
+	status: 'pending' | 'confirmed' | 'cancelled';
+	notes: string | null;
+	created_at: Date;
+	confirmed_at: Date | null;
+	from_location: string;
+	to_location: string | null;
+	to_company_name: string | null;
+	created_by: string;
+}
+
+export interface TransferItemDetail {
+	id: number;
+	quantity: number;
+	package_id: number;
+	product_name: string;
+	strain_name: string | null;
+	category_name: string | null;
+	cost_price: string | null;
+	unit: Unit;
+	batch_id: number | null;
+	current_quantity: number;
+}
+
+export interface TransferListRow {
+	id: number;
+	transfer_type: 'internal' | 'external';
+	status: 'pending' | 'confirmed' | 'cancelled';
+	created_at: Date;
+	from_location: string;
+	to_location: string | null;
+	to_company_name: string | null;
+	package_count: string;
+}
+
+export interface TransferStatus {
+	id: number;
+	company_id: number;
+	status: 'pending' | 'confirmed' | 'cancelled';
+}
+
+export interface Split {
+	productId: number;
+	packageSize: number | null;
+	quantity: number;
+	totalWeight: number;
+	package_tag: string;
+}
+
+export interface ApplyMovementParams {
+	package_tag: string;
+	product_id: number;
+	packages_id: number | null;
+	batch_id: number | null;
+	company_id: number;
+	location_id: number;
+	batch: string | null; //lot_number
+	targetQty: number;
+	movement_type: string;
+	notes: string | null;
+	cost_per_unit: number | null;
+	userId: number;
+	status: InventoryStatus | null;
+	package_size: number | null;
+	unit: Unit;
+}
+
+export interface MovementResult {
+	inventoryId: number | null;
+	startingQty: number;
+	delta: number;
+	endingQty: number | undefined;
+	status: InventoryStatus | string | null;
 }
