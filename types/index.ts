@@ -38,7 +38,8 @@ export interface Product {
 }
 
 export interface ProductWithDetails
-	extends Pick<
+	extends
+		Pick<
 			Product,
 			'id' | 'name' | 'description' | 'unit' | 'category_id' | 'sku' | 'status'
 		>,
@@ -72,6 +73,29 @@ export interface ProductWithInventory
 }
 
 export type ProductWithNames = Omit<Product, 'company_id'> & ProductJoinNames;
+
+// inventory status interface
+export type InventoryStatus =
+	| 'active'
+	| 'inactive'
+	| 'quarantine'
+	| 'damaged'
+	| 'expired'
+	| 'reserved';
+
+// Batch interfaces
+export interface Batch {
+	id: number;
+	product_id: number;
+	company_id: number;
+	batch_number: string;
+	total_quantity: string;
+	unit: Unit;
+	cost_per_unit: string | null;
+	supplier_name: string | null;
+	status: InventoryStatus;
+	created_at: Date;
+}
 
 // Location interfaces
 export interface Location {
