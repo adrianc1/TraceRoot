@@ -39,10 +39,10 @@ export const updateStrain = async (
 	description: string,
 	id: number,
 ): Promise<void> => {
-	const { rows } = await pool.query<Strain>(
+	await pool.query<Strain>(
 		`UPDATE strains
 		SET name = $1,
-		description = $2,
+		description = $2
 		WHERE id = $3`,
 		[name, description, id],
 	);
