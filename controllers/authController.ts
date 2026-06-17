@@ -1,10 +1,17 @@
-const db = require('../db/queries');
-const bcrypt = require('bcryptjs');
-const { body, validationResult, matchedData } = require('express-validator');
+import db from '../db/queries';
+import 'passport';
+import bcrypt from 'bcryptjs';
+import {
+	body,
+	validationResult,
+	matchedData,
+	ValidationChain,
+} from 'express-validator';
+import { Request, Response } from 'express';
 
-const alphaErr = 'must contain only letters';
-const lengthErr = 'must be at least 2 characters';
-const validateUser = [
+const alphaErr: string = 'must contain only letters';
+const lengthErr: string = 'must be at least 2 characters';
+const validateUser: ValidationChain[] = [
 	body('firstName')
 		.trim()
 		.isAlpha()
@@ -36,11 +43,11 @@ const validateUser = [
 		.withMessage('passwords do not match!'),
 ];
 
-const getSignUpForm = async (req, res) => {
+const getSignUpForm = async (req: Request, res: Response) => {
 	res.render('auth/signup.ejs');
 };
 
-const postSignUpForm = async (req, res) => {
+const postSignUpForm = async (req: Request, res: Response) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(400).render('auth/signup', {
@@ -71,7 +78,7 @@ const postSignUpForm = async (req, res) => {
 	res.redirect('/login?registered=true');
 };
 
-const getLoginForm = async (req, res) => {
+const getLoginForm = async (req: Request, res: Response) => {
 	const registered = req.query.registered === 'true';
 	res.render('auth/login', {
 		message: req.flash('error')[0] || null,
@@ -79,7 +86,7 @@ const getLoginForm = async (req, res) => {
 	});
 };
 
-const demoLogin = async (req, res, next) => {
+const demoLogin = async (req: Request, res: Response, next: Function) => {
 	try {
 		const user = await db.getUserByEmail('demo@traceroot.io');
 		if (!user) {
@@ -94,10 +101,4 @@ const demoLogin = async (req, res, next) => {
 	}
 };
 
-module.exports = {
-	getSignUpForm,
-	postSignUpForm,
-	getLoginForm,
-	demoLogin,
-	validateUser,
-};
+export { getSignUpForm, postSignUpForm, getLoginForm, demoLogin, validateUser };

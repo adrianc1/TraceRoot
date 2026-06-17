@@ -14,6 +14,12 @@ const Brands = () => {
 		fetchBrands();
 	}, []);
 
+	const handleDelete = async (id: number) => {
+		if (!confirm('Delete this brand?')) return;
+		await fetch(`/api/brands/${id}`, { method: 'DELETE' });
+		setBrands((prev) => prev.filter((b) => b.id !== id));
+	};
+
 	return (
 		<div className="max-w-7xl mx-auto px-6 py-8 flex-1 w-full">
 			{/* Page header */}
@@ -64,13 +70,19 @@ const Brands = () => {
 									<td className="hidden md:table-cell px-4 py-3 text-[0.8125rem] text-gray-500">
 										{brand.description || ''}
 									</td>
-									<td className="px-4 py-3 text-right">
+									<td className="px-4 py-3 text-right space-x-3">
 										<Link
 											to={`/brands/${brand.id}/edit`}
 											className="text-[0.75rem] text-gray-500 hover:text-gray-700 transition-colors font-medium no-underline"
 										>
 											Edit
 										</Link>
+										<button
+											onClick={() => handleDelete(brand.id)}
+											className="text-[0.75rem] text-red-400 hover:text-red-600 transition-colors font-medium"
+										>
+											Delete
+										</button>
 									</td>
 								</tr>
 							))}

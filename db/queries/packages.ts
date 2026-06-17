@@ -1,8 +1,19 @@
-const pool = require('../pool');
-
-const getAllPackages = async (company_id, limit = 25, offset = 0) => {
+import pool from '../pool';
+import {
+	Package,
+	PackageWithDetails,
+	PackageFilters,
+	Split,
+	ApplyMovementParams,
+	MovementResult,
+} from '../../types';
+export const getAllPackages = async (
+	company_id: number,
+	limit = 25,
+	offset = 0,
+): Promise<PackageWithDetails[]> => {
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<PackageWithDetails>(
 			`
             SELECT
                 pk.id,
@@ -49,15 +60,22 @@ const getAllPackages = async (company_id, limit = 25, offset = 0) => {
 	}
 };
 
-const getPackagesByLocation = async (companyId, locationId) => {
-	const result = await pool.query(
-		`SELECT * FROM      packages                                                                    WHERE company_id = $1 AND location_id = $2 AND status = 'active'`,
+export const getPackagesByLocation = async (
+	companyId: number,
+	locationId: number,
+): Promise<Package[]> => {
+	const result = await pool.query<Package>(
+		`SELECT * FROM      packages                                                   WHERE company_id = $1 AND location_id = $2 AND status = 'active'`,
 		[companyId, locationId],
 	);
 	return result.rows;
 };
 
-const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
+export const getPackagesCountByStatus = async (
+	company_id: number,
+	status: string,
+	filters: PackageFilters = {},
+): Promise<number> => {
 	const { search = '', brand = '', category = '' } = filters;
 	const params = status === 'all' ? [company_id] : [company_id, status];
 	const conditions =
@@ -93,7 +111,7 @@ const getPackagesCountByStatus = async (company_id, status, filters = {}) => {
 	return parseInt(rows[0].count);
 };
 
-const sortMap = {
+export const sortMap = {
 	newest: 'pk.created_at DESC',
 	oldest: 'pk.created_at ASC',
 	qty_asc: 'pk.quantity ASC',
@@ -102,13 +120,13 @@ const sortMap = {
 	za: 'p.name DESC',
 };
 
-const getPackagesByStatus = async (
-	company_id,
-	status,
+export const getPackagesByStatus = async (
+	company_id: number,
+	status: string,
 	limit = 25,
 	offset = 0,
-	filters = {},
-) => {
+	filters: PackageFilters = {},
+): Promise<PackageWithDetails[]> => {
 	const { search = '', brand = '', category = '', sort = 'newest' } = filters;
 	const params = status === 'all' ? [company_id] : [company_id, status];
 	const conditions =
@@ -137,10 +155,10 @@ const getPackagesByStatus = async (
 	params.push(offset);
 	const offsetIdx = params.length;
 
-	const orderBy = sortMap[sort] || 'pk.created_at DESC';
+	const orderBy = sortMap[sort as keyof typeof sortMap] || 'pk.created_at DESC';
 
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<PackageWithDetails>(
 			`
             SELECT
                 pk.id,
@@ -184,8 +202,11 @@ const getPackagesByStatus = async (
 	}
 };
 
-const getPackagesByProductId = async (productId, companyId) => {
-	const { rows } = await pool.query(
+export const getPackagesByProductId = async (
+	productId: number,
+	companyId: number,
+): Promise<PackageWithDetails[]> => {
+	const { rows } = await pool.query<PackageWithDetails>(
 		`
         SELECT
             pk.id,
@@ -225,7 +246,11 @@ const getPackagesByProductId = async (productId, companyId) => {
 	return rows;
 };
 
-const splitPackageTransaction = async (selectedPackage, splits, userId) => {
+export const splitPackageTransaction = async (
+	selectedPackage: Package,
+	splits: Split[],
+	userId: number,
+): Promise<void> => {
 	const client = await pool.connect();
 	try {
 		await client.query('BEGIN');
@@ -322,15 +347,7 @@ const splitPackageTransaction = async (selectedPackage, splits, userId) => {
 	}
 };
 
-const activePackages = async (id) => {
-	const { rows } = await pool.query(
-		`SELECT COUNT(*) FROM packages WHERE product_id=$1 AND quantity > 0 AND status = 'active'`,
-		[id],
-	);
-	return rows;
-};
-
-const applyInventoryMovement = async ({
+export const applyInventoryMovement = async ({
 	package_tag,
 	product_id,
 	packages_id = null,
@@ -346,7 +363,7 @@ const applyInventoryMovement = async ({
 	status,
 	package_size,
 	unit,
-}) => {
+}: ApplyMovementParams): Promise<MovementResult> => {
 	const client = await pool.connect();
 	let delta;
 	try {
@@ -363,7 +380,7 @@ const applyInventoryMovement = async ({
 			invId = packages_id;
 
 			const { rows } = await client.query(
-				`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
+				`SELECT quantity, locked FROM packages WHERE id=$1 FOR UPDATE`,
 				[packages_id],
 			);
 
@@ -515,8 +532,11 @@ const applyInventoryMovement = async ({
 	}
 };
 
-const getPackageByLot = async (productId, lotNumber) => {
-	const { rows } = await pool.query(
+export const getPackageByLot = async (
+	productId: number,
+	lotNumber: string,
+): Promise<Package | null> => {
+	const { rows } = await pool.query<Package>(
 		`SELECT * FROM packages WHERE product_id = $1 AND lot_number = $2`,
 		[productId, lotNumber],
 	);
@@ -526,174 +546,164 @@ const getPackageByLot = async (productId, lotNumber) => {
 	return rows[0] || null;
 };
 
-const getPackage = async (packageId, companyId) => {
-	const { rows } = await pool.query(
+export const getPackage = async (
+	packageId: number,
+	companyId: number,
+): Promise<Package> => {
+	const { rows } = await pool.query<Package>(
 		`SELECT * FROM packages WHERE id=$1 AND company_id=$2`,
 		[packageId, companyId],
 	);
 	return rows[0];
 };
 
-const getPackageByTag = async (packageTag, companyId) => {
-	const { rows } = await pool.query(
+export const getPackageByTag = async (
+	packageTag: string,
+	companyId: number,
+): Promise<Package> => {
+	const { rows } = await pool.query<Package>(
 		`SELECT * FROM packages WHERE package_tag=$1 AND company_id=$2`,
 		[packageTag, companyId],
 	);
 	return rows[0];
 };
 
-const adjustProductInventory = async (
-	packages_id,
-	movement_type,
-	quantity,
-	notes,
-	userId,
-) => {
-	const client = await pool.connect();
+// const adjustProductInventory = async (
+// 	packages_id: number,
+// 	movement_type: string,
+// 	quantity: number,
 
-	try {
-		await client.query('BEGIN');
+// 	notes: string | null,
+// 	userId: number,
+// ): Promise<void> => {
+// 	const client = await pool.connect();
 
-		const current = await client.query(
-			`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
-			[packages_id],
-		);
+// 	try {
+// 		await client.query('BEGIN');
 
-		if (current.rows.length === 0) {
-			throw new Error('Inventory record not found');
-		}
+// 		const current = await client.query<Package>(
+// 			`SELECT quantity FROM packages WHERE id=$1 FOR UPDATE`,
+// 			[packages_id],
+// 		);
 
-		const startingQty = Number(current.rows[0].quantity);
+// 		if (current.rows.length === 0) {
+// 			throw new Error('Inventory record not found');
+// 		}
 
-		if (quantity < 0) {
-			throw new Error('New quantity cannot be negative');
-		}
+// 		const startingQty = Number(current.rows[0].quantity);
 
-		const endingQty = Number(quantity);
-		const delta = endingQty - startingQty;
+// 		if (quantity < 0) {
+// 			throw new Error('New quantity cannot be negative');
+// 		}
 
-		const movementUpdate = await client.query(
-			`
-      INSERT INTO inventory_movements (
-        packages_id,
-        user_id,
-        movement_type,
-        starting_quantity,
-        quantity,
-        ending_quantity,
-        notes
-      )
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
-      RETURNING *
-      `,
-			[
-				packages_id,
-				userId,
-				movement_type,
-				startingQty,
-				delta,
-				endingQty,
-				notes,
-			],
-		);
+// 		const endingQty = Number(quantity);
+// 		const delta = endingQty - startingQty;
 
-		const inventoryUpdate = await client.query(
-			`UPDATE packages
-             SET quantity = $1
-             WHERE id = $2`,
-			[endingQty, packages_id],
-		);
+// 		const movementUpdate = await client.query<MovementResult>(
+// 			`
+//       INSERT INTO inventory_movements (
+//         packages_id,
+//         user_id,
+//         movement_type,
+//         starting_quantity,
+//         quantity,
+//         ending_quantity,
+//         notes
+//       )
+//       VALUES ($1,$2,$3,$4,$5,$6,$7)
+//       RETURNING *
+//       `,
+// 			[
+// 				packages_id,
+// 				userId,
+// 				movement_type,
+// 				startingQty,
+// 				delta,
+// 				endingQty,
+// 				notes,
+// 			],
+// 		);
 
-		await client.query('COMMIT');
-		return movementUpdate.rows[0];
-	} catch (e) {
-		await client.query('ROLLBACK');
-		throw e;
-	} finally {
-		client.release();
-	}
-};
+// 		const inventoryUpdate = await client.query(
+// 			`UPDATE packages
+//              SET quantity = $1
+//              WHERE id = $2`,
+// 			[endingQty, packages_id],
+// 		);
 
-const receiveInventory = async (
-	packages_id,
-	quantity,
-	batch,
-	unit_price,
-	vendor,
-	reason = 'Receive',
-	notes,
-	userId,
-) => {
-	const client = await pool.connect();
+// 		await client.query('COMMIT');
+// 		return movementUpdate.rows[0];
+// 	} catch (e) {
+// 		await client.query('ROLLBACK');
+// 		throw e;
+// 	} finally {
+// 		client.release();
+// 	}
+// };
 
-	try {
-		await client.query('BEGIN');
+// const receiveInventory = async (
+// 	packages_id,
+// 	quantity,
+// 	batch,
+// 	unit_price,
+// 	vendor,
+// 	reason = 'Receive',
+// 	notes,
+// 	userId,
+// ) => {
+// 	const client = await pool.connect();
 
-		const current = await client.query(
-			`SELECT quantity FROM packages WHERE id=$1`,
-			[packages_id],
-		);
+// 	try {
+// 		await client.query('BEGIN');
 
-		if (current.rows.length === 0) {
-			throw new Error('Inventory record not found');
-		}
+// 		const current = await client.query(
+// 			`SELECT quantity FROM packages WHERE id=$1`,
+// 			[packages_id],
+// 		);
 
-		if (quantity < 0) {
-			throw new Error('Inventory cannot be negative');
-		}
+// 		if (current.rows.length === 0) {
+// 			throw new Error('Inventory record not found');
+// 		}
 
-		const currentQty = current.rows[0].quantity;
-		const delta = Number(quantity);
-		const newQty = Number(currentQty) + delta;
+// 		if (quantity < 0) {
+// 			throw new Error('Inventory cannot be negative');
+// 		}
 
-		await client.query(
-			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-			[packages_id, reason, delta, unit_price, notes, userId],
-		);
+// 		const currentQty = current.rows[0].quantity;
+// 		const delta = Number(quantity);
+// 		const newQty = Number(currentQty) + delta;
 
-		await client.query(
-			`UPDATE packages
-     SET quantity = $1,
-         cost_price = $2,
-         supplier_name = $3,
-         lot_number = $4,
-		 batch_id = $5
-     WHERE id = $6`,
-			[newQty, unit_price, vendor, batch, packages_id, batchId],
-		);
+// 		await client.query(
+// 			`INSERT INTO inventory_movements (packages_id, movement_type, quantity, cost_per_unit, notes, user_id)
+//              VALUES ($1, $2, $3, $4, $5, $6)`,
+// 			[packages_id, reason, delta, unit_price, notes, userId],
+// 		);
 
-		await client.query('COMMIT');
-		return { newQty, delta };
-	} catch (e) {
-		await client.query('ROLLBACK');
-		throw e;
-	} finally {
-		client.release();
-	}
-};
+// 		await client.query(
+// 			`UPDATE packages
+//      SET quantity = $1,
+//          cost_price = $2,
+//          supplier_name = $3,
+//          lot_number = $4,
+// 		 batch_id = $5
+//      WHERE id = $6`,
+// 			[newQty, unit_price, vendor, batch, packages_id, batchId],
+// 		);
 
-const getInventoryId = async (productId) => {
-	const { rows } = await pool.query(
-		`SELECT * FROM packages WHERE product_id=$1`,
-		[productId],
-	);
-	return rows;
-};
+// 		await client.query('COMMIT');
+// 		return { newQty, delta };
+// 	} catch (e) {
+// 		await client.query('ROLLBACK');
+// 		throw e;
+// 	} finally {
+// 		client.release();
+// 	}
+// };
 
-module.exports = {
-	getAllPackages,
-	getPackagesByLocation,
-	getPackagesByStatus,
-	splitPackageTransaction,
-	activePackages,
-	applyInventoryMovement,
-	getPackageByLot,
-	getPackage,
-	getPackageByTag,
-	adjustProductInventory,
-	receiveInventory,
-	getInventoryId,
-	getPackagesByProductId,
-	getPackagesCountByStatus,
-};
+// const getInventoryId = async (productId) => {
+// 	const { rows } = await pool.query(
+// 		`SELECT * FROM packages WHERE product_id=$1`,
+// 		[productId],
+// 	);
+// 	return rows;
+// };

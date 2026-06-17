@@ -1,15 +1,16 @@
-const db = require('../db/queries');
-const { convertQuantity } = require('../utils/conversion');
-const { toCsv, sendCsv } = require('../utils/csvExport');
+import { Request, Response } from 'express';
+import * as db from '../db/queries';
+import { convertQuantity } from '../utils/conversion';
+import { toCsv, sendCsv } from '../utils/csvExport';
 
-const getAllPackages = async (req, res) => {
+export const getAllPackages = async (req: Request, res: Response) => {
 	const { location_id } = req.query;
 
 	if (location_id) {
 		try {
 			const packages = await db.getPackagesByLocation(
-				req.user.company_id,
-				location_id,
+				req.user!.company_id,
+				Number(location_id),
 			);
 			res.json({ packages });
 		} catch (error) {
@@ -19,16 +20,16 @@ const getAllPackages = async (req, res) => {
 	}
 
 	try {
-		const userCompanyId = req.user.company_id;
-		const status = req.query.status || 'active';
-		const page = parseInt(req.query.page) || 1;
+		const userCompanyId = req.user!.company_id;
+		const status = String(req.query.status || 'active');
+		const page = Number(req.query.page) || 1;
 		const limit = 25;
 		const offset = (page - 1) * limit;
 		const filters = {
-			search: req.query.search || '',
-			brand: req.query.brand || '',
-			category: req.query.category || '',
-			sort: req.query.sort || 'newest',
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
 		};
 		const [packages, total, brands, strains, categories] = await Promise.all([
 			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
@@ -51,11 +52,11 @@ const getAllPackages = async (req, res) => {
 	}
 };
 
-const getProduct = async (req, res) => {
+export const getProduct = async (req: Request, res: Response) => {
 	try {
 		const product = await db.getProductWithInventoryDB(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 		);
 
 		if (!product) {
@@ -64,8 +65,8 @@ const getProduct = async (req, res) => {
 		}
 
 		const [productInventory, auditTrail] = await Promise.all([
-			db.getPackagesByProductId(req.params.id, req.user.company_id),
-			db.getAuditTrail(req.params.id, req.user.company_id),
+			db.getPackagesByProductId(Number(req.params.id), req.user!.company_id),
+			db.getAuditTrail(Number(req.params.id), req.user!.company_id),
 		]);
 
 		res.json({ product, productInventory, auditTrail });
@@ -75,17 +76,16 @@ const getProduct = async (req, res) => {
 	}
 };
 
-const receiveNewPackageForm = async (req, res) => {
-	const product = { unit: 'N/a' };
-	const products = await db.getAllProductsDB(req.user.company_id);
-	const locations = await db.getLocations(req.user.company_id);
+export const receiveNewPackageForm = async (req: Request, res: Response) => {
+	const products = await db.getAllProductsDB(req.user!.company_id);
+	const locations = await db.getLocations(req.user!.company_id);
 
 	res.json({ products, locations });
 };
 
-const receiveNewPackagesPOST = async (req, res) => {
-	const userId = req.user.id;
-	const company_id = req.user.company_id;
+export const receiveNewPackagesPOST = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+	const company_id = req.user!.company_id;
 
 	const {
 		quantity,
@@ -109,7 +109,11 @@ const receiveNewPackagesPOST = async (req, res) => {
 
 	const normalizedQty = convertQuantity(quantity, unit, unit);
 
-	let existingBatch = await db.getBatchByNumber(product_id, batch);
+	let existingBatch = await db.getBatchByNumber(
+		product_id,
+		batch,
+		req.user!.company_id,
+	);
 
 	let batch_id;
 
@@ -148,12 +152,12 @@ const receiveNewPackagesPOST = async (req, res) => {
 	res.json({ success: true, id: product_id });
 };
 
-const createProductForm = async (req, res) => {
+export const createProductForm = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 	try {
-		const brands = await db.getAllBrands(req.user.company_id);
-		const strains = await db.getAllStrains(req.user.company_id);
-		const categories = await db.getAllCategories(req.user.company_id);
+		const brands = await db.getAllBrands(req.user!.company_id);
+		const strains = await db.getAllStrains(req.user!.company_id);
+		const categories = await db.getAllCategories(req.user!.company_id);
 
 		if (!brands || !strains || !categories) {
 			res.status(404).json({ error: 'No Brands Found' });
@@ -165,25 +169,25 @@ const createProductForm = async (req, res) => {
 	}
 };
 
-const splitPackageProductForm = async (req, res) => {
+export const splitPackageProductForm = async (req: Request, res: Response) => {
 	const selectedPackage = await db.getPackageByTag(
-		req.params.packageTag,
-		req.user.company_id,
+		String(req.params.packageTag),
+		req.user!.company_id,
 	);
 	const product = await db.getProductDB(
 		selectedPackage.product_id,
 		selectedPackage.company_id,
 	);
-	const products = await db.getAllProductsDB(req.user.company_id);
+	const products = await db.getAllProductsDB(req.user!.company_id);
 
 	res.json({ product, products, selectedPackage });
 };
 
-const splitPackagePost = async (req, res) => {
-	const userId = req.user.id;
+export const splitPackagePost = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
 	const selectedBatch = await db.getPackageByTag(
-		req.params.packageTag,
-		Number(req.user.company_id),
+		String(req.params.packageTag),
+		Number(req.user!.company_id),
 	);
 
 	const { productId, packageSize, quantity, packageTag } = req.body;
@@ -194,7 +198,7 @@ const splitPackagePost = async (req, res) => {
 
 	const packageSizes = packageSize || quantity.map(() => 1);
 
-	const splits = productId.map((_, i) => {
+	const splits = productId.map((_: unknown, i: number) => {
 		const size = parseFloat(packageSizes[i]) || 1;
 		const weight = size;
 
@@ -217,8 +221,8 @@ const splitPackagePost = async (req, res) => {
 	res.json({ success: true, productId: selectedBatch.product_id });
 };
 
-const insertProduct = async (req, res) => {
-	const userCompanyId = req.user.company_id;
+export const insertProduct = async (req: Request, res: Response) => {
+	const userCompanyId = req.user!.company_id;
 	const {
 		name,
 		description,
@@ -235,18 +239,27 @@ const insertProduct = async (req, res) => {
 	let newStrain, newBrand, newCategory;
 
 	if (newStrainName?.trim()) {
-		newStrain = await db.insertStrain(newStrainName, req.user.company_id);
+		newStrain = await db.insertStrain(
+			newStrainName,
+			req.user!.company_id,
+			null,
+			null,
+		);
 	} else {
 		newStrain = null;
 	}
 
 	if (newBrandName?.trim()) {
-		newBrand = await db.insertBrand(newBrandName, null, req.user.company_id);
+		newBrand = await db.insertBrand(newBrandName, null, req.user!.company_id);
 	} else {
 		newBrand = null;
 	}
 	if (newCategoryName?.trim()) {
-		newCategory = await db.insertCategory(newCategoryName, req.user.company_id);
+		newCategory = await db.insertCategory(
+			newCategoryName,
+			req.user!.company_id,
+			null,
+		);
 	} else {
 		newCategory = null;
 	}
@@ -270,19 +283,22 @@ const insertProduct = async (req, res) => {
 	res.status(201).json({ success: true, id: product.id });
 };
 
-const getProductsList = async (req, res) => {
+export const getProductsList = async (req: Request, res: Response) => {
 	try {
 		const status = req.query.status === 'archived' ? 'archived' : 'active';
-		const products = await db.getAllProductsDB(req.user.company_id, status);
+		const products = await db.getAllProductsDB(req.user!.company_id, status);
 		res.json({ products });
 	} catch (error) {
 		res.status(500).json({ error: 'Database error' });
 	}
 };
 
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req: Request, res: Response) => {
 	try {
-		const result = await db.deleteProduct(req.params.id, req.user.company_id);
+		const result = await db.deleteProduct(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 
 		if (result.rowCount === 0) {
 			return res.status(400).json({
@@ -299,12 +315,9 @@ const deleteProduct = async (req, res) => {
 	}
 };
 
-const unarchiveProduct = async (req, res) => {
+export const unarchiveProduct = async (req: Request, res: Response) => {
 	try {
-		const unarchive = await db.unarchiveProduct(
-			req.params.id,
-			req.user.company_id,
-		);
+		await db.unarchiveProduct(Number(req.params.id), req.user!.company_id);
 
 		res.status(200).json({ success: true });
 	} catch (error) {
@@ -312,16 +325,19 @@ const unarchiveProduct = async (req, res) => {
 	}
 };
 
-const editProductForm = async (req, res) => {
+export const editProductForm = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
-		const brands = await db.getAllBrands(req.user.company_id);
-		const strains = await db.getAllStrains(req.user.company_id);
-		const categories = await db.getAllCategories(req.user.company_id);
-		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const brands = await db.getAllBrands(req.user!.company_id);
+		const strains = await db.getAllStrains(req.user!.company_id);
+		const categories = await db.getAllCategories(req.user!.company_id);
+		const product = await db.getProductDB(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 
-		const rows = await db.checkIfProductHasPackages(req.params.id);
+		const rows = await db.checkIfProductHasPackages(Number(req.params.id));
 
 		const hasPackages = Number(rows[0].count) > 0;
 
@@ -339,9 +355,9 @@ const editProductForm = async (req, res) => {
 	}
 };
 
-const updateProduct = async (req, res) => {
-	const id = req.params.id;
-	const company_id = req.user.company_id;
+export const updateProduct = async (req: Request, res: Response) => {
+	const id = Number(req.params.id);
+	const company_id = req.user!.company_id;
 	const { name, description, unit, brandId, strainId, categoryId, sku } =
 		req.body;
 
@@ -364,10 +380,10 @@ const updateProduct = async (req, res) => {
 	}
 };
 
-const receiveInventoryPut = async (req, res) => {
-	const userId = req.user.id;
-	const company_id = req.user.company_id;
-	const product_id = req.params.id;
+export const receiveInventoryPut = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+	const company_id = req.user!.company_id;
+	const product_id = Number(req.params.id);
 
 	const {
 		quantity,
@@ -382,7 +398,7 @@ const receiveInventoryPut = async (req, res) => {
 		location_id,
 	} = req.body;
 
-	const product = await db.getProductDB(product_id, req.user.company_id);
+	const product = await db.getProductDB(product_id, req.user!.company_id);
 	const existingInventory = await db.getPackageByLot(product_id, batch);
 	const newBatch = await db.createBatch({
 		product_id,
@@ -420,7 +436,7 @@ const receiveInventoryPut = async (req, res) => {
 	res.json({ success: true, id: product_id });
 };
 
-const adjustInventoryGet = async (req, res) => {
+export const adjustInventoryGet = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	const statusOptions = [
@@ -434,24 +450,24 @@ const adjustInventoryGet = async (req, res) => {
 
 	try {
 		const pkg = await db.getPackageByTag(
-			req.params.packageTag,
-			Number(req.user.company_id),
+			String(req.params.packageTag),
+			Number(req.user!.company_id),
 		);
 
-		const product = await db.getProductDB(pkg.product_id, req.user.company_id);
+		const product = await db.getProductDB(pkg.product_id, req.user!.company_id);
 
 		if (!product) {
 			res.status(404).json({ error: 'Product not found' });
 			return;
 		}
 		const brand = product.brand_id
-			? await db.getBrand(product.brand_id, req.user.company_id)
+			? await db.getBrand(product.brand_id, req.user!.company_id)
 			: null;
 		const strain = product.strain_id
-			? await db.getStrain(product.strain_id, req.user.company_id)
+			? await db.getStrain(product.strain_id, req.user!.company_id)
 			: null;
 		const category = product.category_id
-			? await db.getSingleCategory(product.category_id, req.user.company_id)
+			? await db.getCategoryById(product.category_id, req.user!.company_id)
 			: null;
 
 		const adjustmentReasons = [
@@ -484,12 +500,12 @@ const adjustInventoryGet = async (req, res) => {
 	}
 };
 
-const updateInventory = async (req, res) => {
-	const userId = req.user.id;
+export const updateInventory = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
 
 	const selectedBatch = await db.getPackageByTag(
-		req.params.packageTag,
-		req.user.company_id,
+		String(req.params.packageTag),
+		req.user!.company_id,
 	);
 
 	const { quantity, movement_type, notes, cost_price_unit, status, unit } =
@@ -505,7 +521,7 @@ const updateInventory = async (req, res) => {
 			packages_id: selectedBatch.id,
 			batch_id: selectedBatch.batch_id,
 			company_id: selectedBatch.company_id,
-			location: selectedBatch.location_id,
+			location_id: selectedBatch.location_id,
 			batch: selectedBatch.lot_number,
 			targetQty: Number(quantity),
 			movement_type,
@@ -513,32 +529,39 @@ const updateInventory = async (req, res) => {
 			cost_per_unit: cost_price_unit || null,
 			userId,
 			status: resolvedStatus,
+			package_size: null,
 			unit,
 		});
 
 		res.json({ success: true });
 	} catch (err) {
 		console.error('update inventory error:', err);
-		res.status(500).json({ success: true, error: err.message });
+		res.status(500).json({
+			success: false,
+			error: err instanceof Error ? err.message : 'Unknown error',
+		});
 	}
 };
 
-const receiveInventoryGet = async (req, res) => {
+export const receiveInventoryGet = async (req: Request, res: Response) => {
 	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
 
 	try {
-		const product = await db.getProductDB(req.params.id, req.user.company_id);
+		const product = await db.getProductDB(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 		const brand = product.brand_id
-			? await db.getBrand(product.brand_id, req.user.company_id)
+			? await db.getBrand(product.brand_id, req.user!.company_id)
 			: null;
 		const strain = product.strain_id
-			? await db.getStrain(product.strain_id, req.user.company_id)
+			? await db.getStrain(product.strain_id, req.user!.company_id)
 			: null;
 		const category = product.category_id
-			? await db.getSingleCategory(product.category_id, req.user.company_id)
+			? await db.getCategoryById(product.category_id, req.user!.company_id)
 			: null;
 
-		const locations = await db.getLocations(req.user.company_id);
+		const locations = await db.getLocations(req.user!.company_id);
 
 		res.json({ product, brand, strain, category, units, locations });
 	} catch (error) {
@@ -546,17 +569,17 @@ const receiveInventoryGet = async (req, res) => {
 	}
 };
 
-const exportPackagesCsv = async (req, res) => {
+export const exportPackagesCsv = async (req: Request, res: Response) => {
 	try {
-		const status = req.query.status || 'active';
+		const status = String(req.query.status || 'active');
 		const filters = {
-			search: req.query.search || '',
-			brand: req.query.brand || '',
-			category: req.query.category || '',
-			sort: req.query.sort || 'newest',
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
 		};
 		const packages = await db.getPackagesByStatus(
-			req.user.company_id,
+			req.user!.company_id,
 			status,
 			50000,
 			0,
@@ -597,9 +620,9 @@ const exportPackagesCsv = async (req, res) => {
 	}
 };
 
-const exportProductsCsv = async (req, res) => {
+export const exportProductsCsv = async (req: Request, res: Response) => {
 	try {
-		const products = await db.getAllProductsDB(req.user.company_id);
+		const products = await db.getAllProductsDB(req.user!.company_id);
 		const csv = toCsv(products, [
 			{ header: 'Name', value: 'name' },
 			{ header: 'Brand', value: 'brand_name' },
@@ -619,10 +642,13 @@ const exportProductsCsv = async (req, res) => {
 	}
 };
 
-const exportAuditCsv = async (req, res) => {
+export const exportAuditCsv = async (req: Request, res: Response) => {
 	try {
-		const packages = await db.getAuditTrail(req.params.id);
-		const rows = [];
+		const packages = await db.getAuditTrail(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+		const rows: Record<string, unknown>[] = [];
 		packages.forEach((pkg) => {
 			if (pkg.movements && pkg.movements.length > 0) {
 				pkg.movements.forEach((mv) => {
@@ -665,27 +691,4 @@ const exportAuditCsv = async (req, res) => {
 		console.error(error);
 		res.status(500).json({ error: 'Export failed' });
 	}
-};
-
-module.exports = {
-	getAllPackages,
-	getProductsList,
-	getProduct,
-	createProductForm,
-	updateProduct,
-	deleteProduct,
-	insertProduct,
-	editProductForm,
-	adjustInventoryGet,
-	updateInventory,
-	receiveInventoryGet,
-	receiveInventoryPut,
-	splitPackageProductForm,
-	splitPackagePost,
-	receiveNewPackageForm,
-	receiveNewPackagesPOST,
-	unarchiveProduct,
-	exportPackagesCsv,
-	exportProductsCsv,
-	exportAuditCsv,
 };

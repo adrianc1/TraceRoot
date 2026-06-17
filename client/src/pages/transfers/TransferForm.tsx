@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { TransferItem } from '../../types/transfers';
-
 import type { TransferType } from '../../types/transfers';
 
 interface Locations {

@@ -1,15 +1,22 @@
-const pool = require('../pool');
+import {
+	Transfer,
+	TransferDetail,
+	TransferItem,
+	TransferItemDetail,
+	TransferListRow,
+} from '../../types';
+import pool from '../pool';
 
-const createTransferDB = async (
-	companyId,
-	transferType,
-	fromLocationId,
-	toLocationId,
-	toCompanyName,
-	notes,
-	createdBy,
-	items,
-) => {
+export const createTransferDB = async (
+	companyId: number,
+	transferType: 'internal' | 'external',
+	fromLocationId: number,
+	toLocationId: number | null,
+	toCompanyName: string | null,
+	notes: string,
+	createdBy: number,
+	items: TransferItem[],
+): Promise<Transfer> => {
 	const client = await pool.connect();
 
 	try {
@@ -17,7 +24,7 @@ const createTransferDB = async (
 
 		// validate packages belong to currnt company
 		const packageIds = items.map((item) => item.package_id);
-		const { rows: validPackages } = await client.query(
+		const { rows: validPackages } = await client.query<{ id: number }>(
 			`SELECT id FROM packages 
        WHERE id = ANY($1::int[]) 
        AND company_id = $2
@@ -31,7 +38,7 @@ const createTransferDB = async (
 			);
 		}
 
-		const transferResult = await client.query(
+		const transferResult = await client.query<Transfer>(
 			`INSERT INTO transfers 
         (company_id, transfer_type, from_location_id, to_location_id, to_company_name, notes, created_by)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -50,7 +57,7 @@ const createTransferDB = async (
 		const transfer = transferResult.rows[0];
 
 		for (const item of items) {
-			const newQuantity = Number(item.current_quantity - item.quantity);
+			const newQuantity = item.current_quantity - item.quantity;
 
 			await client.query(
 				`UPDATE packages
@@ -92,14 +99,18 @@ const createTransferDB = async (
 	}
 };
 
-const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
+export const confirmTransferDB = async (
+	transferId: number,
+	companyId: number,
+	confirmedById: number,
+): Promise<Transfer> => {
 	const client = await pool.connect();
 
 	try {
 		await client.query('BEGIN');
 
 		// fetch and validate
-		const { rows: transferRows } = await client.query(
+		const { rows: transferRows } = await client.query<Transfer>(
 			`SELECT * FROM transfers 
        WHERE id = $1 
        AND company_id = $2 
@@ -120,7 +131,7 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 				: 'transfer_external';
 
 		// fetch all packages with active qty
-		const { rows: items } = await client.query(
+		const { rows: items } = await client.query<TransferItem>(
 			`SELECT ti.package_id, ti.quantity, p.quantity AS current_quantity
        FROM transfer_items ti
        JOIN packages p ON ti.package_id = p.id
@@ -168,7 +179,7 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 				[
 					companyId,
 					item.package_id,
-					confirmedBy,
+					confirmedById,
 					movementType,
 					transfer.transfer_type === 'internal' ? 0 : -item.quantity,
 					item.current_quantity,
@@ -179,7 +190,7 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 		}
 
 		// confirm transfer!
-		const { rows: updated } = await client.query(
+		const { rows: updated } = await client.query<Transfer>(
 			`UPDATE transfers
        SET status = 'confirmed', confirmed_at = NOW()
        WHERE id = $1
@@ -197,9 +208,11 @@ const confirmTransferDB = async (transferId, companyId, confirmedBy) => {
 	}
 };
 
-const getAllTransfersDB = async (companyId) => {
+export const getAllTransfersDB = async (
+	companyId: number,
+): Promise<TransferListRow[]> => {
 	try {
-		const { rows } = await pool.query(
+		const { rows } = await pool.query<TransferListRow>(
 			`SELECT
         t.id,
         t.transfer_type,
@@ -224,9 +237,12 @@ const getAllTransfersDB = async (companyId) => {
 	}
 };
 
-const getTransferByIdDB = async (transferId, companyId) => {
+export const getTransferByIdDB = async (
+	transferId: number,
+	companyId: number,
+): Promise<(TransferDetail & { items: TransferItemDetail[] }) | null> => {
 	try {
-		const { rows: transferRows } = await pool.query(
+		const { rows: transferRows } = await pool.query<TransferDetail>(
 			`SELECT
         t.id,
         t.transfer_type,
@@ -249,7 +265,7 @@ const getTransferByIdDB = async (transferId, companyId) => {
 
 		if (!transferRows.length) return null;
 
-		const { rows: items } = await pool.query(
+		const { rows: items } = await pool.query<TransferItemDetail>(
 			`SELECT
         ti.id,
         ti.quantity,
@@ -280,12 +296,15 @@ const getTransferByIdDB = async (transferId, companyId) => {
 	}
 };
 
-const cancelTransferDB = async (transferId, companyId) => {
+export const cancelTransferDB = async (
+	transferId: number,
+	companyId: number,
+): Promise<Transfer> => {
 	const client = await pool.connect();
 	try {
 		await client.query('BEGIN');
 
-		const { rows } = await client.query(
+		const { rows } = await client.query<Transfer>(
 			`UPDATE transfers
              SET status = 'cancelled'
              WHERE id = $1
@@ -314,11 +333,4 @@ const cancelTransferDB = async (transferId, companyId) => {
 	} finally {
 		client.release();
 	}
-};
-module.exports = {
-	createTransferDB,
-	confirmTransferDB,
-	getAllTransfersDB,
-	getTransferByIdDB,
-	cancelTransferDB,
 };

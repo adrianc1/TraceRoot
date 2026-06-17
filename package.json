@@ -32,9 +32,11 @@
 		"tsx": "^4.21.0"
 	},
 	"devDependencies": {
+		"@types/connect-flash": "^0.0.40",
 		"@types/express": "^5.0.6",
 		"@types/node": "^25.6.0",
 		"@types/passport": "^1.0.17",
+		"@types/pg": "^8.20.0",
 		"tailwindcss": "^4.1.18",
 		"typescript": "^6.0.3"
 	}

@@ -1,9 +1,10 @@
-const db = require('../db/queries');
-const { toCsv, sendCsv } = require('../utils/csvExport');
+import { Request, Response } from 'express';
+import * as db from '../db/queries';
+import { toCsv, sendCsv } from '../utils/csvExport';
 
-const getAllTransfers = async (req, res) => {
+export const getAllTransfers = async (req: Request, res: Response) => {
 	try {
-		const transfers = await db.getAllTransfersDB(req.user.company_id);
+		const transfers = await db.getAllTransfersDB(req.user!.company_id);
 		res.json(transfers);
 	} catch (error) {
 		console.error(error);
@@ -11,11 +12,11 @@ const getAllTransfers = async (req, res) => {
 	}
 };
 
-const getTransfer = async (req, res) => {
+export const getTransfer = async (req: Request, res: Response) => {
 	try {
 		const transfer = await db.getTransferByIdDB(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 		);
 
 		if (!transfer) {
@@ -44,10 +45,10 @@ const getTransfer = async (req, res) => {
 // 	}
 // };
 
-const createTransfer = async (req, res) => {
+export const createTransfer = async (req: Request, res: Response) => {
 	try {
-		const companyId = req.user.company_id;
-		const createdBy = req.user.id;
+		const companyId = req.user!.company_id;
+		const createdBy = req.user!.id;
 		const {
 			transfer_type,
 			from_location_id,
@@ -77,16 +78,16 @@ const createTransfer = async (req, res) => {
 		res.status(201).json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ error: 'Failed to create transfer' });
 	}
 };
 
-const confirmTransfer = async (req, res) => {
+export const confirmTransfer = async (req: Request, res: Response) => {
 	try {
 		const transfer = await db.confirmTransferDB(
-			req.params.id,
-			req.user.company_id,
-			req.user.id,
+			Number(req.params.id),
+			req.user!.company_id,
+			req.user!.id,
 		);
 
 		if (!transfer) {
@@ -98,15 +99,15 @@ const confirmTransfer = async (req, res) => {
 		res.status(200).json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ error: 'Failed to confirm transfer' });
 	}
 };
 
-const cancelTransfer = async (req, res) => {
+export const cancelTransfer = async (req: Request, res: Response) => {
 	try {
 		const transfer = await db.cancelTransferDB(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 		);
 
 		if (!transfer) {
@@ -118,13 +119,13 @@ const cancelTransfer = async (req, res) => {
 		res.status(200).json({ success: true });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: error.message });
+		res.status(500).json({ error: 'Failed to cancel transfer' });
 	}
 };
 
-const exportTransfersCsv = async (req, res) => {
+export const exportTransfersCsv = async (req: Request, res: Response) => {
 	try {
-		const transfers = await db.getAllTransfersDB(req.user.company_id);
+		const transfers = await db.getAllTransfersDB(req.user!.company_id);
 		const csv = toCsv(transfers, [
 			{ header: 'ID', value: 'id' },
 			{ header: 'Type', value: 'transfer_type' },
@@ -149,13 +150,4 @@ const exportTransfersCsv = async (req, res) => {
 		console.error(error);
 		res.status(500).json({ error: 'Export failed' });
 	}
-};
-
-module.exports = {
-	getAllTransfers,
-	getTransfer,
-	createTransfer,
-	confirmTransfer,
-	cancelTransfer,
-	exportTransfersCsv,
 };
