@@ -1,5 +1,7 @@
 import pool from '../pool';
 import { Companies, Users } from '../../types';
+import { AuthUser } from '../../types/express';
+
 export const signupAdmin = async (
 	firstName: string,
 	lastName: string,
@@ -9,7 +11,7 @@ export const signupAdmin = async (
 	licenseNumber: string,
 	role = 'admin',
 ): Promise<Users> => {
-	const client = await pool.connect();
+	const client = await po9ol.connect();
 
 	try {
 		await client.query('BEGIN');
@@ -39,8 +41,8 @@ export const signupAdmin = async (
 
 export const getUserByEmail = async (
 	email: string,
-): Promise<Users | undefined> => {
-	const { rows } = await pool.query<Users>(
+): Promise<AuthUser | undefined> => {
+	const { rows } = await pool.query<AuthUser>(
 		`SELECT * FROM users WHERE email=$1`,
 		[email],
 	);
