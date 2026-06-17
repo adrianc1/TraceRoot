@@ -1,8 +1,9 @@
-const db = require('../db/queries');
+import { Request, Response } from 'express';
+import db from '../db/queries';
 
-const getBilling = async (req, res) => {
+export const getBilling = async (req: Request, res: Response) => {
 	try {
-		const billing = await db.getCompanyBilling(req.user.company_id);
+		const billing = await db.getCompanyBilling(req.user!.company_id);
 		res.json(billing);
 	} catch (error) {
 		console.error(error);
@@ -10,7 +11,7 @@ const getBilling = async (req, res) => {
 	}
 };
 
-const handleWebhookEvent = async (event, res) => {
+export const handleWebhookEvent = async (event: any, res: Response) => {
 	switch (event.type) {
 		case 'checkout.session.completed': {
 			const session = event.data.object;
@@ -47,5 +48,3 @@ const handleWebhookEvent = async (event, res) => {
 
 	res.json({ received: true });
 };
-
-module.exports = { getBilling, handleWebhookEvent };

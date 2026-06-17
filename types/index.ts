@@ -283,3 +283,20 @@ export interface MovementResult {
 	endingQty: number | undefined;
 	status: InventoryStatus | string | null;
 }
+
+export interface CompanyBilling {
+	stripe_customer_id?: string;
+	stripe_subscription_status?: string;
+	trial_ends_at?: string;
+	id: number;
+}
+
+export interface UpdateBilling {
+	stripe_customer_id?: string;
+	stripe_subscription_status?: string;
+}
+
+export interface GetCompanyByStripeCustomer {
+	id: number;
+	stripe_subscription_status: string;
+}
