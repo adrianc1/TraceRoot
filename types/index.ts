@@ -300,3 +300,18 @@ export interface GetCompanyByStripeCustomer {
 	id: number;
 	stripe_subscription_status: string;
 }
+
+export interface Companies {
+	id: number;
+	name: string;
+	license_number: string;
+}
+
+export interface Users {
+	id: number;
+	first_name: string;
+	last_name: string;
+	email: string;
+	company_id: number;
+	role: string;
+}
