@@ -29,12 +29,7 @@ export const getStrain = async (req: Request, res: Response) => {
 export const insertStrain = async (req: Request, res: Response) => {
 	try {
 		const { name, description, type } = req.body;
-		const result = await db.insertStrain(
-			name,
-			req.user!.company_id,
-			description,
-			type,
-		);
+		await db.insertStrain(name, req.user!.company_id, description, type);
 		res.status(200).json({ success: true });
 	} catch (error) {
 		console.error(error);
