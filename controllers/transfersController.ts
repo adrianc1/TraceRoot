@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import db from '../db/queries';
+import * as db from '../db/queries';
 import { toCsv, sendCsv } from '../utils/csvExport';
 
 export const getAllTransfers = async (req: Request, res: Response) => {

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import db from '../db/queries';
-
+import * as db from '../db/queries';
 export const getBilling = async (req: Request, res: Response) => {
 	try {
 		const billing = await db.getCompanyBilling(req.user!.company_id);

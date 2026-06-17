@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
-import db from '../db/queries';
-
+import * as db from '../db/queries';
 const isUniqueViolation = (error: unknown): boolean =>
 	typeof error === 'object' &&
 	error !== null &&

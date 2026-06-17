@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
-import db from '../db/queries';
-
+import * as db from '../db/queries';
 export const getAllStrains = async (req: Request, res: Response) => {
 	try {
 		const strains = await db.getAllStrains(req.user!.company_id);

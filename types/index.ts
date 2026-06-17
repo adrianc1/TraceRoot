@@ -316,6 +316,12 @@ export interface Users {
 	role: string;
 }
 
+export interface UserWithCompany extends Users {
+	company_name: string;
+	active: boolean;
+	created_at: Date;
+}
+
 export interface CreateInviteParams {
 	company_id: number;
 	email: string;

@@ -1,9 +1,10 @@
-const db = require('../db/queries');
-const crypto = require('crypto');
+import { Request, Response } from 'express';
+import * as db from '../db/queries';
+import crypto from 'crypto';
 
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req: Request, res: Response) => {
 	try {
-		const user = await db.getUserById(req.user.id, req.user.company_id);
+		const user = await db.getUserById(req.user!.id, req.user!.company_id);
 		if (!user) return res.status(404).json({ error: 'User not found' });
 		res.json(user);
 	} catch (error) {
@@ -12,10 +13,10 @@ const getCurrentUser = async (req, res) => {
 	}
 };
 
-const getUsers = async (req, res) => {
+const getUsers = async (req: Request, res: Response) => {
 	try {
-		const users = await db.getUsersByCompany(req.user.company_id);
-		const pendingInvites = await db.getPendingInvites(req.user.company_id);
+		const users = await db.getUsersByCompany(req.user!.company_id);
+		const pendingInvites = await db.getPendingInvites(req.user!.company_id);
 
 		res.json({
 			users,
@@ -28,26 +29,27 @@ const getUsers = async (req, res) => {
 	}
 };
 
-const getInviteForm = async (req, res) => {
+const getInviteForm = async (req: Request, res: Response) => {
 	res.render('users/invite', { link: null });
 };
 
-const createInvite = async (req, res) => {
+const createInvite = async (req: Request, res: Response) => {
 	try {
 		const { email, role } = req.body;
 		const token = crypto.randomBytes(32).toString('hex');
 		const expires_at = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
 		await db.createInvite({
-			company_id: req.user.company_id,
+			company_id: req.user!.company_id,
 			email,
 			role,
 			token,
 			expires_at,
-			created_by: req.user.id,
+			created_by: req.user!.id,
 		});
 
-		const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
+		const baseUrl =
+			process.env.APP_URL || `${req.protocol}://${req.get('host')}`;
 		const link = `${baseUrl}/accept-invite?token=${token}`;
 
 		res.render('users/invite', { link });
@@ -57,9 +59,9 @@ const createInvite = async (req, res) => {
 	}
 };
 
-const getAcceptInvite = async (req, res) => {
+const getAcceptInvite = async (req: Request, res: Response) => {
 	try {
-		const invite = await db.getInviteByToken(req.query.token);
+		const invite = await db.getInviteByToken(req.query.token as string);
 
 		if (
 			!invite ||
@@ -76,7 +78,7 @@ const getAcceptInvite = async (req, res) => {
 	}
 };
 
-const acceptInvite = async (req, res) => {
+const acceptInvite = async (req: Request, res: Response) => {
 	try {
 		const { token, first_name, last_name, password, confirm_password } =
 			req.body;
@@ -115,9 +117,12 @@ const acceptInvite = async (req, res) => {
 	}
 };
 
-const getEditUser = async (req, res) => {
+const getEditUser = async (req: Request, res: Response) => {
 	try {
-		const user = await db.getUserById(req.params.id, req.user.company_id);
+		const user = await db.getUserById(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
 		if (!user) return res.status(404).send('User not found');
 		res.json(user);
 	} catch (error) {
@@ -126,12 +131,12 @@ const getEditUser = async (req, res) => {
 	}
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req: Request, res: Response) => {
 	try {
 		const { role } = req.body;
 		const updated = await db.updateUserRole(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 			role,
 		);
 		if (!updated) return res.status(404).json({ error: 'User not found' });
@@ -142,11 +147,11 @@ const updateUser = async (req, res) => {
 	}
 };
 
-const reactivateUser = async (req, res) => {
+const reactivateUser = async (req: Request, res: Response) => {
 	try {
 		const reactivated = await db.reactivateUser(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 		);
 		if (!reactivated) return res.status(404).json({ error: 'User not found' });
 		res.json({ success: true });
@@ -156,16 +161,16 @@ const reactivateUser = async (req, res) => {
 	}
 };
 
-const deactivateUser = async (req, res) => {
+const deactivateUser = async (req: Request, res: Response) => {
 	try {
-		if (req.params.id === String(req.user.id)) {
+		if (req.params.id === String(req.user!.id)) {
 			return res
 				.status(400)
 				.json({ error: 'Cannot deactivate your own account' });
 		}
 		const deactivated = await db.deactivateUser(
-			req.params.id,
-			req.user.company_id,
+			Number(req.params.id),
+			req.user!.company_id,
 		);
 		if (!deactivated) return res.status(404).json({ error: 'User not found' });
 		res.json({ success: true });
@@ -175,20 +180,17 @@ const deactivateUser = async (req, res) => {
 	}
 };
 
-const getAccount = async (req, res) => {
-	const company = await db.getCompanyById(req.user.company_id);
-	res.json('users/account', {
-		user: req.user,
-		companyName: company ? company.name : '',
-	});
+const getAccount = async (req: Request, res: Response) => {
+	const company = await db.getCompanyById(req.user!.company_id);
+	res.json('users/account');
 };
 
-const getSettings = async (req, res) => {
-	const billing = await db.getCompanyBilling(req.user.company_id);
+const getSettings = async (req: Request, res: Response) => {
+	const billing = await db.getCompanyBilling(req.user!.company_id);
 	res.json({ user: req.user, billing });
 };
 
-module.exports = {
+export {
 	getCurrentUser,
 	getUsers,
 	getInviteForm,

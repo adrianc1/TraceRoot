@@ -1,5 +1,4 @@
-import { Companies, Invites, Users, CreateInviteParams } from '../../types';
-import { AuthUser } from '../../types/express';
+import { Invites, Users, CreateInviteParams } from '../../types';
 import pool from '../pool';
 import bcrypt from 'bcryptjs';
 
