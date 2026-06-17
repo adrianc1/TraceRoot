@@ -11,7 +11,7 @@ export const signupAdmin = async (
 	licenseNumber: string,
 	role = 'admin',
 ): Promise<Users> => {
-	const client = await po9ol.connect();
+	const client = await pool.connect();
 
 	try {
 		await client.query('BEGIN');

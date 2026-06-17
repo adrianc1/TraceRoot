@@ -315,3 +315,23 @@ export interface Users {
 	company_id: number;
 	role: string;
 }
+
+export interface CreateInviteParams {
+	company_id: number;
+	email: string;
+	role: 'admin' | 'manager' | 'staff';
+	token: string;
+	expires_at: Date;
+	created_by: number;
+}
+
+export interface Invites {
+	id: number;
+	company_id: number;
+	email: string;
+	role: 'admin' | 'manager' | 'staff';
+	token: string;
+	expires_at: Date;
+	created_by: number;
+	accepted_at: Date | null;
+}

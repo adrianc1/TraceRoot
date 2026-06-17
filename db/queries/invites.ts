@@ -1,5 +1,7 @@
-const pool = require('../pool');
-const bcrypt = require('bcryptjs');
+import { Companies, Invites, Users, CreateInviteParams } from '../../types';
+import { AuthUser } from '../../types/express';
+import pool from '../pool';
+import bcrypt from 'bcryptjs';
 
 const createInvite = async ({
 	company_id,
@@ -8,8 +10,8 @@ const createInvite = async ({
 	token,
 	expires_at,
 	created_by,
-}) => {
-	const { rows } = await pool.query(
+}: CreateInviteParams): Promise<Invites> => {
+	const { rows } = await pool.query<Invites>(
 		`INSERT INTO invites (company_id, email, role, token, expires_at, created_by)
          VALUES ($1, $2, $3, $4, $5, $6)
          RETURNING *`,
@@ -18,15 +20,16 @@ const createInvite = async ({
 	return rows[0];
 };
 
-const getInviteByToken = async (token) => {
-	const { rows } = await pool.query(`SELECT * FROM invites WHERE token = $1`, [
-		token,
-	]);
+const getInviteByToken = async (token: string): Promise<Invites | null> => {
+	const { rows } = await pool.query<Invites>(
+		`SELECT * FROM invites WHERE token = $1`,
+		[token],
+	);
 	return rows[0] || null;
 };
 
-const getPendingInvites = async (company_id) => {
-	const { rows } = await pool.query(
+const getPendingInvites = async (company_id: number): Promise<Invites[]> => {
+	const { rows } = await pool.query<Invites>(
 		`SELECT * FROM invites
          WHERE company_id = $1
          AND accepted_at IS NULL
@@ -37,8 +40,8 @@ const getPendingInvites = async (company_id) => {
 	return rows;
 };
 
-const markInviteAccepted = async (id) => {
-	const { rows } = await pool.query(
+const markInviteAccepted = async (id: number): Promise<Invites> => {
+	const { rows } = await pool.query<Invites>(
 		`UPDATE invites
          SET accepted_at = NOW()
          WHERE id = $1
@@ -55,18 +58,25 @@ const createUserFromInvite = async ({
 	first_name,
 	last_name,
 	password,
-}) => {
+}: {
+	company_id: number;
+	email: string;
+	role: string;
+	first_name: string;
+	last_name: string;
+	password: string;
+}): Promise<Users> => {
 	const hashedPassword = await bcrypt.hash(password, 10);
-	const { rows } = await pool.query(
+	const { rows } = await pool.query<Users>(
 		`INSERT INTO users (company_id, email, role, first_name, last_name, password_hash)
          VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, email, role, first_name, last_name`,
+         RETURNING id, email, role, first_name, last_name, company_id`,
 		[company_id, email, role, first_name, last_name, hashedPassword],
 	);
 	return rows[0];
 };
 
-module.exports = {
+export {
 	createInvite,
 	getInviteByToken,
 	getPendingInvites,
