@@ -1,4 +1,4 @@
-import db from '../db/queries';
+import * as db from '../db/queries';
 import 'passport';
 import bcrypt from 'bcryptjs';
 import {
@@ -101,4 +101,10 @@ const demoLogin = async (req: Request, res: Response, next: Function) => {
 	}
 };
 
-export { getSignUpForm, postSignUpForm, getLoginForm, demoLogin, validateUser };
+export const authController = {
+	getSignUpForm,
+	postSignUpForm,
+	getLoginForm,
+	demoLogin,
+	validateUser,
+};

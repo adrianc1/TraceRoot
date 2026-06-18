@@ -6,12 +6,12 @@ const isUniqueViolation = (error: unknown): boolean =>
 	'code' in error &&
 	(error as { code?: unknown }).code === '23505';
 
-export const getAllLocations = async (req: Request, res: Response) => {
+const getAllLocations = async (req: Request, res: Response) => {
 	const locations = await db.getAllLocations(req.user!.company_id);
 	res.json(locations);
 };
 
-export const createLocation = async (req: Request, res: Response) => {
+const createLocation = async (req: Request, res: Response) => {
 	try {
 		const { name, description } = req.body;
 		await db.insertLocation(name, description, req.user!.company_id);
@@ -26,7 +26,7 @@ export const createLocation = async (req: Request, res: Response) => {
 	}
 };
 
-export const updateLocation = async (req: Request, res: Response) => {
+const updateLocation = async (req: Request, res: Response) => {
 	try {
 		const { name, description, is_active } = req.body;
 		await db.updateLocation(
@@ -47,7 +47,7 @@ export const updateLocation = async (req: Request, res: Response) => {
 	}
 };
 
-export const getLocationById = async (req: Request, res: Response) => {
+const getLocationById = async (req: Request, res: Response) => {
 	try {
 		const location = await db.getLocationById(
 			Number(req.params.id),
@@ -60,4 +60,11 @@ export const getLocationById = async (req: Request, res: Response) => {
 	} catch (error) {
 		res.status(500).json({ error: 'Server error' });
 	}
+};
+
+export const locationsController = {
+	getAllLocations,
+	createLocation,
+	updateLocation,
+	getLocationById,
 };

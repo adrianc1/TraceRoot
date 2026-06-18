@@ -692,3 +692,26 @@ export const exportAuditCsv = async (req: Request, res: Response) => {
 		res.status(500).json({ error: 'Export failed' });
 	}
 };
+
+export const productsController = {
+	getAllPackages,
+	getProduct,
+	receiveNewPackageForm,
+	receiveNewPackagesPOST,
+	createProductForm,
+	splitPackagePost,
+	splitPackageProductForm,
+	insertProduct,
+	getProductsList,
+	deleteProduct,
+	unarchiveProduct,
+	editProductForm,
+	updateProduct,
+	receiveInventoryPut,
+	receiveInventoryGet,
+	updateInventory,
+	exportPackagesCsv,
+	exportProductsCsv,
+	exportAuditCsv,
+	adjustInventoryGet,
+};
