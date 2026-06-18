@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import * as db from '../db/queries';
-export const getAllStrains = async (req: Request, res: Response) => {
+const getAllStrains = async (req: Request, res: Response) => {
 	try {
 		const strains = await db.getAllStrains(req.user!.company_id);
 		res.json(strains);
@@ -9,7 +9,7 @@ export const getAllStrains = async (req: Request, res: Response) => {
 	}
 };
 
-export const getStrain = async (req: Request, res: Response) => {
+const getStrain = async (req: Request, res: Response) => {
 	try {
 		const strain = await db.getStrain(
 			Number(req.params.id),
@@ -25,7 +25,7 @@ export const getStrain = async (req: Request, res: Response) => {
 	}
 };
 
-export const insertStrain = async (req: Request, res: Response) => {
+const insertStrain = async (req: Request, res: Response) => {
 	try {
 		const { name, description, type } = req.body;
 		await db.insertStrain(name, req.user!.company_id, description, type);
@@ -36,18 +36,26 @@ export const insertStrain = async (req: Request, res: Response) => {
 	}
 };
 
-export const updateStrain = async (req: Request, res: Response) => {
+const updateStrain = async (req: Request, res: Response) => {
 	const id = Number(req.params.id);
 	const { name, description } = req.body;
 	await db.updateStrain(name, description, id);
 	res.status(200).json({ success: true });
 };
 
-export const deleteStrain = async (req: Request, res: Response) => {
+const deleteStrain = async (req: Request, res: Response) => {
 	try {
 		await db.deleteStrain(Number(req.params.id));
 		res.status(200).json({ success: true });
 	} catch (error) {
 		res.json({ error: 'there is an error.' });
 	}
+};
+
+export const strainsController = {
+	getAllStrains,
+	getStrain,
+	insertStrain,
+	updateStrain,
+	deleteStrain,
 };

@@ -1,17 +1,18 @@
 import type { Request, Response } from 'express';
 import * as db from '../db/queries';
+
 const isUniqueViolation = (error: unknown): boolean =>
 	typeof error === 'object' &&
 	error !== null &&
 	'code' in error &&
 	(error as { code?: unknown }).code === '23505';
 
-export const getAllBrands = async (req: Request, res: Response) => {
+const getAllBrands = async (req: Request, res: Response) => {
 	const brands = await db.getAllBrands(req.user!.company_id);
 	res.json(brands);
 };
 
-export const createBrand = async (req: Request, res: Response) => {
+const createBrand = async (req: Request, res: Response) => {
 	try {
 		const { name, description } = req.body;
 		await db.insertBrand(name, description, req.user!.company_id);
@@ -26,7 +27,7 @@ export const createBrand = async (req: Request, res: Response) => {
 	}
 };
 
-export const getBrandById = async (req: Request, res: Response) => {
+const getBrandById = async (req: Request, res: Response) => {
 	const brand = await db.getBrandById(
 		Number(req.params.id),
 		req.user!.company_id,
@@ -34,7 +35,7 @@ export const getBrandById = async (req: Request, res: Response) => {
 	res.json(brand);
 };
 
-export const updateBrand = async (req: Request, res: Response) => {
+const updateBrand = async (req: Request, res: Response) => {
 	try {
 		const { name, description } = req.body;
 		await db.updateBrand(
@@ -54,7 +55,15 @@ export const updateBrand = async (req: Request, res: Response) => {
 	}
 };
 
-export const deleteBrand = async (req: Request, res: Response) => {
+const deleteBrand = async (req: Request, res: Response) => {
 	await db.deleteBrand(Number(req.params.id));
 	res.status(200).json({ success: true });
+};
+
+export const brandsController = {
+	getAllBrands,
+	createBrand,
+	getBrandById,
+	updateBrand,
+	deleteBrand,
 };

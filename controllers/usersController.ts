@@ -204,3 +204,18 @@ export {
 	getAccount,
 	getSettings,
 };
+
+export const usersController = {
+	getCurrentUser,
+	getUsers,
+	getInviteForm,
+	createInvite,
+	getAcceptInvite,
+	acceptInvite,
+	getEditUser,
+	updateUser,
+	reactivateUser,
+	deactivateUser,
+	getAccount,
+	getSettings,
+};
