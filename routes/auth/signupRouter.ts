@@ -1,14 +1,16 @@
-const express = require('express');
-const authController = require('../../controllers/authController');
-const usersController = require('../../controllers/usersController');
-const router = express.Router();
+import express from 'express';
+import { Router, Request, Response } from 'express';
+import { authController } from '../../controllers/authController';
+import { usersController } from '../../controllers/usersController';
 
-router.get('/', (req, res) => {
+const router: Router = express.Router();
+
+router.get('/', (req: Request, res: Response) => {
 	res.render('index');
 });
 
 router.get('/signup/create-account', authController.getSignUpForm);
-router.get('/logout', (req, res) => {
+router.get('/logout', (req: Request, res: Response) => {
 	req.logout((err) => {
 		if (err) console.error(err);
 		res.redirect('/login');
@@ -23,4 +25,4 @@ router.post(
 	authController.postSignUpForm,
 );
 
-module.exports = router;
+export default router;
