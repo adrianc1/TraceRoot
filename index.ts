@@ -35,7 +35,7 @@ const PORT: number = 3000;
 
 app.use(cors());
 
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.resolve('views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -93,9 +93,9 @@ app.use('/api/transfers', ensureAuthenticated, transfersRouter);
 app.use('/api/locations', ensureAuthenticated, locationsRouter);
 
 if (process.env.NODE_ENV === 'production') {
-	app.use(express.static(path.join(__dirname, 'client/dist')));
+	app.use(express.static(path.resolve('client/dist')));
 	app.get('/{*path}', (req, res) => {
-		res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+		res.sendFile(path.resolve('client/dist/index.html'));
 	});
 }
 

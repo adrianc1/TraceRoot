@@ -2,10 +2,11 @@
 	"name": "cannabis_inventory",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "dist/index.js",
 	"scripts": {
-		"dev": "tsx --env-file=.env --watch index.js",
-		"start": "tsx --env-file=.env index.js",
+		"dev": "tsx --env-file=.env --watch index.ts",
+		"start": "node --env-file=.env dist/index.js",
+		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"test": "jest",
 		"watch:css": "npx @tailwindcss/cli -i ./public/input.css -o ./public/tailwind.css --watch"
