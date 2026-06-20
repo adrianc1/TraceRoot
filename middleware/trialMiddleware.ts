@@ -1,8 +1,9 @@
-const db = require('../db/queries');
+import { Request, Response, NextFunction } from 'express';
+import * as db from '../db/queries/index.js';
 
 const BYPASS_PATHS = ['/billing', '/pricing', '/login', '/logout', '/signup', '/', '/features', '/contact', '/privacy', '/terms'];
 
-const checkTrial = async (req, res, next) => {
+export const checkTrial = async (req: Request, res: Response, next: NextFunction) => {
 	if (!req.isAuthenticated() || !req.user) return next();
 
 	const path = req.path;
@@ -25,5 +26,3 @@ const checkTrial = async (req, res, next) => {
 		next();
 	}
 };
-
-module.exports = { checkTrial };

@@ -1,34 +1,37 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const express = require('express');
-const cors = require('cors');
-const session = require('express-session');
-const pool = require('./db/pool.js');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const pgSession = require('connect-pg-simple')(session);
-const flash = require('connect-flash');
-const path = require('node:path');
-const brandsRouter = require('./routes/brandsRouter');
-const categoryRouter = require('./routes/categoryRouter');
-const productsRouter = require('./routes/productsRouter');
-const strainsRouter = require('./routes/strainsRouter');
-const signupRouter = require('./routes/auth/signupRouter');
-const loginRouter = require('./routes/auth/loginRouter');
-const transfersRouter = require('./routes/transfersRouter');
-const locationsRouter = require('./routes/locationsRouter');
-const usersRouter = require('./routes/usersRouter');
-const usersEjsRouter = require('./routes/usersEjsRouter');
-const billingRouter = require('./routes/billingRouter');
-const { setLocals } = require('./middleware/appMiddleware');
-const {
+import express from 'express';
+import cors from 'cors';
+import session from 'express-session';
+import pool from './db/pool.js';
+import passport from 'passport';
+import connectPgSimple from 'connect-pg-simple';
+import flash from 'connect-flash';
+import path from 'node:path';
+import brandsRouter from './routes/brandsRouter.js';
+import categoryRouter from './routes/categoryRouter.js';
+import productsRouter from './routes/productsRouter.js';
+import strainsRouter from './routes/strainsRouter.js';
+import signupRouter from './routes/auth/signupRouter.js';
+import loginRouter from './routes/auth/loginRouter.js';
+import transfersRouter from './routes/transfersRouter.js';
+import locationsRouter from './routes/locationsRouter.js';
+import usersRouter from './routes/usersRouter.js';
+import usersEjsRouter from './routes/usersEjsRouter.js';
+import billingRouter from './routes/billingRouter.js';
+import { setLocals } from './middleware/appMiddleware.js';
+import {
 	ensureAuthenticated,
 	redirectIfAuthenticated,
-} = require('./middleware/authMiddleware.js');
-const { checkTrial } = require('./middleware/trialMiddleware');
+} from './middleware/authMiddleware.js';
+import { checkTrial } from './middleware/trialMiddleware.js';
+import configurePassport from './auth/passport.js';
+
+const pgSession = connectPgSimple(session);
 
 const app = express();
-const PORT = 3000;
+const PORT: number = 3000;
 
 app.use(cors());
 
@@ -36,7 +39,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// Webhook must receive raw body — register before express.json()
+// bill webhoopk
 app.post(
 	'/billing/webhook',
 	express.raw({ type: 'application/json' }),
@@ -47,22 +50,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // sessions
-require('./auth/passport')(passport);
+configurePassport(passport);
 
 app.use(
-	// session({
-	// dev env
-	// 	secret: process.env.COOKIE_SECRET,
-	// 	resave: false,
-	// 	saveUninitialized: false,
-	// 	cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 },
-	// }),
 	session({
 		store: new pgSession({
 			pool: pool,
 			tableName: 'session',
 		}),
-		secret: process.env.COOKIE_SECRET,
+		secret: process.env.COOKIE_SECRET as string,
 		resave: false,
 		saveUninitialized: false,
 		cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }, // 30 days
