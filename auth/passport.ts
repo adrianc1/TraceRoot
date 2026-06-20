@@ -1,9 +1,10 @@
-const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcryptjs');
-const db = require('../db/queries');
-const pool = require('../db/pool');
+import { PassportStatic } from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcryptjs';
+import * as db from '../db/queries/index.js';
+import pool from '../db/pool.js';
 
-module.exports = function (passport) {
+export default function configurePassport(passport: PassportStatic) {
 	passport.use(
 		new LocalStrategy(
 			{ usernameField: 'email' },
@@ -28,15 +29,13 @@ module.exports = function (passport) {
 		),
 	);
 
-	passport.serializeUser((user, done) => {
+	passport.serializeUser((user: any, done) => {
 		done(null, user.id);
 	});
 
 	passport.deserializeUser(async (id, done) => {
 		try {
-			const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [
-				id,
-			]);
+			const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 			const user = rows[0];
 
 			if (!user) {
@@ -47,4 +46,4 @@ module.exports = function (passport) {
 			done(err);
 		}
 	});
-};
+}

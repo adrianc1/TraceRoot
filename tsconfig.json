@@ -16,7 +16,7 @@
 		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
-		"index.js",
+		"index.ts",
 		"auth/**/*",
 		"controllers/**/*",
 		"db/**/*",
