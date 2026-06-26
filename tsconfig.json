@@ -6,6 +6,7 @@
 		"lib": ["ES2022"],
 		"outDir": "./dist",
 		"rootDir": "./",
+		"types": ["jest"],
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"allowJs": true,
@@ -23,7 +24,9 @@
 		"middleware/**/*",
 		"routes/**/*",
 		"utils/**/*",
-		"types/**/*"
+		"types/**/*",
+		"src/**/*.ts",
+		"tests/**/*.test.ts"
 	],
 	"exclude": ["node_modules", "client", "public", "dist", "tests"]
 }
