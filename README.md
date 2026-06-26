@@ -98,42 +98,6 @@ A live demo is available at [traceroot.io](https://traceroot.io). Use the follow
 
 ---
 
-## Getting Started
-
-**Prerequisites:** Node.js 18+, PostgreSQL 14+
-
-```bash
-git clone https://github.com/yourusername/traceroot
-cd traceroot
-npm install
-```
-
-Create a `.env` file:
-
-```env
-DATABASE_URL=postgresql://localhost/traceroot
-COOKIE_SECRET=your_secret_here
-PORT=3000
-
-# Stripe (optional for local dev — required for billing features)
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_MONTHLY=price_...
-STRIPE_PRICE_ANNUAL=price_...
-```
-
-Initialize the database:
-
-```bash
-psql -d traceroot -f db/schema.sql
-psql -d traceroot -f db/seed.sql
-```
-
-Start the dev server:
-
-```bash
-npm run dev
-```
 
 ---
 
