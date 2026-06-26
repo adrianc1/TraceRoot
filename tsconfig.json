@@ -28,5 +28,5 @@
 		"src/**/*.ts",
 		"tests/**/*.test.ts"
 	],
-	"exclude": ["node_modules", "client", "public", "dist", "tests"]
+	"exclude": ["node_modules", "client", "public", "dist"]
 }
