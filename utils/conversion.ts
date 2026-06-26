@@ -1,18 +1,6 @@
 import type { Unit } from '../types';
-type Weight = {
-	mg: number;
-	g: number;
-	kg: number;
-	oz: number;
-	lb: number;
-};
 
-type Volume = {
-	ml: number;
-	l: number;
-};
-
-const weightToGrams: Weight = {
+const weightToGrams: Partial<Record<Unit, number>> = {
 	mg: 0.001,
 	g: 1,
 	kg: 1000,
@@ -20,22 +8,27 @@ const weightToGrams: Weight = {
 	lb: 453.592,
 };
 
-const volumeToMl: Volume = {
+const volumeToMl: Partial<Record<Unit, number>> = {
 	ml: 1,
 	l: 1000,
 };
 
 function convertQuantity(amount: number, fromUnit: Unit, toUnit: Unit) {
-	if (fromUnit === toUnit) return amount;
+	const fromGrams = weightToGrams[fromUnit];
+	const toGrams = weightToGrams[toUnit];
+	const fromMl = volumeToMl[fromUnit];
+	const toMl = volumeToMl[toUnit];
 
-	if (weightToGrams[fromUnit] && weightToGrams[toUnit]) {
-		const grams = amount * weightToGrams[fromUnit];
-		return grams / weightToGrams[toUnit];
+	if (fromGrams === toGrams || fromMl === toMl) return amount;
+
+	if (fromGrams !== undefined && toGrams !== undefined) {
+		const grams = amount * fromGrams;
+		return grams / toGrams;
 	}
 	//volume conversion
-	if (volumeToMl[fromUnit] && volumeToMl[toUnit]) {
-		const ml = amount * volumeToMl[fromUnit];
-		return ml / volumeToMl[toUnit];
+	if (fromMl !== undefined && toMl !== undefined) {
+		const ml = amount * fromMl;
+		return ml / toMl;
 	}
 
 	throw new Error(`Cannot convert ${fromUnit} to ${toUnit}`);

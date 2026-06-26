@@ -30,8 +30,9 @@ const Account = () => {
 				{/* <!-- Avatar + name --> */}
 				<div className="px-6 py-6 border-b border-gray-100 flex items-center gap-4">
 					<div className="w-12 h-12 rounded-full bg-green-light flex items-center justify-center shrink-0">
-						<span className="text-[0.9rem] font-semibold text-green-deep font-mono">
-							{user.first_name[0]} {user.last_name[0]}
+						<span className="text-[1rem] font-semibold text-green-deep font-mono flex">
+							{user.first_name[0]}
+							{user.last_name[0]}
 						</span>
 					</div>
 					<div>
@@ -77,7 +78,9 @@ const Account = () => {
 						<span className="text-[0.7rem] font-mono text-gray-400 uppercase tracking-[0.08em]">
 							Role
 						</span>
-						<span className={`inline-flex items-center px-2 py-0.5 rounded text-[0.75rem] font-medium capitalize ${{ admin: 'bg-green-light text-green-deep', manager: 'bg-blue-50 text-blue-700', staff: 'bg-orange-100 text-orange-500' }[user.role]}`}>
+						<span
+							className={`inline-flex items-center px-2 py-0.5 rounded text-[0.75rem] font-medium capitalize ${{ admin: 'bg-green-light text-green-deep', manager: 'bg-blue-50 text-blue-700', staff: 'bg-orange-100 text-orange-500' }[user.role]}`}
+						>
 							{user.role}
 						</span>
 					</div>

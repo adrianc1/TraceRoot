@@ -1,0 +1,717 @@
+import { Request, Response } from 'express';
+import * as db from '../db/queries';
+import { convertQuantity } from '../utils/conversion';
+import { toCsv, sendCsv } from '../utils/csvExport';
+
+export const getAllPackages = async (req: Request, res: Response) => {
+	const { location_id } = req.query;
+
+	if (location_id) {
+		try {
+			const packages = await db.getPackagesByLocation(
+				req.user!.company_id,
+				Number(location_id),
+			);
+			res.json({ packages });
+		} catch (error) {
+			res.status(500).json({ error: 'Database error' });
+		}
+		return;
+	}
+
+	try {
+		const userCompanyId = req.user!.company_id;
+		const status = String(req.query.status || 'active');
+		const page = Number(req.query.page) || 1;
+		const limit = 25;
+		const offset = (page - 1) * limit;
+		const filters = {
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
+		};
+		const [packages, total, brands, strains, categories] = await Promise.all([
+			db.getPackagesByStatus(userCompanyId, status, limit, offset, filters),
+			db.getPackagesCountByStatus(userCompanyId, status, filters),
+			db.getAllBrands(userCompanyId),
+			db.getAllStrains(userCompanyId),
+			db.getAllCategories(userCompanyId),
+		]);
+		res.json({
+			packages,
+			total,
+			brands,
+			strains,
+			categories,
+			currentPage: page,
+			totalPages: Math.ceil(total / limit),
+		});
+	} catch (error) {
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+export const getProduct = async (req: Request, res: Response) => {
+	try {
+		const product = await db.getProductWithInventoryDB(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+
+		const [productInventory, auditTrail] = await Promise.all([
+			db.getPackagesByProductId(Number(req.params.id), req.user!.company_id),
+			db.getAuditTrail(Number(req.params.id), req.user!.company_id),
+		]);
+
+		res.json({ product, productInventory, auditTrail });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Database error retrieving single product' });
+	}
+};
+
+export const receiveNewPackageForm = async (req: Request, res: Response) => {
+	const products = await db.getAllProductsDB(req.user!.company_id);
+	const locations = await db.getLocations(req.user!.company_id);
+
+	res.json({ products, locations });
+};
+
+export const receiveNewPackagesPOST = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+	const company_id = req.user!.company_id;
+
+	const {
+		quantity,
+		unit,
+		unit_price,
+		reason,
+		notes,
+		vendor,
+		batch,
+		package_size,
+		package_tag,
+		product_id,
+		location_id,
+	} = req.body;
+
+	if (!product_id) {
+		return res
+			.status(400)
+			.json({ error: 'Please select a product before submitting.' });
+	}
+
+	const normalizedQty = convertQuantity(quantity, unit, unit);
+
+	let existingBatch = await db.getBatchByNumber(
+		product_id,
+		batch,
+		req.user!.company_id,
+	);
+
+	let batch_id;
+
+	if (existingBatch) {
+		batch_id = existingBatch.id;
+	} else {
+		const newBatch = await db.createBatch({
+			product_id,
+			company_id,
+			batch_number: batch,
+			total_quantity: normalizedQty,
+			unit,
+			cost_per_unit: unit_price,
+			supplier_name: vendor,
+		});
+		batch_id = newBatch.id;
+	}
+
+	await db.applyInventoryMovement({
+		package_tag,
+		product_id,
+		packages_id: null,
+		batch_id,
+		company_id,
+		location_id,
+		batch,
+		targetQty: Number(normalizedQty),
+		movement_type: reason,
+		notes,
+		cost_per_unit: unit_price,
+		userId,
+		status: 'active',
+		package_size: package_size || null,
+		unit,
+	});
+	res.json({ success: true, id: product_id });
+};
+
+export const createProductForm = async (req: Request, res: Response) => {
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
+	try {
+		const brands = await db.getAllBrands(req.user!.company_id);
+		const strains = await db.getAllStrains(req.user!.company_id);
+		const categories = await db.getAllCategories(req.user!.company_id);
+
+		if (!brands || !strains || !categories) {
+			res.status(404).json({ error: 'No Brands Found' });
+		}
+
+		res.json({ brands, strains, categories, units });
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+export const splitPackageProductForm = async (req: Request, res: Response) => {
+	const selectedPackage = await db.getPackageByTag(
+		String(req.params.packageTag),
+		req.user!.company_id,
+	);
+	const product = await db.getProductDB(
+		selectedPackage.product_id,
+		selectedPackage.company_id,
+	);
+	const products = await db.getAllProductsDB(req.user!.company_id);
+
+	res.json({ product, products, selectedPackage });
+};
+
+export const splitPackagePost = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+	const selectedBatch = await db.getPackageByTag(
+		String(req.params.packageTag),
+		Number(req.user!.company_id),
+	);
+
+	const { productId, packageSize, quantity, packageTag } = req.body;
+
+	const unit = selectedBatch.unit;
+	let totalUsed = 0;
+	let orignalPackageQty = parseFloat(selectedBatch.quantity);
+
+	const packageSizes = packageSize || quantity.map(() => 1);
+
+	const splits = productId.map((_: unknown, i: number) => {
+		const size = parseFloat(packageSizes[i]) || 1;
+		const weight = size;
+
+		totalUsed += weight;
+
+		return {
+			productId: parseFloat(productId[i]),
+			packageSize: unit === 'each' ? null : size,
+			quantity: size,
+			totalWeight: weight,
+			package_tag: packageTag[i],
+		};
+	});
+
+	if (totalUsed > orignalPackageQty) {
+		return res.status(400).send('Split exceeds available quantity');
+	}
+
+	await db.splitPackageTransaction(selectedBatch, splits, userId);
+	res.json({ success: true, productId: selectedBatch.product_id });
+};
+
+export const insertProduct = async (req: Request, res: Response) => {
+	const userCompanyId = req.user!.company_id;
+	const {
+		name,
+		description,
+		unit,
+		brandId,
+		strainId,
+		newStrainName,
+		newBrandName,
+		newCategoryName,
+		categoryId,
+		sku,
+	} = req.body;
+
+	let newStrain, newBrand, newCategory;
+
+	if (newStrainName?.trim()) {
+		newStrain = await db.insertStrain(
+			newStrainName,
+			req.user!.company_id,
+			null,
+			null,
+		);
+	} else {
+		newStrain = null;
+	}
+
+	if (newBrandName?.trim()) {
+		newBrand = await db.insertBrand(newBrandName, null, req.user!.company_id);
+	} else {
+		newBrand = null;
+	}
+	if (newCategoryName?.trim()) {
+		newCategory = await db.insertCategory(
+			newCategoryName,
+			req.user!.company_id,
+			null,
+		);
+	} else {
+		newCategory = null;
+	}
+
+	const strain_id =
+		(strainId !== '__new__' && strainId) || newStrain?.id || null;
+	const brand_id = (brandId !== '__new__' && brandId) || newBrand?.id || null;
+	const category_id =
+		(categoryId !== '__new__' && categoryId) || newCategory?.id || null;
+
+	const product = await db.insertProduct(
+		name,
+		description,
+		unit,
+		brand_id,
+		strain_id,
+		category_id,
+		userCompanyId,
+		sku,
+	);
+	res.status(201).json({ success: true, id: product.id });
+};
+
+export const getProductsList = async (req: Request, res: Response) => {
+	try {
+		const status = req.query.status === 'archived' ? 'archived' : 'active';
+		const products = await db.getAllProductsDB(req.user!.company_id, status);
+		res.json({ products });
+	} catch (error) {
+		res.status(500).json({ error: 'Database error' });
+	}
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+	try {
+		const result = await db.deleteProduct(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+
+		if (result.rowCount === 0) {
+			return res.status(400).json({
+				success: false,
+				error: 'Cannot archive — product has active inventory',
+			});
+		}
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res
+			.status(500)
+			.json({ success: false, error: 'Failed to archive product' });
+	}
+};
+
+export const unarchiveProduct = async (req: Request, res: Response) => {
+	try {
+		await db.unarchiveProduct(Number(req.params.id), req.user!.company_id);
+
+		res.status(200).json({ success: true });
+	} catch (error) {
+		res.status(500).json({ error: 'Server Error' });
+	}
+};
+
+export const editProductForm = async (req: Request, res: Response) => {
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
+
+	try {
+		const brands = await db.getAllBrands(req.user!.company_id);
+		const strains = await db.getAllStrains(req.user!.company_id);
+		const categories = await db.getAllCategories(req.user!.company_id);
+		const product = await db.getProductDB(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+
+		const rows = await db.checkIfProductHasPackages(Number(req.params.id));
+
+		const hasPackages = Number(rows[0].count) > 0;
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+		if (!brands || !strains || !categories) {
+			res.status(404).json({ error: 'No Brands Found' });
+		}
+
+		res.json({ product, brands, strains, categories, units, hasPackages });
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+export const updateProduct = async (req: Request, res: Response) => {
+	const id = Number(req.params.id);
+	const company_id = req.user!.company_id;
+	const { name, description, unit, brandId, strainId, categoryId, sku } =
+		req.body;
+
+	try {
+		await db.updateProduct(
+			name,
+			description,
+			unit,
+			company_id,
+			brandId,
+			strainId,
+			categoryId,
+			id,
+			sku,
+		);
+		res.json({ success: true });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Server error' });
+	}
+};
+
+export const receiveInventoryPut = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+	const company_id = req.user!.company_id;
+	const product_id = Number(req.params.id);
+
+	const {
+		quantity,
+		unit,
+		unit_price,
+		reason,
+		notes,
+		vendor,
+		batch,
+		package_size,
+		package_tag,
+		location_id,
+	} = req.body;
+
+	const product = await db.getProductDB(product_id, req.user!.company_id);
+	const existingInventory = await db.getPackageByLot(product_id, batch);
+	const newBatch = await db.createBatch({
+		product_id,
+		company_id,
+		batch_number: batch,
+		total_quantity: quantity,
+		unit,
+		cost_per_unit: unit_price,
+		supplier_name: vendor,
+	});
+
+	const batch_id = newBatch.id;
+
+	const package_id = existingInventory ? existingInventory.id : null;
+
+	const normalizedQty = convertQuantity(quantity, unit, product.unit);
+
+	await db.applyInventoryMovement({
+		package_tag,
+		product_id,
+		packages_id: package_id,
+		batch_id,
+		company_id,
+		location_id,
+		batch,
+		targetQty: Number(normalizedQty),
+		movement_type: reason,
+		notes,
+		cost_per_unit: unit_price,
+		userId,
+		status: 'active',
+		package_size: package_size || null,
+		unit,
+	});
+	res.json({ success: true, id: product_id });
+};
+
+export const adjustInventoryGet = async (req: Request, res: Response) => {
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
+
+	const statusOptions = [
+		'active',
+		'inactive',
+		'quarantine',
+		'damaged',
+		'expired',
+		'reserved',
+	];
+
+	try {
+		const pkg = await db.getPackageByTag(
+			String(req.params.packageTag),
+			Number(req.user!.company_id),
+		);
+
+		const product = await db.getProductDB(pkg.product_id, req.user!.company_id);
+
+		if (!product) {
+			res.status(404).json({ error: 'Product not found' });
+			return;
+		}
+		const brand = product.brand_id
+			? await db.getBrand(product.brand_id, req.user!.company_id)
+			: null;
+		const strain = product.strain_id
+			? await db.getStrain(product.strain_id, req.user!.company_id)
+			: null;
+		const category = product.category_id
+			? await db.getCategoryById(product.category_id, req.user!.company_id)
+			: null;
+
+		const adjustmentReasons = [
+			'Audit/Cycle Count',
+			'Drying/Moisture Loss',
+			'Laboratory Testing',
+			'Damaged Goods',
+			'Expired Product',
+			'Waste/Spoilage',
+			'Internal Quality Control',
+			'Theft/Loss',
+			'Data Entry Error',
+			'Promotional/Sample',
+			'Return to Vendor',
+			'Seizure/Legal Compliance',
+		];
+
+		res.json({
+			product,
+			brand,
+			strain,
+			category,
+			units,
+			adjustmentReasons,
+			statusOptions,
+			package: pkg,
+		});
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+export const updateInventory = async (req: Request, res: Response) => {
+	const userId = req.user!.id;
+
+	const selectedBatch = await db.getPackageByTag(
+		String(req.params.packageTag),
+		req.user!.company_id,
+	);
+
+	const { quantity, movement_type, notes, cost_price_unit, status, unit } =
+		req.body;
+
+	const resolvedStatus =
+		Number(quantity) === 0 && status === 'active' ? 'inactive' : status;
+
+	try {
+		await db.applyInventoryMovement({
+			package_tag: selectedBatch.package_tag,
+			product_id: selectedBatch.product_id,
+			packages_id: selectedBatch.id,
+			batch_id: selectedBatch.batch_id,
+			company_id: selectedBatch.company_id,
+			location_id: selectedBatch.location_id,
+			batch: selectedBatch.lot_number,
+			targetQty: Number(quantity),
+			movement_type,
+			notes,
+			cost_per_unit: cost_price_unit || null,
+			userId,
+			status: resolvedStatus,
+			package_size: null,
+			unit,
+		});
+
+		res.json({ success: true });
+	} catch (err) {
+		console.error('update inventory error:', err);
+		res.status(500).json({
+			success: false,
+			error: err instanceof Error ? err.message : 'Unknown error',
+		});
+	}
+};
+
+export const receiveInventoryGet = async (req: Request, res: Response) => {
+	const units = ['mg', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'each'];
+
+	try {
+		const product = await db.getProductDB(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+		const brand = product.brand_id
+			? await db.getBrand(product.brand_id, req.user!.company_id)
+			: null;
+		const strain = product.strain_id
+			? await db.getStrain(product.strain_id, req.user!.company_id)
+			: null;
+		const category = product.category_id
+			? await db.getCategoryById(product.category_id, req.user!.company_id)
+			: null;
+
+		const locations = await db.getLocations(req.user!.company_id);
+
+		res.json({ product, brand, strain, category, units, locations });
+	} catch (error) {
+		console.error(error);
+	}
+};
+
+export const exportPackagesCsv = async (req: Request, res: Response) => {
+	try {
+		const status = String(req.query.status || 'active');
+		const filters = {
+			search: String(req.query.search || ''),
+			brand: String(req.query.brand || ''),
+			category: String(req.query.category || ''),
+			sort: String(req.query.sort || 'newest'),
+		};
+		const packages = await db.getPackagesByStatus(
+			req.user!.company_id,
+			status,
+			50000,
+			0,
+			filters,
+		);
+		const csv = toCsv(packages, [
+			{ header: 'Package Tag', value: 'package_tag' },
+			{ header: 'Product', value: 'product_name' },
+			{ header: 'SKU', value: 'product_sku' },
+			{ header: 'Brand', value: 'brand_name' },
+			{ header: 'Category', value: 'category_name' },
+			{ header: 'Strain', value: 'strain_name' },
+			{ header: 'Location', value: 'location' },
+			{ header: 'Status', value: 'status' },
+			{ header: 'Quantity', value: 'quantity' },
+			{ header: 'Unit', value: 'unit' },
+			{ header: 'Cost Price', value: 'cost_price' },
+			{
+				header: 'Total Value',
+				value: (row) =>
+					(Number(row.quantity || 0) * Number(row.cost_price || 0)).toFixed(2),
+			},
+			{ header: 'Batch Number', value: 'batch_number' },
+			{ header: 'Lot Number', value: 'lot_number' },
+			{
+				header: 'Created At',
+				value: (row) =>
+					row.created_at
+						? new Date(row.created_at).toLocaleString('en-US')
+						: '',
+			},
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `packages-${status}-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
+export const exportProductsCsv = async (req: Request, res: Response) => {
+	try {
+		const products = await db.getAllProductsDB(req.user!.company_id);
+		const csv = toCsv(products, [
+			{ header: 'Name', value: 'name' },
+			{ header: 'Brand', value: 'brand_name' },
+			{ header: 'Category', value: 'category_name' },
+			{ header: 'Strain', value: 'strain_name' },
+			{ header: 'Unit', value: 'unit' },
+			{ header: 'On Hand', value: 'product_qty' },
+			{ header: 'Avg Cost', value: 'average_cost' },
+			{ header: 'Total Value', value: 'total_valuation' },
+			{ header: 'Status', value: 'status' },
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `products-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
+export const exportAuditCsv = async (req: Request, res: Response) => {
+	try {
+		const packages = await db.getAuditTrail(
+			Number(req.params.id),
+			req.user!.company_id,
+		);
+		const rows: Record<string, unknown>[] = [];
+		packages.forEach((pkg) => {
+			if (pkg.movements && pkg.movements.length > 0) {
+				pkg.movements.forEach((mv) => {
+					rows.push({
+						package_tag: pkg.package_tag,
+						location: pkg.location,
+						status: pkg.status,
+						movement_type: mv.movement_type,
+						user_name: mv.user_name,
+						starting_quantity: mv.starting_quantity,
+						quantity: mv.quantity,
+						ending_quantity: mv.ending_quantity,
+						notes: mv.notes,
+						created_at: mv.created_at,
+					});
+				});
+			}
+		});
+		const csv = toCsv(rows, [
+			{ header: 'Package Tag', value: 'package_tag' },
+			{ header: 'Location', value: 'location' },
+			{ header: 'Status', value: 'status' },
+			{ header: 'Movement Type', value: 'movement_type' },
+			{ header: 'User', value: 'user_name' },
+			{ header: 'Starting Qty', value: 'starting_quantity' },
+			{ header: 'Change', value: 'quantity' },
+			{ header: 'Ending Qty', value: 'ending_quantity' },
+			{ header: 'Notes', value: 'notes' },
+			{
+				header: 'Timestamp',
+				value: (row) =>
+					row.created_at
+						? new Date(row.created_at).toLocaleString('en-US')
+						: '',
+			},
+		]);
+		const date = new Date().toISOString().slice(0, 10);
+		sendCsv(res, `audit-product-${req.params.id}-${date}.csv`, csv);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Export failed' });
+	}
+};
+
+export const productsController = {
+	getAllPackages,
+	getProduct,
+	receiveNewPackageForm,
+	receiveNewPackagesPOST,
+	createProductForm,
+	splitPackagePost,
+	splitPackageProductForm,
+	insertProduct,
+	getProductsList,
+	deleteProduct,
+	unarchiveProduct,
+	editProductForm,
+	updateProduct,
+	receiveInventoryPut,
+	receiveInventoryGet,
+	updateInventory,
+	exportPackagesCsv,
+	exportProductsCsv,
+	exportAuditCsv,
+	adjustInventoryGet,
+};

@@ -6,25 +6,27 @@
 		"lib": ["ES2022"],
 		"outDir": "./dist",
 		"rootDir": "./",
+		"types": ["jest"],
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"allowJs": true,
 		"checkJs": false,
-		"strict": false,
-		"noImplicitAny": false,
+		"strict": true,
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
-		"index.js",
+		"index.ts",
 		"auth/**/*",
 		"controllers/**/*",
 		"db/**/*",
 		"middleware/**/*",
 		"routes/**/*",
 		"utils/**/*",
-		"types/**/*"
+		"types/**/*",
+		"src/**/*.ts",
+		"tests/**/*.test.ts"
 	],
-	"exclude": ["node_modules", "client", "public", "dist", "tests"]
+	"exclude": ["node_modules", "client", "public", "dist"]
 }

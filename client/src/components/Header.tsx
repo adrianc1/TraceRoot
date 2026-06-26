@@ -1,24 +1,17 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { CurrentUser } from '../types/user';
 
 const Header = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
+	const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+	const [isDrawerCatalogOpen, setIsDrawerCatalogOpen] = useState<boolean>(false);
 	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
-	const ref = useRef<HTMLDivElement>(null);
-
-	const toggleCatalogDropdown = () => {
-		const catalogBtn = document.getElementById('catalog-menu-btn');
-		if (!catalogBtn) return;
-		setIsOpen(!isOpen);
-	};
-
-	const toggleUserDropdown = () => {
-		const userBtn = document.getElementById('user-menu-btn');
-		if (!userBtn) return;
-		setIsUserDropdownOpen(!isUserDropdownOpen);
-	};
+	const toggleCatalogDropdown = () => setIsOpen(!isOpen);
+	const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
+	const openDrawer = () => setIsDrawerOpen(true);
+	const closeDrawer = () => setIsDrawerOpen(false);
 
 	useEffect(() => {
 		const fetchCurrentUser = async () => {
@@ -90,7 +83,6 @@ const Header = () => {
 							</button>
 							<div
 								id="catalog-dropdown"
-								ref={ref}
 								className={`absolute left-0 top-[calc(100%+10px)] w-44 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50 ${isOpen ? 'block' : 'hidden'}`}
 							>
 								<div className="py-1">
@@ -141,6 +133,7 @@ const Header = () => {
 							id="drawer-btn"
 							className="md:hidden flex items-center justify-center w-9 h-9 rounded-md hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer"
 							aria-label="Open menu"
+							onClick={openDrawer}
 						>
 							<svg
 								className="w-5 h-5 text-gray-600"
@@ -285,13 +278,14 @@ const Header = () => {
 			{/* <!-- Mobile drawer backdrop --> */}
 			<div
 				id="drawer-backdrop"
-				className="fixed inset-0 bg-black/40 z-40 hidden md:hidden transition-opacity duration-200 opacity-0"
+				onClick={closeDrawer}
+				className={`fixed inset-0 bg-black/40 z-40 md:hidden transition-opacity duration-200 ${isDrawerOpen ? 'block opacity-100' : 'hidden opacity-0'}`}
 			></div>
 
 			{/* <!-- Mobile drawer --> */}
 			<div
 				id="drawer"
-				className="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl flex flex-col md:hidden transition-transform duration-250 -translate-x-full"
+				className={`fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl flex flex-col md:hidden transition-transform duration-250 ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}
 			>
 				{/* <!-- Drawer header --> */}
 				<div className="flex items-center justify-between px-5 h-[60px] border-b border-gray-100 shrink-0">
@@ -300,6 +294,7 @@ const Header = () => {
 						id="drawer-close-btn"
 						className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer"
 						aria-label="Close menu"
+						onClick={closeDrawer}
 					>
 						<svg
 							className="w-4 h-4 text-gray-500"
@@ -343,6 +338,7 @@ const Header = () => {
 						<button
 							id="drawer-catalog-btn"
 							className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer font-medium"
+							onClick={() => setIsDrawerCatalogOpen(!isDrawerCatalogOpen)}
 						>
 							<span className="flex items-center gap-3">
 								<svg
@@ -377,7 +373,7 @@ const Header = () => {
 						</button>
 						<div
 							id="drawer-catalog-items"
-							className="hidden pl-10 mt-0.5 space-y-0.5"
+							className={`${isDrawerCatalogOpen ? 'block' : 'hidden'} pl-10 mt-0.5 space-y-0.5`}
 						>
 							<a
 								href="/packages/products"

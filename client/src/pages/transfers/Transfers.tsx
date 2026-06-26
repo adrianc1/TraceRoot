@@ -105,7 +105,7 @@ const Transfers = () => {
 								TRANSFER_TYPE_STYLES[t.transfer_type] ||
 								TRANSFER_TYPE_STYLES.internal;
 							return (
-								<tr className="hover:bg-gray-50 transition-colors">
+								<tr key={t.id} className="hover:bg-gray-50 transition-colors">
 									{/* <!-- transfer id --> */}
 									<td className="px-4 py-3">
 										<span className="font-mono text-[0.75rem] text-gray-500">
