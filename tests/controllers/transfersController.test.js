@@ -1,10 +1,4 @@
-const {
-	getAllTransfers,
-	getTransfer,
-	createTransfer,
-	confirmTransfer,
-	cancelTransfer,
-} = require('../../controllers/transfersController');
+const { getAllTransfers } = require('../../controllers/transfersController');
 const db = require('../../db/queries');
 
 jest.mock('../../db/queries');

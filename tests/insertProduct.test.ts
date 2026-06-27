@@ -35,7 +35,6 @@ describe('insertProduct', () => {
 	});
 
 	test('creates a product and returns 201', async () => {
-		// Arrange: stub what the db returns for this test
 		mockedDb.insertProduct.mockResolvedValue({ id: 1 } as any);
 
 		await insertProduct(req as Request, res as Response);
