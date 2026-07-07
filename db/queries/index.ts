@@ -3,6 +3,7 @@ export * from './billing';
 export * from './batches';
 export * from './brands';
 export * from './categories';
+export * from './dashboard';
 export * from './inventory';
 export * from './locations';
 export * from './packages';

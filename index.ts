@@ -20,6 +20,7 @@ import locationsRouter from './routes/locationsRouter.js';
 import usersRouter from './routes/usersRouter.js';
 import usersEjsRouter from './routes/usersEjsRouter.js';
 import billingRouter from './routes/billingRouter.js';
+import dashboardRouter from './routes/dashboardRouter.js';
 import { setLocals } from './middleware/appMiddleware.js';
 import {
 	ensureAuthenticated,
@@ -91,6 +92,7 @@ app.use('/api/strains', ensureAuthenticated, strainsRouter);
 app.use('/api/brands', ensureAuthenticated, brandsRouter);
 app.use('/api/transfers', ensureAuthenticated, transfersRouter);
 app.use('/api/locations', ensureAuthenticated, locationsRouter);
+app.use('/api/dashboard', ensureAuthenticated, dashboardRouter);
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.resolve('client/dist')));
