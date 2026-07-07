@@ -53,6 +53,12 @@ const Header = () => {
 					{/* <!-- Desktop nav links --> */}
 					<nav className="hidden md:flex items-center gap-7">
 						<a
+							href="/dashboard"
+							className="text-[0.8125rem] text-gray-600 hover:text-gray-900 transition-colors no-underline"
+						>
+							Dashboard
+						</a>
+						<a
 							href="/packages"
 							className="text-[0.8125rem] text-gray-600 hover:text-gray-900 transition-colors no-underline"
 						>
