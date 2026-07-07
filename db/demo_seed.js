@@ -22,6 +22,12 @@ async function seed() {
         WHERE c.name = 'TraceRoot Demo'
       )
     `);
+		await client.query(`
+      DELETE FROM invites
+      WHERE company_id IN (
+        SELECT id FROM companies WHERE name = 'TraceRoot Demo'
+      )
+    `);
 		await client.query(`DELETE FROM companies WHERE name = 'TraceRoot Demo'`);
 
 		// ------------------------------------------------------------------
