@@ -94,7 +94,7 @@ const demoLogin = async (req: Request, res: Response, next: Function) => {
 		}
 		req.login(user, (err) => {
 			if (err) return next(err);
-			res.redirect('/packages');
+			res.redirect('/dashboard');
 		});
 	} catch (err) {
 		next(err);

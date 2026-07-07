@@ -11,7 +11,7 @@ router.get('/demo', authController.demoLogin);
 router.post(
 	'/',
 	passport.authenticate('local', {
-		successRedirect: '/packages',
+		successRedirect: '/dashboard',
 		failureRedirect: '/login',
 		failureFlash: true,
 	}),

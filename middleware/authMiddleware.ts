@@ -17,7 +17,7 @@ export const redirectIfAuthenticated = (
 	next: NextFunction,
 ) => {
 	if (req.isAuthenticated()) {
-		return res.redirect('/packages');
+		return res.redirect('/dashboard');
 	}
 	next();
 };
