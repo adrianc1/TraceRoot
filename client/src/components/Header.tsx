@@ -5,7 +5,8 @@ const Header = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isUserDropdownOpen, setIsUserDropdownOpen] = useState<boolean>(false);
 	const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-	const [isDrawerCatalogOpen, setIsDrawerCatalogOpen] = useState<boolean>(false);
+	const [isDrawerCatalogOpen, setIsDrawerCatalogOpen] =
+		useState<boolean>(false);
 	const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
 	const toggleCatalogDropdown = () => setIsOpen(!isOpen);
@@ -45,7 +46,7 @@ const Header = () => {
 				<div className="max-w-7xl mx-auto px-6 h-[60px] flex items-center justify-between">
 					{/* <!-- Logo --> */}
 					<a
-						href="/packages"
+						href="/dashboard"
 						className="flex items-center gap-2 no-underline shrink-0"
 					>
 						<img src="/tracerootheader.png" alt="TraceRoot" className="h-7" />

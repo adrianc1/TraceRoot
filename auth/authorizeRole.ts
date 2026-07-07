@@ -15,7 +15,7 @@ const authorizeRole =
 			});
 		}
 		req.flash('error', 'You do not have permission to access that page');
-		return res.redirect(req.headers.referer || '/packages');
+		return res.redirect(req.headers.referer || '/dashboard');
 	};
 
 export const authorizeRoleMiddleware = authorizeRole;

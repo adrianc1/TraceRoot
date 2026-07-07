@@ -4,7 +4,7 @@ interface ChartCardProps {
 	title: string;
 	subtitle?: string;
 	chart: ReactNode;
-	table: ReactNode; // accessibility twin of the chart
+	table: ReactNode; 
 	className?: string;
 }
 
