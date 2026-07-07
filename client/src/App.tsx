@@ -29,6 +29,7 @@ import Settings from './pages/settings/Settings';
 import GetUsers from './pages/users/GetUsers';
 import EditUserForm from './pages/users/EditUser';
 import Account from './pages/settings/Account';
+import Dashboard from './pages/dashboard/Dashboard';
 function App() {
 	return (
 		<div className="">
@@ -36,7 +37,8 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route path="/packages/receive" element={<GeneralReceiving />} />
-					<Route path="/" element={<div>App root </div>} />
+					<Route path="/" element={<Dashboard />} />
+					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/brands" element={<Brands />} />
 					<Route path="/brands/create" element={<CreateBrand />} />
 					<Route path="/brands/:id/edit" element={<EditBrand />} />
