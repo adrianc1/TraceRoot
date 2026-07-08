@@ -18,7 +18,7 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 
 | Layer    | Technology                                              |
 | -------- | ------------------------------------------------------- |
-| Backend  | Node.js, Express.js (migrating JavaScript → TypeScript) |
+| Backend  | Node.js, Express 5, TypeScript                          |
 | Database | PostgreSQL (AWS RDS)                                    |
 | Auth     | Passport.js (local strategy, session-based)             |
 | Frontend | React + TypeScript, Vite, Tailwind CSS                  |
@@ -31,7 +31,7 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 TraceRoot has gone through two major migrations as the project matured:
 
 1. **Frontend: EJS → React + TypeScript** *(complete)* — the core app views were rewritten as a Vite-based React + TypeScript single-page app, served alongside the Express backend. Auth, billing, and the static marketing pages are intentionally kept on server-rendered EJS, where SSR and simplicity are a better fit than a SPA.
-2. **Backend: JavaScript → TypeScript** _(in progress)_ — the Express backend is being incrementally migrated to TypeScript, one domain at a time (queries → controllers → routes), starting with reference data (brands, categories, strains, locations) and working outward through products, packages, and transfers.
+2. **Backend: JavaScript → TypeScript** _(complete)_ — the Express backend was incrementally migrated to TypeScript one domain at a time (queries → controllers → routes), from reference data (brands, categories, strains, locations) outward through products, packages, transfers, and billing. All application code — routes, controllers, queries, middleware, and auth — is now TypeScript. The Jest test suite is being converted from JavaScript to TypeScript as an ongoing follow-up.
 
 ---
 
@@ -51,16 +51,21 @@ Every table carries a `company_id` foreign key. All queries are scoped to the au
 
 ### Stripe billing with trial middleware
 
-Subscriptions are managed via Stripe Checkout. On signup, companies receive a 14-day free trial tracked by a `trial_ends_at` timestamp in the `companies` table. A middleware layer (`trialMiddleware.js`) runs on every authenticated request and gates access to app routes if the trial has expired and no active Stripe subscription exists. Subscription state is updated in real-time via Stripe webhooks (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`), which write back to `stripe_subscription_status` on the company record. The webhook endpoint receives a raw body before Express JSON parsing to allow Stripe signature verification.
+Subscriptions are managed via Stripe Checkout. On signup, companies receive a 14-day free trial tracked by a `trial_ends_at` timestamp in the `companies` table. A middleware layer (`trialMiddleware.ts`) runs on every authenticated request and gates access to app routes if the trial has expired and no active Stripe subscription exists. Subscription state is updated in real-time via Stripe webhooks (`checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`), which write back to `stripe_subscription_status` on the company record. The webhook endpoint receives a raw body before Express JSON parsing to allow Stripe signature verification.
 
 ### Composite foreign key on packages → locations
 
 `packages` enforces `FOREIGN KEY (location_id, company_id) REFERENCES locations(id, company_id)` — a composite key that prevents a package from being assigned to a location belonging to a different company, even if the location ID is otherwise valid.
 
+### Dashboard aggregation in a single request
+
+The operator dashboard is served by one endpoint (`GET /api/dashboard`) that runs its five aggregate queries concurrently with `Promise.all` rather than issuing a separate round-trip per widget. Metrics are computed in SQL — `SUM(quantity * cost_price)` for inventory value, and `generate_series` to bucket the 30-day activity timeline so days with no movements still return a zero row — keeping aggregation in the database instead of the application layer. Every query is company-scoped like the rest of the app. On the frontend, the charts (donut, bar, line) are hand-built SVG components with no charting dependency.
+
 ---
 
 ## Features
 
+- **Operator dashboard** — post-login analytics overview with KPI tiles (inventory value, active packages, active products and locations, 30-day movement volume) and charts for inventory value by category, value by location, package status, and daily inventory activity
 - **Multi-tenant auth** — company-scoped accounts, session-based login via Passport.js
 - **Role-based access control** — admin, manager, and staff roles with route-level enforcement
 - **Product catalog** — products linked to brands, strains, and categories
