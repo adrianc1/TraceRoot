@@ -109,8 +109,8 @@ A live demo is available at [traceroot.io](https://traceroot.io). Use the follow
 ## Roadmap
 
 - [x] **Frontend migration** — core app views rewritten in React + TypeScript (Vite); auth, billing, and static marketing pages intentionally kept on server-rendered EJS
-- [ ] **Backend TypeScript migration** — incrementally migrating Express backend from JavaScript to TypeScript
-- [ ] **Dashboard** — inventory summary, recent transfers, low-stock alerts at a glance
+- [x] **Backend TypeScript migration** — incrementally migrating Express backend from JavaScript to TypeScript
+- [x] **Dashboard** — inventory summary, recent transfers, low-stock alerts at a glance
 - [ ] **Variance checker** — upload a physical count CSV, compare against system quantities, AI-generated reconciliation summary via Claude API
 - [ ] **METRC integration** — sync package data directly to state track-and-trace via API
 - [ ] **Reporting** — inventory valuation trends, movement exports, low-stock alerts
