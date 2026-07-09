@@ -311,7 +311,9 @@ const Product = () => {
 															<span className="text-[0.75rem] text-gray-500 ml-1">{product.unit}</span>
 														</td>
 														<td className="px-4 py-3">
-															<span className="text-[0.8125rem] font-semibold text-green-mid">—</span>
+															<span className="text-[0.8125rem] font-semibold text-green-mid">
+																${formatCurrency(pkg.quantity * (pkg.cost_price || 0))}
+															</span>
 														</td>
 														<td className="px-4 py-3">
 															<span className={`inline-flex items-center gap-1 font-mono text-[0.7rem] font-medium px-2 py-[0.2rem] rounded capitalize ${statusStyle}`}>

@@ -58,5 +58,7 @@ export interface AuditPackage {
 	package_tag: string;
 	location: string;
 	status: PackageStatus;
+	quantity: number;
+	cost_price: number;
 	movements: InventoryMovement[];
 }
