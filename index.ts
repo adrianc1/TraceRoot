@@ -96,6 +96,9 @@ app.use('/api/dashboard', ensureAuthenticated, dashboardRouter);
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.resolve('client/dist')));
 	app.get('/{*path}', (req, res) => {
+		if (!req.isAuthenticated()) {
+			return res.redirect('/login');
+		}
 		res.sendFile(path.resolve('client/dist/index.html'));
 	});
 }
