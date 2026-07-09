@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as db from '../db/queries';
 import crypto from 'crypto';
-
+import { validateUser } from './authController';
 const getCurrentUser = async (req: Request, res: Response) => {
 	try {
 		const user = await db.getUserById(req.user!.id, req.user!.company_id);
@@ -92,10 +92,16 @@ const acceptInvite = async (req: Request, res: Response) => {
 			return res.render('users/invite-invalid');
 		}
 
+		// password errors
 		if (password !== confirm_password) {
 			return res.render('users/accept-invite', {
 				invite,
 				error: 'Passwords do not match',
+			});
+		} else if (password.length < 8) {
+			return res.render('users/accept-invite', {
+				invite,
+				error: 'Password must be at least 8 characters long',
 			});
 		}
 

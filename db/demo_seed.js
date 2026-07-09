@@ -632,6 +632,125 @@ async function seed() {
 			[cid, pk1, managerId],
 		);
 
+		// ------------------------------------------------------------------
+		// Bulk catalog — extra products so the packages list paginates
+		// (>25 active packages) and the inventory valuation reads high.
+		// The curated 6-product data above keeps the rich transfer/audit demo.
+		// ------------------------------------------------------------------
+		const { rows: xStrains } = await client.query(
+			`INSERT INTO strains (name, company_id, type, description) VALUES
+        ('Wedding Cake',      $1, 'Hybrid', 'Rich, tangy, earthy pepper'),
+        ('Runtz',             $1, 'Hybrid', 'Fruity candy profile'),
+        ('Zkittlez',          $1, 'Indica', 'Tropical sweet blend'),
+        ('Jack Herer',        $1, 'Sativa', 'Spicy pine, clear-headed'),
+        ('Northern Lights',   $1, 'Indica', 'Sweet and spicy, relaxing'),
+        ('Durban Poison',     $1, 'Sativa', 'Sweet anise, energetic'),
+        ('GG4',               $1, 'Hybrid', 'Heavy euphoria, chem notes'),
+        ('Granddaddy Purple', $1, 'Indica', 'Grape and berry, full-body'),
+        ('Pineapple Express', $1, 'Hybrid', 'Bright tropical lift'),
+        ('Do-Si-Dos',         $1, 'Indica', 'Sweet cookie funk')
+      RETURNING id`,
+			[cid],
+		);
+		const [x1, x2, x3, x4, x5, x6, x7, x8, x9, x10] = xStrains.map((r) => r.id);
+
+		const { rows: xBrands } = await client.query(
+			`INSERT INTO brands (name, description, company_id) VALUES
+        ('Emerald Harvest',    'Sun-grown outdoor flower',       $1),
+        ('High Desert',        'Solventless concentrates',       $1),
+        ('Coastal Collective', 'Vapes, tinctures, and wellness', $1)
+      RETURNING id`,
+			[cid],
+		);
+		const [xb1, xb2, xb3] = xBrands.map((r) => r.id);
+
+		const { rows: xCats } = await client.query(
+			`INSERT INTO categories (name, description, company_id) VALUES
+        ('Vapes',     'Cartridges and disposables', $1),
+        ('Tinctures', 'Sublingual oils and drops',  $1)
+      RETURNING id`,
+			[cid],
+		);
+		const [xcVape, xcTinc] = xCats.map((r) => r.id);
+
+		// [name, brandId, strainId, categoryId, unit, sku, packageSize, cost, qty, locationId, status]
+		const catalog = [
+			['Wedding Cake 3.5g', xb1, x1, c1, 'g', 'BULK-001', 3.5, 5.5, 560, locShow, 'active'],
+			['Runtz 3.5g', xb1, x2, c1, 'g', 'BULK-002', 3.5, 5.75, 500, locSafe, 'active'],
+			['Zkittlez 7g', xb1, x3, c1, 'g', 'BULK-003', 7, 4.8, 630, locShow, 'active'],
+			['Jack Herer 3.5g', b1, x4, c1, 'g', 'BULK-004', 3.5, 5.1, 420, locSafe, 'active'],
+			['Northern Lights 14g', xb1, x5, c1, 'g', 'BULK-005', 14, 4.25, 680, locShow, 'active'],
+			['GG4 3.5g', b1, x7, c1, 'g', 'BULK-006', 3.5, 5.9, 380, locSafe, 'active'],
+			['Granddaddy Purple 7g', xb1, x8, c1, 'g', 'BULK-007', 7, 4.6, 540, locShow, 'quarantine'],
+			['Durban Poison 3.5g', b1, x6, c1, 'g', 'BULK-008', 3.5, 5.0, 300, locSafe, 'active'],
+			['Pineapple Express Pre-Roll', b2, x9, c2, 'each', 'BULK-009', 1, 3.2, 260, locShow, 'active'],
+			['Do-Si-Dos Infused Pre-Roll', b2, x10, c2, 'each', 'BULK-010', 1, 3.8, 180, locShow, 'active'],
+			['Wedding Cake Pre-Roll 5pk', b2, x1, c2, 'each', 'BULK-011', 5, 3.5, 220, locSafe, 'active'],
+			['Runtz Blunt', b2, x2, c2, 'each', 'BULK-012', 1, 4.0, 140, locShow, 'active'],
+			['Zkittlez Live Rosin 1g', xb2, x3, c3, 'g', 'BULK-013', 1, 22.0, 110, locCool, 'active'],
+			['GG4 Shatter 1g', xb2, x7, c3, 'g', 'BULK-014', 1, 16.0, 130, locCool, 'active'],
+			['Northern Lights Budder 1g', xb2, x5, c3, 'g', 'BULK-015', 1, 18.5, 90, locCool, 'active'],
+			['Blue Dream Live Resin 1g', xb2, s1, c3, 'g', 'BULK-016', 1, 20.0, 120, locCool, 'active'],
+			['Granddaddy Purple Hash 2g', xb2, x8, c3, 'g', 'BULK-017', 2, 14.0, 140, locCool, 'reserved'],
+			['Jack Herer Sauce 1g', xb2, x4, c3, 'g', 'BULK-018', 1, 24.0, 60, locCool, 'active'],
+			['Runtz Gummies 10mg', b3, x2, c4, 'each', 'BULK-019', 10, 2.4, 520, locShow, 'active'],
+			['Zkittlez Chocolate 100mg', b3, x3, c4, 'each', 'BULK-020', 1, 3.2, 300, locCool, 'active'],
+			['Wedding Cake Caramels 5mg', b3, x1, c4, 'each', 'BULK-021', 20, 2.1, 600, locShow, 'active'],
+			['Northern Lights Mints 5mg', b3, x5, c4, 'each', 'BULK-022', 20, 2.3, 460, locShow, 'active'],
+			['Sour Diesel Gummies 10mg', b3, s3, c4, 'each', 'BULK-023', 10, 2.5, 380, locShow, 'active'],
+			['Pineapple Express Cart 0.5g', xb3, x9, xcVape, 'each', 'BULK-024', 1, 11.0, 240, locShow, 'active'],
+			['GG4 Disposable 1g', xb3, x7, xcVape, 'each', 'BULK-025', 1, 14.5, 180, locShow, 'active'],
+			['Blue Dream Cart 1g', xb3, s1, xcVape, 'each', 'BULK-026', 1, 12.0, 320, locSafe, 'active'],
+			['Gelato Live Resin Cart 0.5g', xb3, s4, xcVape, 'each', 'BULK-027', 1, 15.5, 150, locShow, 'active'],
+			['Durban Poison Cart 1g', xb3, x6, xcVape, 'each', 'BULK-028', 1, 10.5, 200, locShow, 'active'],
+			['Zkittlez Disposable 2g', xb3, x3, xcVape, 'each', 'BULK-029', 2, 16.0, 90, locSafe, 'quarantine'],
+			['Wedding Cake Tincture 500mg', xb3, x1, xcTinc, 'each', 'BULK-030', 1, 12.0, 120, locCool, 'active'],
+			['Northern Lights Sleep Drops', xb3, x5, xcTinc, 'each', 'BULK-031', 1, 9.5, 160, locCool, 'active'],
+			['CBD Wellness Tincture 1000mg', xb3, x8, xcTinc, 'each', 'BULK-032', 1, 13.0, 100, locCool, 'active'],
+			['Pineapple Express Tincture', xb3, x9, xcTinc, 'each', 'BULK-033', 1, 8.5, 140, locCool, 'active'],
+			['Do-Si-Dos Night Drops', xb3, x10, xcTinc, 'each', 'BULK-034', 1, 11.5, 110, locShow, 'active'],
+		];
+
+		let tagSeq = 100;
+		for (let i = 0; i < catalog.length; i++) {
+			const [name, brand, strain, cat, unit, sku, size, cost, qty, loc, status] =
+				catalog[i];
+
+			const {
+				rows: [prod],
+			} = await client.query(
+				`INSERT INTO products (company_id, brand_id, strain_id, category_id, name, description, unit, sku)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
+				[cid, brand, strain, cat, name, name, unit, sku],
+			);
+
+			const {
+				rows: [batch],
+			} = await client.query(
+				`INSERT INTO batches (product_id, company_id, batch_number, total_quantity, unit, cost_per_unit, supplier_name, status)
+         VALUES ($1,$2,$3,$4,$5,$6,'Bulk Supplier Co.','active') RETURNING id`,
+				[prod.id, cid, `BATCH-2025-${String(i + 100).padStart(3, '0')}`, qty, unit, cost],
+			);
+
+			tagSeq++;
+			const tag = `DEMO-2025-${String(tagSeq).padStart(6, '0')}`;
+			const {
+				rows: [pkg],
+			} = await client.query(
+				`INSERT INTO packages (package_tag, product_id, company_id, batch_id, location_id, status, quantity, package_size, unit, cost_price, supplier_name, lot_number)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'Bulk Supplier Co.',$11) RETURNING id`,
+				[tag, prod.id, cid, batch.id, loc, status, qty, qty, unit, cost, `LOT-${tagSeq}`],
+			);
+
+			const daysAgo = (i % 28) + 1;
+			await client.query(
+				`INSERT INTO inventory_movements (company_id, packages_id, user_id, movement_type,
+          quantity, starting_quantity, ending_quantity, cost_per_unit, notes, created_at)
+         VALUES ($1,$2,$3,'receive',$4,0,$4,$5,$6, NOW() - INTERVAL '${daysAgo} days')`,
+				[cid, pkg.id, uid, qty, cost, `Initial stock receive — ${name}`],
+			);
+		}
+
 		await client.query('COMMIT');
 
 		console.log('');
@@ -641,7 +760,7 @@ async function seed() {
 		console.log('  Email:    demo@traceroot.io');
 		console.log('  Password: demo123');
 		console.log('');
-		console.log('  17 packages | 4 locations | 6 products');
+		console.log('  54 packages | 4 locations | 40 products');
 		console.log(
 			'  4 confirmed transfers | 1 cancelled | 1 pending external | 1 pending internal',
 		);
