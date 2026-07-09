@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { INK } from './chartTheme';
 
 export interface BarDatum {
 	label: string;
@@ -12,11 +11,8 @@ interface HBarChartProps {
 	formatValue: (n: number) => string;
 }
 
-const ROW_H = 32;
-const BAR_H = 14;
-const LABEL_W = 110;
-const VALUE_W = 76;
-
+// Rendered in HTML/CSS (not SVG) so the label/value text stays a constant
+// size regardless of the card's width — only the bars flex responsively.
 const HBarChart = ({ data, color, formatValue }: HBarChartProps) => {
 	const [hovered, setHovered] = useState<number | null>(null);
 
@@ -25,72 +21,37 @@ const HBarChart = ({ data, color, formatValue }: HBarChartProps) => {
 	}
 
 	const max = Math.max(...data.map((d) => d.value), 1);
-	const width = 480;
-	const plotW = width - LABEL_W - VALUE_W;
-	const height = data.length * ROW_H;
 
 	return (
-		<svg
-			viewBox={`0 0 ${width} ${height}`}
-			className="w-full"
-			role="img"
-			aria-label="Bar chart"
-		>
+		<div className="flex flex-col gap-1.5">
 			{data.map((d, i) => {
-				const y = i * ROW_H;
-				const w = Math.max((d.value / max) * plotW, d.value > 0 ? 3 : 0);
+				const pct = Math.max((d.value / max) * 100, d.value > 0 ? 2 : 0);
 				const dim = hovered !== null && hovered !== i;
 				return (
-					<g
+					<div
 						key={d.label}
-						opacity={dim ? 0.4 : 1}
+						className="flex items-center gap-3 py-1 transition-opacity"
+						style={{ opacity: dim ? 0.4 : 1 }}
 						onMouseEnter={() => setHovered(i)}
 						onMouseLeave={() => setHovered(null)}
+						title={`${d.label}: ${formatValue(d.value)}`}
 					>
-						{/* oversize hit target */}
-						<rect x={0} y={y} width={width} height={ROW_H} fill="transparent" />
-						<text
-							x={LABEL_W - 8}
-							y={y + ROW_H / 2}
-							textAnchor="end"
-							dominantBaseline="middle"
-							fontSize={12}
-							fill={INK.secondary}
-						>
-							{d.label.length > 14 ? d.label.slice(0, 13) + '…' : d.label}
-						</text>
-						<line
-							x1={LABEL_W}
-							y1={y + ROW_H / 2}
-							x2={LABEL_W + plotW}
-							y2={y + ROW_H / 2}
-							stroke={INK.grid}
-							strokeWidth={1}
-						/>
-						<rect
-							x={LABEL_W}
-							y={y + (ROW_H - BAR_H) / 2}
-							width={w}
-							height={BAR_H}
-							rx={4}
-							fill={color}
-						>
-							<title>{`${d.label}: ${formatValue(d.value)}`}</title>
-						</rect>
-						<text
-							x={LABEL_W + w + 6}
-							y={y + ROW_H / 2}
-							dominantBaseline="middle"
-							fontSize={12}
-							fill={INK.primary}
-							className="tabular-nums"
-						>
+						<span className="w-24 shrink-0 text-right text-[0.8125rem] text-gray-600 capitalize truncate">
+							{d.label}
+						</span>
+						<div className="flex-1 h-3.5 bg-gray-100 rounded-full overflow-hidden">
+							<div
+								className="h-full rounded-full transition-all"
+								style={{ width: `${pct}%`, backgroundColor: color }}
+							/>
+						</div>
+						<span className="w-20 shrink-0 text-[0.8125rem] font-medium text-gray-900 tabular-nums">
 							{formatValue(d.value)}
-						</text>
-					</g>
+						</span>
+					</div>
 				);
 			})}
-		</svg>
+		</div>
 	);
 };
 
