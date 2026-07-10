@@ -100,10 +100,12 @@ export const getDailyMovements = async (
         to_char(d.day, 'YYYY-MM-DD') AS day,
         COUNT(im.id)::int AS movements
      FROM generate_series(
-        (NOW() - INTERVAL '29 days')::date, NOW()::date, '1 day'
+        ((NOW() AT TIME ZONE 'America/Los_Angeles') - INTERVAL '29 days')::date,
+        (NOW() AT TIME ZONE 'America/Los_Angeles')::date,
+        '1 day'
      ) AS d(day)
      LEFT JOIN inventory_movements im
-        ON im.company_id = $1 AND im.created_at::date = d.day
+        ON im.company_id = $1 AND (im.created_at AT TIME ZONE 'America/Los_Angeles')::date = d.day
      GROUP BY d.day
      ORDER BY d.day`,
 		[companyId],
