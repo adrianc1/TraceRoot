@@ -63,7 +63,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     role user_role DEFAULT 'staff',
     active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Depends on Companies + Metadata
@@ -78,7 +78,7 @@ CREATE TABLE products (
     unit unit NOT NULL,
     sku VARCHAR(100),
     status product_status NOT NULL DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE (company_id, sku)
 );
 
@@ -92,7 +92,7 @@ CREATE TABLE batches (
     cost_per_unit DECIMAL(10,2),
     supplier_name VARCHAR(255),
     status inventory_status DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(product_id, batch_number)
 );
 
@@ -106,8 +106,8 @@ CREATE TABLE locations (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT unique_company_location_name 
         UNIQUE (company_id, name),
     CONSTRAINT unique_location_company_pair
@@ -131,8 +131,8 @@ CREATE TABLE packages (
     supplier_name VARCHAR(255),
     lot_number VARCHAR(100),
     locked BOOLEAN NOT NULL DEFAULT FALSE,
-    updated_at TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (package_tag),
     FOREIGN KEY (location_id, company_id)
         REFERENCES locations(id, company_id) ON DELETE RESTRICT
@@ -150,8 +150,8 @@ CREATE TABLE transfers (
     status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
     notes TEXT,
     created_by INTEGER NOT NULL REFERENCES users(id),
-    confirmed_at TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    confirmed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT internal_requires_to_location 
         CHECK (transfer_type = 'external' OR to_location_id IS NOT NULL),
     CONSTRAINT external_requires_company_name 
@@ -163,7 +163,7 @@ CREATE TABLE transfer_items (
     transfer_id INTEGER NOT NULL REFERENCES transfers(id) ON DELETE CASCADE,
     package_id INTEGER NOT NULL REFERENCES packages(id),
     quantity NUMERIC NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE invites (
@@ -175,7 +175,7 @@ CREATE TABLE invites (
     expires_at TIMESTAMP NOT NULL,
     created_by INTEGER REFERENCES users(id),
     accepted_at TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Audit Trail
@@ -190,7 +190,7 @@ CREATE TABLE inventory_movements (
     ending_quantity DECIMAL(10,3),
     cost_per_unit DECIMAL(10,2),
     notes TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE  session (
