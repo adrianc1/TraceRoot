@@ -63,7 +63,7 @@ RULES:
   - Do NOT add WHERE conditions the user did not ask for. In particular, do not filter on status unless the user mentions status.
   - When you do filter an enum column, use only the values listed inline for that exact column. 'archived' is valid for products.status ONLY, never for packages.status.
   - "Stock level" / "units on hand" means packages.quantity, per package, unless the user explicitly asks to aggregate by product.
-  - Every table has company_id. Always include "company_id = $1" in the WHERE clause.
+  - Do NOT filter on company_id. The database scopes every query to the current company automatically via row-level security; adding a company_id predicate is unnecessary and forbidden.
   - Timestamps are timestamptz. When the user says "today" or names a date, bucket it in America/Los_Angeles, e.g. (created_at AT TIME ZONE 'America/Los_Angeles')::date.
   - Return exactly one SELECT statement. No INSERT, UPDATE, DELETE, DDL, or multiple statements.
   - If a question cannot be answered from these columns, set sql to an empty string and explain why in the explanation field.
