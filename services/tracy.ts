@@ -69,13 +69,13 @@ RULES:
   - If a question cannot be answered from these columns, set sql to an empty string and explain why in the explanation field.
 `;
 
-const TracyAnswer = z.object({
+export const TracyAnswer = z.object({
 	sql: z.string().describe('A single read-only SELECT query'),
 	explanation: z.string().describe('One sentence explaining what it does'),
 	tables_used: z.array(z.string()),
 });
 
-async function main() {
+export async function askTracy(question: string) {
 	const message = await client.messages.parse({
 		model: 'claude-haiku-4-5',
 		max_tokens: 1024,
@@ -85,12 +85,18 @@ async function main() {
 		messages: [
 			{
 				role: 'user',
-				content: 'What is the most valuable product in our inventory?',
+				content: `${`${question}`}`,
 			},
 		],
 		output_config: { format: zodOutputFormat(TracyAnswer) },
 	});
-	console.log(message.parsed_output);
+
+	// check if out put return SQL, if not throw error
+	if (!message.parsed_output?.sql) {
+		console.error('No SQL returned from Tracy');
+		throw new Error('No SQL returned from Tracy');
+	}
+	return message.parsed_output;
 }
 
-main();
+askTracy('what the most expensive product?');
