@@ -1,17 +1,8 @@
 import type { Request, Response } from 'express';
-import { ValidationChain, body, validationResult } from 'express-validator';
+import { validationResult } from 'express-validator';
 import { askTracy } from '../services/tracy';
 import { tracyQuery } from '../db/queries/tracy';
-import { sqlValidation } from '../utils/sqlValidation';
-
-export const validateTracyQuestion: ValidationChain[] = [
-	body('question')
-		.isString()
-		.trim()
-		.withMessage(`Question must be a valid string`)
-		.isLength({ min: 5, max: 300 })
-		.withMessage(`Question must be between 5-300 characters`),
-];
+import { isSafeSql } from '../utils/sqlValidation';
 
 export const tracyCoordinator = async (req: Request, res: Response) => {
 	const questionErrors = validationResult(req);
@@ -31,7 +22,7 @@ export const tracyCoordinator = async (req: Request, res: Response) => {
 			return;
 		}
 
-		if (sqlValidation(sql)) {
+		if (isSafeSql(sql)) {
 			result = await tracyQuery(sql, company_id);
 		} else {
 			return res.status(500).json({ error: 'Invalid SQL generated' });

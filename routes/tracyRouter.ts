@@ -1,10 +1,8 @@
 import express from 'express';
 import { Router } from 'express';
-import {
-	tracyCoordinator,
-	validateTracyQuestion,
-} from '../controllers/tracyController';
+import { tracyCoordinator } from '../controllers/tracyController';
 import { authorizeRoleMiddleware } from '../auth/authorizeRole';
+import { validateTracyQuestion } from '../middleware/tracyQuestionMiddleware';
 
 const router: Router = express.Router();
 
