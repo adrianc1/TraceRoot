@@ -85,18 +85,14 @@ export async function askTracy(question: string) {
 		messages: [
 			{
 				role: 'user',
-				content: `${`${question}`}`,
+				content: `${question}`,
 			},
 		],
 		output_config: { format: zodOutputFormat(TracyAnswer) },
 	});
 
-	// check if out put return SQL, if not throw error
-	if (!message.parsed_output?.sql) {
-		console.error('No SQL returned from Tracy');
-		throw new Error('No SQL returned from Tracy');
+	if (!message.parsed_output) {
+		throw new Error('Tracy returned no parsed output');
 	}
 	return message.parsed_output;
 }
-
-askTracy('what the most expensive product?');

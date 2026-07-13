@@ -28,6 +28,9 @@ export const tracyCoordinator = async (req: Request, res: Response) => {
 			return res.status(500).json({ error: 'Invalid SQL generated' });
 		}
 
+		if (result.length === 0) {
+			res.status(200);
+		}
 		res.json({
 			sql,
 			explanation,
