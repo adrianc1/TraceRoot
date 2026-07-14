@@ -5,6 +5,7 @@ import ChartCard, { ChartTable } from '../../components/charts/ChartCard';
 import DonutChart from '../../components/charts/DonutChart';
 import HBarChart from '../../components/charts/HBarChart';
 import LineChart from '../../components/charts/LineChart';
+import { TracyAI } from '../../components/tracy/TracyAI.tsx';
 import {
 	SERIES_COLORS,
 	formatMoney,
@@ -58,7 +59,7 @@ const Dashboard = () => {
 		<div className="bg-gray-50 min-h-screen">
 			<div className="max-w-7xl mx-auto px-6 py-8">
 				<h1 className="text-xl font-semibold text-gray-900 mb-6">Dashboard</h1>
-
+				<TracyAI />
 				{/* KPI row */}
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 					<StatTile
