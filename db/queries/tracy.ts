@@ -5,6 +5,9 @@ export const tracyQuery = async (
 	company_id: number,
 ): Promise<any[]> => {
 	const client = await tracyPool.connect();
+	const MAX_ROWS = 500;
+	const sanitized = sql.trim().replace(/;\s*$/, '');
+	const capped = `SELECT * FROM (${sanitized}) AS tracy_result LIMIT $1`;
 
 	try {
 		await client.query('BEGIN');
@@ -14,7 +17,7 @@ export const tracyQuery = async (
 		await client.query("SET LOCAL statement_timeout = '5s'");
 
 		// run Claudes SQL
-		const result = await client.query(sql);
+		const result = await client.query(capped, [MAX_ROWS]);
 		await client.query('COMMIT');
 		return result.rows;
 	} catch (error) {

@@ -67,6 +67,14 @@ RULES:
   - Timestamps are timestamptz. When the user says "today" or names a date, bucket it in America/Los_Angeles, e.g. (created_at AT TIME ZONE 'America/Los_Angeles')::date.
   - Return exactly one SELECT statement. No INSERT, UPDATE, DELETE, DDL, or multiple statements.
   - If a question cannot be answered from these columns, set sql to an empty string and explain why in the explanation field.
+
+COLUMN SELECTION (the results are shown directly to a human in a table):
+  - Select only the columns needed to answer the question. Never select every column of a table.
+  - Prefer human-readable values over foreign keys. If an answer would include product_id, join products and return products.name instead. Same for location_id -> locations.name, brand_id -> brands.name, strain_id -> strains.name, category_id -> categories.name, batch_id -> batches.batch_number.
+  - Never return internal columns (id, company_id, parent_package_id, external_id) unless the user explicitly asks for them.
+  - Do not return created_at or updated_at unless the user asks about timing.
+  - Alias every returned column to a short, human-readable name, e.g. SUM(quantity) AS total_quantity, products.name AS product.
+  - If you alias a table, use that alias consistently for every column of that table.
 `;
 
 export const TracyAnswer = z.object({
@@ -79,13 +87,14 @@ export async function askTracy(question: string) {
 	const message = await client.messages.parse({
 		model: 'claude-haiku-4-5',
 		max_tokens: 1024,
+		temperature: 0.5,
 		system: [
 			{ type: 'text', text: SCHEMA, cache_control: { type: 'ephemeral' } },
 		],
 		messages: [
 			{
 				role: 'user',
-				content: `${question}`,
+				content: question,
 			},
 		],
 		output_config: { format: zodOutputFormat(TracyAnswer) },
