@@ -10,7 +10,9 @@ Inventory management platform built for cannabis operators in regulated markets.
 
 Cannabis operators in regulated states must maintain accurate, real-time inventory records in state track-and-trace systems (e.g., METRC). In practice, most operators manage inventory across paper logs, multiple spreadsheets, and manual data entry — a process that is error-prone and time-consuming. Discrepancies between internal records and the state system trigger compliance audits.
 
-TraceRoot centralizes that workflow. Operators manage inventory in one place, with a complete audit trail that mirrors what regulators expect to see.
+TraceRoot centralizes that workflow. Operators manage inventory in one place, backed by an immutable, timestamped, user-attributed movement history for every package.
+
+TraceRoot is a system of record, not a compliance product — it does not submit to or certify against any state system. Compliance remains the operator's responsibility; TraceRoot's job is to make the underlying records complete and defensible.
 
 ---
 
@@ -22,6 +24,7 @@ TraceRoot centralizes that workflow. Operators manage inventory in one place, wi
 | Database | PostgreSQL (AWS RDS)                                    |
 | Auth     | Passport.js (local strategy, session-based)             |
 | Frontend | React + TypeScript, Vite, Tailwind CSS                  |
+| AI       | Anthropic API (Claude) — natural-language-to-SQL for Tracy |
 | Billing  | Stripe (Checkout, webhooks, subscriptions)              |
 | Hosting  | AWS EC2 + RDS, PM2                                      |
 | Testing  | Jest                                                    |
@@ -57,6 +60,14 @@ Subscriptions are managed via Stripe Checkout. On signup, companies receive a 14
 
 `packages` enforces `FOREIGN KEY (location_id, company_id) REFERENCES locations(id, company_id)` — a composite key that prevents a package from being assigned to a location belonging to a different company, even if the location ID is otherwise valid.
 
+### Tracy: natural-language inventory queries, isolated by Postgres RLS
+
+Tracy lets an operator ask a question in plain English ("how many active packages do we have per location?") and get back a live answer instead of writing SQL. A single Claude call generates `{ sql, explanation, tables_used }` from a grounded schema prompt; the app never lets the model touch the database directly.
+
+Tenant isolation is enforced by Postgres Row-Level Security rather than string-checking the generated SQL for a `company_id` filter — a naive check like `sql.includes('company_id = $1')` still passes on `SELECT * FROM packages WHERE company_id = $1 UNION SELECT * FROM packages`, leaking every tenant's data. Instead, a dedicated read-only role (`tracy_ro`, `NOSUPERUSER NOBYPASSRLS`, granted `SELECT` on only 8 queryable tables) runs the query through a separate connection pool, inside a transaction that sets `app.company_id` as a transaction-local `set_config` value; RLS policies on each table enforce `company_id = current_setting('app.company_id')` at the database level, so no application-layer bug in the SQL validator can leak across tenants.
+
+Defense in depth on top of RLS: `isSafeSql` rejects anything that isn't a single read-only statement, and every generated query is wrapped in `SELECT * FROM (...) LIMIT 500` with a 5-second statement timeout before it runs. Declines (ambiguous questions, no matching schema, disallowed statements) return a plain-language explanation instead of an error, surfaced in the UI next to the results.
+
 ### Dashboard aggregation in a single request
 
 The operator dashboard is served by one endpoint (`GET /api/dashboard`) that runs its five aggregate queries concurrently with `Promise.all` rather than issuing a separate round-trip per widget. Metrics are computed in SQL — `SUM(quantity * cost_price)` for inventory value, and `generate_series` to bucket the 30-day activity timeline so days with no movements still return a zero row — keeping aggregation in the database instead of the application layer. Every query is company-scoped like the rest of the app. On the frontend, the charts (donut, bar, line) are hand-built SVG components with no charting dependency.
@@ -65,6 +76,7 @@ The operator dashboard is served by one endpoint (`GET /api/dashboard`) that run
 
 ## Features
 
+- **Tracy AI** — ask inventory questions in plain English on the dashboard; a Claude-generated, guardrailed SQL query runs against a tenant-isolated (Postgres RLS) read-only role and returns results as stat tiles or a paginated data table, capped at 500 rows
 - **Operator dashboard** — post-login analytics overview with KPI tiles (inventory value, active packages, active products and locations, 30-day movement volume) and charts for inventory value by category, value by location, package status, and daily inventory activity
 - **Multi-tenant auth** — company-scoped accounts, session-based login via Passport.js
 - **Role-based access control** — admin, manager, and staff roles with route-level enforcement
@@ -111,6 +123,7 @@ A live demo is available at [traceroot.io](https://traceroot.io). Use the follow
 - [x] **Frontend migration** — core app views rewritten in React + TypeScript (Vite); auth, billing, and static marketing pages intentionally kept on server-rendered EJS
 - [x] **Backend TypeScript migration** — Express backend migrated from JavaScript to TypeScript, one domain at a time
 - [x] **Dashboard** — KPI tiles and charts for inventory value by category and location, package status, and 30-day activity
+- [x] **Tracy AI** — natural-language-to-SQL inventory assistant on the dashboard, tenant-isolated via Postgres RLS
 - [ ] **Variance checker** — upload a physical count CSV, compare against system quantities, AI-generated reconciliation summary via Claude API
 - [ ] **METRC integration** — sync package data directly to state track-and-trace via API
 - [ ] **Reporting** — inventory valuation trends, movement exports, low-stock alerts

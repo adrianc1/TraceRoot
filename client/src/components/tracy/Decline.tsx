@@ -1,6 +1,6 @@
 export const Decline = ({ message }: { message: string }) => {
 	return (
-		<div className="w-full md:w-2/3 mb-6 flex gap-3 rounded-lg border border-amber-300 bg-amber-light px-4 py-3">
+		<div className="w-full mb-6 flex gap-3 rounded-lg border border-amber-300 bg-amber-light px-4 py-3">
 			<svg
 				viewBox="0 0 20 20"
 				fill="currentColor"

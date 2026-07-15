@@ -27,21 +27,22 @@ export const TracyAI = () => {
 		const data = await res.json();
 
 		setResponse(data);
-		console.log('Tracy response:', data);
+		setLoading(false);
 	};
 
 	return (
 		<div className="">
 			<form
 				onSubmit={handleFormSubmit}
-				className="w-full md:w-2/3 flex items-center gap-2 mb-6"
+				className="w-full flex items-center gap-2 mb-6"
 			>
 				<label htmlFor="tracy-user-input" className="sr-only">
 					Ask about your inventory
 				</label>
 				<input
 					type="text"
-					className={`flex-1 min-w-0 px-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white transition-all focus:border-green-mid focus:outline-none `}
+					disabled={loading}
+					className={`flex-1 min-w-0 w-full px-3 py-[0.4rem] text-[0.8125rem] border border-gray-300 rounded-md bg-white transition-all focus:border-green-mid focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed`}
 					id="tracy-user-input"
 					value={userSearch}
 					onChange={(e) => setUserSearch(e.target.value)}
@@ -49,7 +50,8 @@ export const TracyAI = () => {
 				/>
 				<button
 					type="submit"
-					className={`px-4 py-[0.4rem] text-[0.8125rem] font-medium text-green-mid bg-white border border-green-mid rounded-md hover:bg-green-deep hover:text-white hover:border-green-deep transition-colors inline-flex items-center gap-1.5 `}
+					disabled={loading}
+					className={`px-4 py-[0.4rem] text-[0.8125rem] font-medium text-green-mid bg-white border border-green-mid rounded-md hover:bg-green-deep hover:text-white hover:border-green-deep transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed  `}
 				>
 					<SparkleIcon className="w-4 h-4" />
 					Ask Tracy
