@@ -463,9 +463,6 @@
   .table {
     display: table;
   }
-  .table\! {
-    display: table !important;
-  }
   .h-1 {
     height: var(--spacing);
   }
@@ -717,6 +714,9 @@
   }
   .justify-center {
     justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
   }
   .gap-1 {
     gap: var(--spacing);
@@ -986,6 +986,12 @@
     background-color: color-mix(in srgb, #e6f7ef 30%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-green-light) 30%, transparent);
+    }
+  }
+  .bg-green-light\/50 {
+    background-color: color-mix(in srgb, #e6f7ef 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-green-light) 50%, transparent);
     }
   }
   .bg-green-mid {
@@ -1787,6 +1793,24 @@
   .disabled\:opacity-50 {
     &:disabled {
       opacity: 50%;
+    }
+  }
+  .disabled\:hover\:bg-white {
+    &:disabled {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-white);
+        }
+      }
+    }
+  }
+  .disabled\:hover\:text-green-mid {
+    &:disabled {
+      &:hover {
+        @media (hover: hover) {
+          color: var(--color-green-mid);
+        }
+      }
     }
   }
   .sm\:flex {
