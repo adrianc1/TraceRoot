@@ -322,6 +322,25 @@ const Header = () => {
 				{/* <!-- Drawer nav --> */}
 				<nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
 					<a
+						href="/dashboard"
+						className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors no-underline font-medium"
+					>
+						<svg
+							className="w-4 h-4 text-gray-500 shrink-0"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.75"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M3 12l2-2m0 0l7-7 7 7m-9-2v18h6a2 2 0 002-2v-7h4l-2-2M13 21v-6a1 1 0 00-1-1h-2a1 1 0 00-1 1v6"
+							/>
+						</svg>
+						Dashboard
+					</a>
+					<a
 						href="/packages"
 						className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[0.875rem] text-gray-700 hover:bg-gray-100 transition-colors no-underline font-medium"
 					>
