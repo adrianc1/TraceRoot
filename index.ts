@@ -27,6 +27,7 @@ import {
 } from './middleware/authMiddleware.js';
 import { checkTrial } from './middleware/trialMiddleware.js';
 import configurePassport from './auth/passport.js';
+import tracyRouter from './routes/tracyRouter.js';
 
 const pgSession = connectPgSimple(session);
 
@@ -80,6 +81,7 @@ app.get('/contact', (_req, res) => res.render('contact'));
 app.use('/api/billing', ensureAuthenticated, billingRouter);
 app.use('/billing', ensureAuthenticated, billingRouter);
 
+// auth routes
 app.use('/login', redirectIfAuthenticated, loginRouter);
 app.use('/', signupRouter);
 app.use('/api/users', ensureAuthenticated, usersRouter);
@@ -91,7 +93,12 @@ app.use('/api/strains', ensureAuthenticated, strainsRouter);
 app.use('/api/brands', ensureAuthenticated, brandsRouter);
 app.use('/api/transfers', ensureAuthenticated, transfersRouter);
 app.use('/api/locations', ensureAuthenticated, locationsRouter);
+
+// dashboard routes
 app.use('/api/dashboard', ensureAuthenticated, dashboardRouter);
+
+// AI routes
+app.use('/api/tracy', ensureAuthenticated, tracyRouter);
 
 if (process.env.NODE_ENV === 'production') {
 	app.use(express.static(path.resolve('client/dist')));

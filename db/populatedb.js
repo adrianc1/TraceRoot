@@ -12,6 +12,9 @@ async function main() {
 	const schemaSQL = fs.readFileSync('./db/schema.sql', 'utf-8');
 	await client.query(schemaSQL);
 
+	const rlsSQL = fs.readFileSync('./db/rls_setup.sql', 'utf-8');
+	await client.query(rlsSQL);
+
 	const seedSQL = fs.readFileSync('./db/seed.sql', 'utf-8');
 	await client.query(seedSQL);
 

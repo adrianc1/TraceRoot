@@ -341,3 +341,9 @@ export interface Invites {
 	created_by: number;
 	accepted_at: Date | null;
 }
+
+export interface TracyAnswer {
+	sql: string;
+	explanation: string;
+	tables_used: string[];
+}

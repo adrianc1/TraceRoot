@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as db from '../db/queries';
 import crypto from 'crypto';
-import { validateUser } from './authController';
 const getCurrentUser = async (req: Request, res: Response) => {
 	try {
 		const user = await db.getUserById(req.user!.id, req.user!.company_id);
